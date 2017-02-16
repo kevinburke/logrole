@@ -9,11 +9,11 @@ import (
 	"time"
 
 	log "github.com/inconshreveable/log15"
-	twilio "github.com/saintpete/twilio-go"
 	"github.com/saintpete/logrole/config"
 	"github.com/saintpete/logrole/services"
 	"github.com/saintpete/logrole/test"
 	"github.com/saintpete/logrole/test/harness"
+	twilio "github.com/saintpete/twilio-go"
 )
 
 var dlog = log.New()
@@ -55,6 +55,7 @@ var notFoundResp = []byte("{\"code\": 20404, \"message\": \"The requested resour
 
 func newServerWithResponse(code int, resp []byte) *httptest.Server {
 	return httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		fmt.Println("hit test server", r.URL.Path)
 		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(code)
 		w.Write(resp)
@@ -74,7 +75,7 @@ func Test404OnResource404(t *testing.T) {
 	w := httptest.NewRecorder()
 	s.ServeHTTP(w, req)
 	if w.Code != 404 {
-		t.Errorf("expected Code to be 404, got %d", w.Code)
+		t.Errorf("expected Code to be 404, got %d, body:\n\n%s", w.Code, w.Body.String())
 	}
 }
 

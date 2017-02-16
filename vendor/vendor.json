@@ -86,10 +86,10 @@
 			"revisionTime": "2016-10-26T22:56:18Z"
 		},
 		{
-			"checksumSHA1": "pRZoJEa1gpLB05roBsF7xKH14os=",
+			"checksumSHA1": "4Q+6hL4zknSNA7fE+lV43XlX504=",
 			"path": "github.com/kevinburke/rest",
-			"revision": "03864faadc09165226fa75846ef31ab00944c17c",
-			"revisionTime": "2017-01-05T01:36:19Z"
+			"revision": "795c9b7c8862b3e8a901e83bacb7500540467a16",
+			"revisionTime": "2017-02-16T05:26:47Z"
 		},
 		{
 			"checksumSHA1": "I4njd26dG5hxFT2nawuByM4pxzY=",
@@ -104,10 +104,10 @@
 			"revisionTime": "2016-08-06T12:27:52Z"
 		},
 		{
-			"checksumSHA1": "Fzu1HJOTox+yuh6q6ODDnqGqV44=",
+			"checksumSHA1": "KQ/tsHS++zsghHK8jmmc9x9+b8g=",
 			"path": "github.com/saintpete/twilio-go",
-			"revision": "9a4eeb51fa469e798d925730b7d969093081b72b",
-			"revisionTime": "2016-12-08T01:18:00Z"
+			"revision": "87225a985856b906f72cbf326dadb8d5faedbd72",
+			"revisionTime": "2017-02-16T06:16:21Z"
 		},
 		{
 			"checksumSHA1": "zmC8/3V4ls53DJlNTKDZwPSC/dA=",

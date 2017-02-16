@@ -5,10 +5,10 @@ import (
 	"time"
 
 	log "github.com/inconshreveable/log15"
-	twilio "github.com/saintpete/twilio-go"
 	"github.com/saintpete/logrole/config"
 	"github.com/saintpete/logrole/services"
 	"github.com/saintpete/logrole/views"
+	twilio "github.com/saintpete/twilio-go"
 )
 
 var NullLogger = log.New()
