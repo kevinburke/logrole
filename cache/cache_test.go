@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"github.com/saintpete/logrole/test"
-	twilio "github.com/saintpete/twilio-go"
+	twilio "github.com/kevinburke/twilio-go"
 )
 
 func TestEncodeDecode(t *testing.T) {

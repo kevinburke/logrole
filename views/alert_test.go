@@ -4,7 +4,7 @@ import (
 	"testing"
 	"time"
 
-	twilio "github.com/saintpete/twilio-go"
+	twilio "github.com/kevinburke/twilio-go"
 	"github.com/saintpete/logrole/config"
 )
 

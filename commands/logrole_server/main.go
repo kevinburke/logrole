@@ -16,7 +16,7 @@ import (
 	"github.com/saintpete/logrole/config"
 	"github.com/saintpete/logrole/server"
 	"github.com/saintpete/logrole/services"
-	twilio "github.com/saintpete/twilio-go"
+	twilio "github.com/kevinburke/twilio-go"
 	yaml "gopkg.in/yaml.v2"
 )
 

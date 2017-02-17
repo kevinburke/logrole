@@ -11,10 +11,10 @@ check out the dependency locally using `go get <dependency-name>`. Then start
 using it in the project - just add the dependency where you would use it - and
 run `make deps`. This should add the dependency to the `vendor` directory.
 
-To update a dependency, say, `github.com/saintpete/twilio-go` - update the
-project on your local fork, `$GOPATH/src/github.com/saintpete/twilio-go` to
+To update a dependency, say, `github.com/kevinburke/twilio-go` - update the
+project on your local fork, `$GOPATH/src/github.com/kevinburke/twilio-go` to
 the new version you want. Then in the logrole project, run
 
 ```
-govendor update github.com/saintpete/twilio-go
+govendor update github.com/kevinburke/twilio-go
 ```

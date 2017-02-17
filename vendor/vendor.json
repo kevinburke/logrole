@@ -92,6 +92,12 @@
 			"revisionTime": "2017-02-16T05:26:47Z"
 		},
 		{
+			"checksumSHA1": "klyRQfMxgO6wieyXfHr++SDoEzk=",
+			"path": "github.com/kevinburke/twilio-go",
+			"revision": "9a4eeb51fa469e798d925730b7d969093081b72b",
+			"revisionTime": "2016-12-08T01:18:00Z"
+		},
+		{
 			"checksumSHA1": "I4njd26dG5hxFT2nawuByM4pxzY=",
 			"path": "github.com/mattn/go-colorable",
 			"revision": "d228849504861217f796da67fae4f6e347643f15",
@@ -162,12 +168,6 @@
 			"path": "github.com/saintpete/logrole/views",
 			"revision": "60deb7bff4123cda6e297eaaa8d8cee857ea21bc",
 			"revisionTime": "2017-02-13T18:26:07Z"
-		},
-		{
-			"checksumSHA1": "Fzu1HJOTox+yuh6q6ODDnqGqV44=",
-			"path": "github.com/saintpete/twilio-go",
-			"revision": "9a4eeb51fa469e798d925730b7d969093081b72b",
-			"revisionTime": "2016-12-08T01:18:00Z"
 		},
 		{
 			"checksumSHA1": "zmC8/3V4ls53DJlNTKDZwPSC/dA=",

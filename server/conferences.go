@@ -18,7 +18,7 @@ import (
 	"github.com/saintpete/logrole/config"
 	"github.com/saintpete/logrole/services"
 	"github.com/saintpete/logrole/views"
-	twilio "github.com/saintpete/twilio-go"
+	twilio "github.com/kevinburke/twilio-go"
 )
 
 const conferencePattern = `(?P<sid>CF[a-f0-9]{32})`

@@ -4,7 +4,7 @@ import (
 	"errors"
 
 	types "github.com/kevinburke/go-types"
-	twilio "github.com/saintpete/twilio-go"
+	twilio "github.com/kevinburke/twilio-go"
 	"github.com/saintpete/logrole/config"
 	"github.com/saintpete/logrole/services"
 )

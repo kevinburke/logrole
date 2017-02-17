@@ -13,7 +13,7 @@ import (
 	"github.com/saintpete/logrole/services"
 	"github.com/saintpete/logrole/test"
 	"github.com/saintpete/logrole/test/harness"
-	twilio "github.com/saintpete/twilio-go"
+	twilio "github.com/kevinburke/twilio-go"
 )
 
 var dlog = log.New()

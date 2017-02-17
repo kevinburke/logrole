@@ -22,7 +22,7 @@ import (
 	"github.com/saintpete/logrole/cache"
 	"github.com/saintpete/logrole/config"
 	"github.com/saintpete/logrole/services"
-	twilio "github.com/saintpete/twilio-go"
+	twilio "github.com/kevinburke/twilio-go"
 )
 
 // Front page of messages should be changing
