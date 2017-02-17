@@ -6,6 +6,7 @@
 package views
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"net/http"
@@ -22,7 +23,6 @@ import (
 	"github.com/saintpete/logrole/config"
 	"github.com/saintpete/logrole/services"
 	twilio "github.com/saintpete/twilio-go"
-	"golang.org/x/net/context"
 )
 
 // Front page of messages should be changing

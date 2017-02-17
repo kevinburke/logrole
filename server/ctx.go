@@ -1,9 +1,8 @@
 package server
 
 import (
+	"context"
 	"time"
-
-	"golang.org/x/net/context"
 )
 
 var defaultTimeout = 15 * time.Second

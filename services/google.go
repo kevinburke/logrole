@@ -1,12 +1,12 @@
 package services
 
 import (
+	"context"
 	"fmt"
 	"net/http"
 	"net/mail"
 
 	"github.com/kevinburke/rest"
-	"golang.org/x/net/context"
 )
 
 // Base URL to get user data from.

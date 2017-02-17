@@ -1,6 +1,7 @@
 package config
 
 import (
+	"context"
 	"crypto/subtle"
 	"encoding/json"
 	"errors"
@@ -14,7 +15,6 @@ import (
 	log "github.com/inconshreveable/log15"
 	"github.com/kevinburke/rest"
 	"github.com/saintpete/logrole/services"
-	"golang.org/x/net/context"
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/google"
 )

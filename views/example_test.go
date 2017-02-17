@@ -1,15 +1,15 @@
 package views_test
 
 import (
+	"context"
 	"fmt"
 	"time"
 
 	"github.com/kevinburke/handlers"
-	twilio "github.com/saintpete/twilio-go"
 	"github.com/saintpete/logrole/config"
 	"github.com/saintpete/logrole/services"
 	"github.com/saintpete/logrole/views"
-	"golang.org/x/net/context"
+	twilio "github.com/saintpete/twilio-go"
 )
 
 func Example() {

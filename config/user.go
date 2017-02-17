@@ -1,12 +1,11 @@
 package config
 
 import (
+	"context"
 	"fmt"
 	"net/http"
 	"strings"
 	"time"
-
-	"golang.org/x/net/context"
 )
 
 var DefaultUser = NewUser(AllUserSettings())

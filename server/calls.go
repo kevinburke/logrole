@@ -1,6 +1,7 @@
 package server
 
 import (
+	"context"
 	"errors"
 	"html/template"
 	"net/http"
@@ -18,7 +19,6 @@ import (
 	"github.com/saintpete/logrole/services"
 	"github.com/saintpete/logrole/views"
 	twilio "github.com/saintpete/twilio-go"
-	"golang.org/x/net/context"
 	"golang.org/x/sync/errgroup"
 )
 

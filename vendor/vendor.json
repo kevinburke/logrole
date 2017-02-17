@@ -104,10 +104,70 @@
 			"revisionTime": "2016-08-06T12:27:52Z"
 		},
 		{
-			"checksumSHA1": "KQ/tsHS++zsghHK8jmmc9x9+b8g=",
+			"checksumSHA1": "0H5LuyeiukIGtQfyCR9E467hFB4=",
+			"path": "github.com/saintpete/logrole/assets",
+			"revision": "60deb7bff4123cda6e297eaaa8d8cee857ea21bc",
+			"revisionTime": "2017-02-13T18:26:07Z"
+		},
+		{
+			"checksumSHA1": "LYCoLJTi2T8vfOCkitoty277jNM=",
+			"path": "github.com/saintpete/logrole/cache",
+			"revision": "60deb7bff4123cda6e297eaaa8d8cee857ea21bc",
+			"revisionTime": "2017-02-13T18:26:07Z"
+		},
+		{
+			"checksumSHA1": "65hrWtW4Ioku4CJdoU1/sgog8sA=",
+			"path": "github.com/saintpete/logrole/commands/logrole_server",
+			"revision": "60deb7bff4123cda6e297eaaa8d8cee857ea21bc",
+			"revisionTime": "2017-02-13T18:26:07Z"
+		},
+		{
+			"checksumSHA1": "2DMjhKxTqp7SExPKuMB/Ysr/y0Y=",
+			"path": "github.com/saintpete/logrole/commands/logrole_write_config_from_env",
+			"revision": "60deb7bff4123cda6e297eaaa8d8cee857ea21bc",
+			"revisionTime": "2017-02-13T18:26:07Z"
+		},
+		{
+			"checksumSHA1": "uHMcQJkgrZDezGT4azB/CfaG+bE=",
+			"path": "github.com/saintpete/logrole/config",
+			"revision": "60deb7bff4123cda6e297eaaa8d8cee857ea21bc",
+			"revisionTime": "2017-02-13T18:26:07Z"
+		},
+		{
+			"checksumSHA1": "PwDJdZGcZw65d61/VxftfRSF6tM=",
+			"path": "github.com/saintpete/logrole/server",
+			"revision": "60deb7bff4123cda6e297eaaa8d8cee857ea21bc",
+			"revisionTime": "2017-02-13T18:26:07Z"
+		},
+		{
+			"checksumSHA1": "czhB1+vu5Ja/GnF3E5eEH2CIIRc=",
+			"path": "github.com/saintpete/logrole/services",
+			"revision": "60deb7bff4123cda6e297eaaa8d8cee857ea21bc",
+			"revisionTime": "2017-02-13T18:26:07Z"
+		},
+		{
+			"checksumSHA1": "IIX0g4SdnT+tn1ZPVMq6L3VbfbA=",
+			"path": "github.com/saintpete/logrole/test",
+			"revision": "60deb7bff4123cda6e297eaaa8d8cee857ea21bc",
+			"revisionTime": "2017-02-13T18:26:07Z"
+		},
+		{
+			"checksumSHA1": "DYgamNEHzwYaYWWt2BwI1ajeEXI=",
+			"path": "github.com/saintpete/logrole/test/harness",
+			"revision": "60deb7bff4123cda6e297eaaa8d8cee857ea21bc",
+			"revisionTime": "2017-02-13T18:26:07Z"
+		},
+		{
+			"checksumSHA1": "lZ9lrt/TRNnA7LLh8qAUjc8ynjo=",
+			"path": "github.com/saintpete/logrole/views",
+			"revision": "60deb7bff4123cda6e297eaaa8d8cee857ea21bc",
+			"revisionTime": "2017-02-13T18:26:07Z"
+		},
+		{
+			"checksumSHA1": "Fzu1HJOTox+yuh6q6ODDnqGqV44=",
 			"path": "github.com/saintpete/twilio-go",
-			"revision": "87225a985856b906f72cbf326dadb8d5faedbd72",
-			"revisionTime": "2017-02-16T06:16:21Z"
+			"revision": "9a4eeb51fa469e798d925730b7d969093081b72b",
+			"revisionTime": "2016-12-08T01:18:00Z"
 		},
 		{
 			"checksumSHA1": "zmC8/3V4ls53DJlNTKDZwPSC/dA=",
@@ -146,10 +206,10 @@
 			"revisionTime": "2016-10-31T15:37:30Z"
 		},
 		{
-			"checksumSHA1": "9jjO5GjLa0XF/nfWihF02RoH4qc=",
+			"checksumSHA1": "Y+HGqEkYM15ir+J93MEaHdyFy0c=",
 			"path": "golang.org/x/net/context",
-			"revision": "40d3034e575b6eafbca34e64224da61de35ae04c",
-			"revisionTime": "2016-11-01T21:56:08Z"
+			"revision": "b4690f45fa1cafc47b1c280c2e75116efe40cc13",
+			"revisionTime": "2017-02-15T08:41:58Z"
 		},
 		{
 			"checksumSHA1": "WHc3uByvGaMcnSoI21fhzYgbOgg=",
@@ -158,16 +218,16 @@
 			"revisionTime": "2016-11-01T21:56:08Z"
 		},
 		{
-			"checksumSHA1": "hyK05cmzm+vPH1OO+F1AkvES3sw=",
+			"checksumSHA1": "nJGYSAwWAjkslNuv7w6yvmjf2K8=",
 			"path": "golang.org/x/oauth2",
-			"revision": "d5040cddfc0da40b408c9a1da4728662435176a9",
-			"revisionTime": "2016-11-03T22:50:36Z"
+			"revision": "b9780ec78894ab900c062d58ee3076cd9b2a4501",
+			"revisionTime": "2017-02-14T22:24:16Z"
 		},
 		{
-			"checksumSHA1": "oecZumjzvtTWER8GcKRiSMsQtzY=",
+			"checksumSHA1": "rEzA1cW2NdfF9ndGQHTNzE5+mF4=",
 			"path": "golang.org/x/oauth2/google",
-			"revision": "d5040cddfc0da40b408c9a1da4728662435176a9",
-			"revisionTime": "2016-11-03T22:50:36Z"
+			"revision": "b9780ec78894ab900c062d58ee3076cd9b2a4501",
+			"revisionTime": "2017-02-14T22:24:16Z"
 		},
 		{
 			"checksumSHA1": "D3v/aqfB9swlaZcSksCoF+lbOqo=",
