@@ -19,10 +19,10 @@ import (
 	"github.com/golang/groupcache/singleflight"
 	log "github.com/inconshreveable/log15"
 	"github.com/kevinburke/rest"
-	"github.com/saintpete/logrole/cache"
-	"github.com/saintpete/logrole/config"
-	"github.com/saintpete/logrole/services"
-	twilio "github.com/saintpete/twilio-go"
+	"github.com/kevinburke/logrole/cache"
+	"github.com/kevinburke/logrole/config"
+	"github.com/kevinburke/logrole/services"
+	twilio "github.com/kevinburke/twilio-go"
 )
 
 // Front page of messages should be changing

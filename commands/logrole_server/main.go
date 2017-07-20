@@ -13,10 +13,10 @@ import (
 
 	log "github.com/inconshreveable/log15"
 	"github.com/kevinburke/handlers"
-	"github.com/saintpete/logrole/config"
-	"github.com/saintpete/logrole/server"
-	"github.com/saintpete/logrole/services"
-	twilio "github.com/saintpete/twilio-go"
+	"github.com/kevinburke/logrole/config"
+	"github.com/kevinburke/logrole/server"
+	"github.com/kevinburke/logrole/services"
+	twilio "github.com/kevinburke/twilio-go"
 	yaml "gopkg.in/yaml.v2"
 )
 

@@ -10,8 +10,8 @@ import (
 
 	"github.com/kevinburke/handlers"
 	"github.com/kevinburke/rest"
-	twilio "github.com/saintpete/twilio-go"
-	"github.com/saintpete/logrole/services"
+	twilio "github.com/kevinburke/twilio-go"
+	"github.com/kevinburke/logrole/services"
 )
 
 // An imageServer provides an opaque proxy for image requests.

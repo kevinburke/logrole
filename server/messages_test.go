@@ -9,11 +9,11 @@ import (
 	"time"
 
 	log "github.com/inconshreveable/log15"
-	"github.com/saintpete/logrole/config"
-	"github.com/saintpete/logrole/services"
-	"github.com/saintpete/logrole/test"
-	"github.com/saintpete/logrole/test/harness"
-	twilio "github.com/saintpete/twilio-go"
+	"github.com/kevinburke/logrole/config"
+	"github.com/kevinburke/logrole/services"
+	"github.com/kevinburke/logrole/test"
+	"github.com/kevinburke/logrole/test/harness"
+	twilio "github.com/kevinburke/twilio-go"
 )
 
 var dlog = log.New()

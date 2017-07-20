@@ -14,7 +14,7 @@ import (
 
 	log "github.com/inconshreveable/log15"
 	"github.com/kevinburke/rest"
-	"github.com/saintpete/logrole/services"
+	"github.com/kevinburke/logrole/services"
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/google"
 )
@@ -161,7 +161,7 @@ type GoogleAuthenticator struct {
 // authenticate requests via Google login.
 //
 // To get a clientID and clientSecret, see
-// https://github.com/saintpete/logrole/blob/master/docs/google.md
+// https://github.com/kevinburke/logrole/blob/master/docs/google.md
 func NewGoogleAuthenticator(logger log.Logger, clientID string, clientSecret string, baseURL string, allowedDomains []string, secretKey *[32]byte) *GoogleAuthenticator {
 	conf := &oauth2.Config{
 		ClientID:     clientID,

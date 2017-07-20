@@ -7,7 +7,7 @@ import (
 
 	log "github.com/inconshreveable/log15"
 	"github.com/kevinburke/rest"
-	twilio "github.com/saintpete/twilio-go"
+	twilio "github.com/kevinburke/twilio-go"
 )
 
 type searchServer struct {

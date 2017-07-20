@@ -4,8 +4,8 @@ import (
 	"errors"
 
 	types "github.com/kevinburke/go-types"
-	twilio "github.com/saintpete/twilio-go"
-	"github.com/saintpete/logrole/config"
+	twilio "github.com/kevinburke/twilio-go"
+	"github.com/kevinburke/logrole/config"
 )
 
 type CallPage struct {

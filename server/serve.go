@@ -18,10 +18,10 @@ import (
 	log "github.com/inconshreveable/log15"
 	"github.com/kevinburke/handlers"
 	"github.com/kevinburke/rest"
-	"github.com/saintpete/logrole/assets"
-	"github.com/saintpete/logrole/config"
-	"github.com/saintpete/logrole/services"
-	"github.com/saintpete/logrole/views"
+	"github.com/kevinburke/logrole/assets"
+	"github.com/kevinburke/logrole/config"
+	"github.com/kevinburke/logrole/services"
+	"github.com/kevinburke/logrole/views"
 )
 
 // Server version, run "make release" to increase this value

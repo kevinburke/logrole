@@ -8,8 +8,8 @@ import (
 	"time"
 
 	types "github.com/kevinburke/go-types"
-	twilio "github.com/saintpete/twilio-go"
-	"github.com/saintpete/logrole/services"
+	twilio "github.com/kevinburke/twilio-go"
+	"github.com/kevinburke/logrole/services"
 )
 
 const HTML5DatetimeLocalFormat = "2006-01-02T15:04"
@@ -44,7 +44,7 @@ func cleanError(err error) string {
 	}
 	str := strings.Replace(err.Error(), "twilio: ", "", 1)
 	if strings.Contains(strings.ToLower(str), "aftersid is required for paging") {
-		str = str + " See https://github.com/saintpete/logrole/issues/2"
+		str = str + " See https://github.com/kevinburke/logrole/issues/2"
 	}
 	return str
 }

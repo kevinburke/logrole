@@ -5,7 +5,7 @@ import (
 	"net/url"
 
 	log "github.com/inconshreveable/log15"
-	"github.com/saintpete/logrole/services"
+	"github.com/kevinburke/logrole/services"
 )
 
 type tzServer struct {

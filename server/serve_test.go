@@ -7,8 +7,8 @@ import (
 	"testing"
 
 	log "github.com/inconshreveable/log15"
-	"github.com/saintpete/logrole/config"
-	"github.com/saintpete/logrole/services"
+	"github.com/kevinburke/logrole/config"
+	"github.com/kevinburke/logrole/services"
 )
 
 func TestRequestsUpgraded(t *testing.T) {

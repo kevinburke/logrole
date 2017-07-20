@@ -22,7 +22,7 @@ calls, call from, etc. etc.
 
 <img alt="Tab to search demo" src="https://thumbs.gfycat.com/BarrenColorlessJackrabbit-size_restricted.gif" />
 
-[user-settings]: https://godoc.org/github.com/saintpete/logrole/config#UserSettings
+[user-settings]: https://godoc.org/github.com/kevinburke/logrole/config#UserSettings
 
 ## It Is Really Fast
 
@@ -47,7 +47,7 @@ If you need to search your Twilio Logs, this is the tool you should be using.
 To install Logrole, run
 
 ```bash
-go get -u github.com/saintpete/logrole/...
+go get -u github.com/kevinburke/logrole/...
 ```
 
 You will need a working [Go environment][go-env]; I recommend setting the
@@ -78,8 +78,8 @@ variables to a config.yml file. Follow the steps in (1).
 
 For more information, please [see the Settings documentation][settings-docs].
 
-[settings-docs]: https://github.com/saintpete/logrole/blob/master/docs/settings.md
-[config-sample]: https://github.com/saintpete/logrole/blob/master/config.sample.yml
+[settings-docs]: https://github.com/kevinburke/logrole/blob/master/docs/settings.md
+[config-sample]: https://github.com/kevinburke/logrole/blob/master/config.sample.yml
 
 ## Authentication
 
@@ -87,7 +87,7 @@ Logrole supports three authentication modes: none, basic auth,
 and Google OAuth. For more information, [see the Settings
 documentation][settings-auth-docs].
 
-[settings-auth-docs]: https://github.com/saintpete/logrole/blob/master/docs/settings.md#authentication
+[settings-auth-docs]: https://github.com/kevinburke/logrole/blob/master/docs/settings.md#authentication
 
 ## Local Development
 
@@ -97,7 +97,7 @@ https://golang.org/doc/install.
 
 [go-env]: https://golang.org/doc/install
 
-To check out the project, run `go get -u github.com/saintpete/logrole/...`.
+To check out the project, run `go get -u github.com/kevinburke/logrole/...`.
 
 To start a development server, run `make serve`. This will start a server on
 [localhost:4114](http://localhost:4114).
@@ -131,4 +131,4 @@ to request this feature][support] if you'd like it to be available in Logrole.
 The Start/End date filters may only work in Chrome.
 
 [support]: mailto:help@twilio.com
-[issue-4]: https://github.com/saintpete/logrole/issues/4
+[issue-4]: https://github.com/kevinburke/logrole/issues/4

@@ -4,7 +4,7 @@ import (
 	"net/http"
 
 	log "github.com/inconshreveable/log15"
-	"github.com/saintpete/logrole/config"
+	"github.com/kevinburke/logrole/config"
 )
 
 type logoutServer struct {

@@ -169,7 +169,7 @@ redirected to Google to login, and then sent back to Logrole.
 You'll need a Google Client ID and Client Secret for OAuth. [Follow these
 instructions][google] to get those values.
 
-[google]: https://github.com/saintpete/logrole/tree/master/docs/google.md
+[google]: https://github.com/kevinburke/logrole/tree/master/docs/google.md
 
 #### Allowed domains
 
@@ -252,8 +252,8 @@ If google_allowed_domains is not empty, and a user's domain is allowed, but
 they are not in a group, we use the permissions for the default group. If no
 default group exists, the user is denied access.
 
-[user-settings]: https://godoc.org/github.com/saintpete/logrole/config#UserSettings
-[default-user]: https://godoc.org/github.com/saintpete/logrole/config#DefaultUser
+[user-settings]: https://godoc.org/github.com/kevinburke/logrole/config#UserSettings
+[default-user]: https://godoc.org/github.com/kevinburke/logrole/config#DefaultUser
 
 ### What happens to the YAML file?
 
@@ -281,4 +281,4 @@ The logrole_server binary handles these automatically for you. If you are
 writing custom code, you can skip any or all of these steps with your own
 initialization.
 
-[settings-godoc]: https://godoc.org/github.com/saintpete/logrole/server/#Settings
+[settings-godoc]: https://godoc.org/github.com/kevinburke/logrole/server/#Settings

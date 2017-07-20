@@ -4,7 +4,7 @@ SHELL = /bin/bash
 BUMP_VERSION := $(shell command -v bump_version)
 GODOCDOC := $(shell command -v godocdoc)
 GO_BINDATA := $(shell command -v go-bindata)
-GOVENDOR := $(shell command -v govendor)
+DEP := $(shell command -v dep)
 JUSTRUN := $(shell command -v justrun)
 BENCHSTAT := $(shell command -v benchstat)
 WRITE_MAILMAP := $(shell command -v write_mailmap)
@@ -70,10 +70,10 @@ endif
 	justrun -v --delay=100ms -c 'make assets serve' $(WATCH_TARGETS)
 
 deps:
-ifndef GOVENDOR
-	go get -u github.com/kardianos/govendor
+ifndef DEP
+	go get -u github.com/golang/dep/cmd/dep
 endif
-	govendor sync
+	dep ensure
 
 release: race-test
 ifndef BUMP_VERSION
@@ -100,9 +100,9 @@ loc:
 # version of everything out to the GOPATH.
 unvendored:
 	rm -rf vendor/*/
-	go get -u ./...
+	go get -t -u ./...
 	$(MAKE) race-test
-	govendor sync
+	dep ensure
 
 authors:
 ifndef WRITE_MAILMAP

@@ -13,7 +13,7 @@ import (
 	"strings"
 
 	"github.com/kevinburke/handlers"
-	"github.com/saintpete/logrole/server"
+	"github.com/kevinburke/logrole/server"
 )
 
 func init() {

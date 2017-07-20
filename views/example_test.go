@@ -6,10 +6,10 @@ import (
 	"time"
 
 	"github.com/kevinburke/handlers"
-	"github.com/saintpete/logrole/config"
-	"github.com/saintpete/logrole/services"
-	"github.com/saintpete/logrole/views"
-	twilio "github.com/saintpete/twilio-go"
+	"github.com/kevinburke/logrole/config"
+	"github.com/kevinburke/logrole/services"
+	"github.com/kevinburke/logrole/views"
+	twilio "github.com/kevinburke/twilio-go"
 )
 
 func Example() {

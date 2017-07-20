@@ -16,10 +16,10 @@ import (
 	log "github.com/inconshreveable/log15"
 	types "github.com/kevinburke/go-types"
 	"github.com/kevinburke/rest"
-	"github.com/saintpete/logrole/config"
-	"github.com/saintpete/logrole/services"
-	"github.com/saintpete/logrole/views"
-	twilio "github.com/saintpete/twilio-go"
+	"github.com/kevinburke/logrole/config"
+	"github.com/kevinburke/logrole/services"
+	"github.com/kevinburke/logrole/views"
+	twilio "github.com/kevinburke/twilio-go"
 )
 
 const alertPattern = `(?P<sid>NO[a-f0-9]{32})`

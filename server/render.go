@@ -12,8 +12,8 @@ import (
 
 	"github.com/aristanetworks/goarista/monotime"
 	"github.com/kevinburke/handlers"
-	"github.com/saintpete/logrole/assets"
-	"github.com/saintpete/logrole/services"
+	"github.com/kevinburke/logrole/assets"
+	"github.com/kevinburke/logrole/services"
 )
 
 var base, phoneTpl, copyScript, sidTpl, messageInstanceTpl, messageListTpl,

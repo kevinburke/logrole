@@ -5,8 +5,8 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/saintpete/logrole/config"
-	"github.com/saintpete/logrole/server"
+	"github.com/kevinburke/logrole/config"
+	"github.com/kevinburke/logrole/server"
 	yaml "gopkg.in/yaml.v2"
 )
 

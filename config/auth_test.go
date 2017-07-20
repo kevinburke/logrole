@@ -6,7 +6,7 @@ import (
 	"testing"
 
 	log "github.com/inconshreveable/log15"
-	"github.com/saintpete/logrole/services"
+	"github.com/kevinburke/logrole/services"
 )
 
 var NullLogger = log.New()

@@ -3,8 +3,8 @@ package server
 import (
 	"net/http"
 
-	"github.com/saintpete/logrole/config"
-	"github.com/saintpete/logrole/services"
+	"github.com/kevinburke/logrole/config"
+	"github.com/kevinburke/logrole/services"
 )
 
 func Example() {

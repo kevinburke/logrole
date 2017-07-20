@@ -8,7 +8,7 @@ import (
 
 	"github.com/kevinburke/handlers"
 	"github.com/kevinburke/rest"
-	"github.com/saintpete/logrole/services"
+	"github.com/kevinburke/logrole/services"
 )
 
 type errorData struct {

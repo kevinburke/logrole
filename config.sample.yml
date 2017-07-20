@@ -72,7 +72,7 @@ email_address: test@example.com
 #
 # You can define and register your own
 # ErrorReporter as long as it uses this interface:
-# https://godoc.org/github.com/saintpete/logrole/services#ErrorReporter. See
+# https://godoc.org/github.com/kevinburke/logrole/services#ErrorReporter. See
 # services/error_reporter.go for an example.
 #
 # 500 server errors and panics are always logged to stderr.
@@ -83,7 +83,7 @@ error_reporter_token: your_sentry_dsn
 # "google".
 #
 # For more on authentication, see
-# https://github.com/saintpete/logrole/blob/master/docs/settings.md#authentication
+# https://github.com/kevinburke/logrole/blob/master/docs/settings.md#authentication
 auth_scheme: google
 
 # Uncomment these fields to use basic auth with a single user and password.
@@ -92,7 +92,7 @@ auth_scheme: google
 #basic_auth_password: hymanrickover
 
 # To create/configure Google credentials, see
-# https://github.com/saintpete/logrole/blob/master/docs/google.md
+# https://github.com/kevinburke/logrole/blob/master/docs/google.md
 google_client_id:     customdomain.apps.googleusercontent.com
 google_client_secret: W-secretkey
 
@@ -110,7 +110,7 @@ google_allowed_domains:
 # different groups.
 #
 # For more on the exact details of policy, see the authentication docs:
-# https://github.com/saintpete/logrole/blob/master/docs/settings.md#authentication
+# https://github.com/kevinburke/logrole/blob/master/docs/settings.md#authentication
 policy:
     - name: support
       permissions:

@@ -5,9 +5,9 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/saintpete/logrole/config"
-	"github.com/saintpete/logrole/test"
-	"github.com/saintpete/logrole/test/harness"
+	"github.com/kevinburke/logrole/config"
+	"github.com/kevinburke/logrole/test"
+	"github.com/kevinburke/logrole/test/harness"
 )
 
 func TestGetFiltersGeneratesCorrectQuery(t *testing.T) {

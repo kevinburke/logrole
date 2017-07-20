@@ -11,8 +11,8 @@ import (
 
 	log "github.com/inconshreveable/log15"
 	"github.com/kevinburke/handlers"
-	twilio "github.com/saintpete/twilio-go"
-	"github.com/saintpete/logrole/services"
+	twilio "github.com/kevinburke/twilio-go"
+	"github.com/kevinburke/logrole/services"
 	yaml "gopkg.in/yaml.v2"
 )
 
@@ -33,7 +33,7 @@ var DefaultTimezones = []string{
 // 1980's.
 var DefaultMaxResourceAge = time.Since(twilio.Epoch)
 
-var missingGoogleCredentials = errors.New("Cannot use google auth without a Client ID and Client Secret. To configure a Client ID and Secret, see https://github.com/saintpete/logrole/blob/master/docs/google.md.")
+var missingGoogleCredentials = errors.New("Cannot use google auth without a Client ID and Client Secret. To configure a Client ID and Secret, see https://github.com/kevinburke/logrole/blob/master/docs/google.md.")
 
 // FileConfig defines the settings you can load from a YAML configuration file.
 // Load configuration from a YAML file into a FileConfig struct, then call
@@ -108,7 +108,7 @@ type Settings struct {
 	PageSize uint
 
 	// Used to encrypt next page URI's and sessions. See
-	// https://github.com/saintpete/logrole/blob/master/docs/settings.md#secret-key
+	// https://github.com/kevinburke/logrole/blob/master/docs/settings.md#secret-key
 	SecretKey *[32]byte
 
 	// Don't show resources that are older than this age. Set to a very high

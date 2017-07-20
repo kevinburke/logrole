@@ -6,8 +6,8 @@ import (
 	"net/url"
 	"regexp"
 
-	twilio "github.com/saintpete/twilio-go"
-	"github.com/saintpete/logrole/views"
+	twilio "github.com/kevinburke/twilio-go"
+	"github.com/kevinburke/logrole/views"
 )
 
 type audioServer struct {
