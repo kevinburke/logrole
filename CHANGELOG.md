@@ -1,5 +1,11 @@
 # Changes
 
+## 1.6
+
+- Switch to using dep
+- Switch to using kevinburke/twilio-go
+- Switch to using stdlib context
+
 ## 1.5
 
 Ensure repository works with latest version of kevinburke/rest.
