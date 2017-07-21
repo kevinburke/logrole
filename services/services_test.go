@@ -3,13 +3,15 @@ package services
 import (
 	"strings"
 	"testing"
+
+	"github.com/kevinburke/nacl"
 )
 
 var npurl = "/2010-04-01/Accounts/AC58f1e8f2b1c6b88ca90a012a4be0c279/Messages.json?PageSize=50&Page=1&PageToken=PASM1f753eba6c2942858fd0be4608ead788"
 
 func TestOpaque(t *testing.T) {
 	t.Parallel()
-	key := NewRandomKey()
+	key := nacl.NewKey()
 	out := Opaque(npurl, key)
 	if strings.Contains(out, npurl) {
 		t.Fatal("encrypted value should not contain the input")

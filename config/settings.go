@@ -1,7 +1,6 @@
 package config
 
 import (
-	"encoding/hex"
 	"errors"
 	"fmt"
 	"io/ioutil"
@@ -11,8 +10,9 @@ import (
 
 	log "github.com/inconshreveable/log15"
 	"github.com/kevinburke/handlers"
-	twilio "github.com/kevinburke/twilio-go"
 	"github.com/kevinburke/logrole/services"
+	"github.com/kevinburke/nacl"
+	twilio "github.com/kevinburke/twilio-go"
 	yaml "gopkg.in/yaml.v2"
 )
 
@@ -135,26 +135,6 @@ type Settings struct {
 
 var errWrongLength = errors.New("Secret key has wrong length. Should be a 64-byte hex string")
 
-// getSecretKey produces a valid [32]byte secret key or returns an error. If
-// hexKey is the empty string, a valid 32 byte key will be randomly generated
-// and returned. If hexKey is invalid, an error is returned.
-func getSecretKey(hexKey string) (*[32]byte, error) {
-	if hexKey == "" {
-		return services.NewRandomKey(), nil
-	}
-
-	if len(hexKey) != 64 {
-		return nil, errWrongLength
-	}
-	secretKeyBytes, err := hex.DecodeString(hexKey)
-	if err != nil {
-		return nil, err
-	}
-	secretKey := new([32]byte)
-	copy(secretKey[:], secretKeyBytes)
-	return secretKey, nil
-}
-
 // NewSettingsFromConfig creates a new Settings object from the given
 // FileConfig, or an error.
 //
@@ -188,9 +168,15 @@ func NewSettingsFromConfig(c *FileConfig, l log.Logger) (settings *Settings, err
 	if c.SecretKey == "" {
 		l.Warn("No secret key provided, generating random secret key. Sessions won't persist across restarts")
 	}
-	secretKey, err := getSecretKey(c.SecretKey)
-	if err != nil {
-		return nil, err
+	var secretKey nacl.Key
+	if c.SecretKey == "" {
+		secretKey = nacl.NewKey()
+	} else {
+		var err error
+		secretKey, err = nacl.Load(c.SecretKey)
+		if err != nil {
+			return nil, err
+		}
 	}
 	if c.MaxResourceAge == 0 {
 		c.MaxResourceAge = DefaultMaxResourceAge

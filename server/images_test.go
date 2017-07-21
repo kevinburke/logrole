@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	"github.com/kevinburke/logrole/services"
+	"github.com/kevinburke/nacl"
 )
 
 const imagepath = "/media.twiliocdn.com/AC58f1e8f2b1c6b88ca90a012a4be0c279/10a8a62e659081b0ac370192c3b9fb6b"
@@ -21,7 +22,7 @@ func TestGetImages(t *testing.T) {
 		w.WriteHeader(http.StatusOK)
 		w.Write([]byte("hello world"))
 	}))
-	key := services.NewRandomKey()
+	key := nacl.NewKey()
 	u := services.Opaque(s.URL+imagepath, key)
 	i := &imageServer{
 		secretKey: key,

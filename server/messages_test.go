@@ -13,11 +13,12 @@ import (
 	"github.com/kevinburke/logrole/services"
 	"github.com/kevinburke/logrole/test"
 	"github.com/kevinburke/logrole/test/harness"
+	"github.com/kevinburke/nacl"
 	twilio "github.com/kevinburke/twilio-go"
 )
 
 var dlog = log.New()
-var key = services.NewRandomKey()
+var key = nacl.NewKey()
 var lf services.LocationFinder
 
 func init() {

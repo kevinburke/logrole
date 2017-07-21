@@ -8,7 +8,7 @@ import (
 
 	log "github.com/inconshreveable/log15"
 	"github.com/kevinburke/logrole/config"
-	"github.com/kevinburke/logrole/services"
+	"github.com/kevinburke/nacl"
 )
 
 func TestRequestsUpgraded(t *testing.T) {
@@ -41,7 +41,7 @@ func TestIndex(t *testing.T) {
 	settings := &config.Settings{
 		AllowUnencryptedTraffic: true,
 		Authenticator:           &config.NoopAuthenticator{},
-		SecretKey:               services.NewRandomKey(),
+		SecretKey:               nacl.NewKey(),
 		Logger:                  NullLogger,
 	}
 	s, err := NewServer(settings)
@@ -67,7 +67,7 @@ func init() {
 }
 
 func getGoogleAuthServer(t *testing.T) *Server {
-	key := services.NewRandomKey()
+	key := nacl.NewKey()
 	settings := &config.Settings{
 		SecretKey:     key,
 		Authenticator: config.NewGoogleAuthenticator(NullLogger, "", "", "http://localhost", nil, key),
@@ -114,7 +114,7 @@ func TestStaticPagesAvailableNoAuth(t *testing.T) {
 	a := config.NewBasicAuthAuthenticator("logrole")
 	a.AddUserPassword("test", "test")
 	settings := &config.Settings{
-		SecretKey:     services.NewRandomKey(),
+		SecretKey:     nacl.NewKey(),
 		Authenticator: a,
 		Logger:        NullLogger,
 	}

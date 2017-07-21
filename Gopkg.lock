@@ -50,6 +50,12 @@
   version = "0.29"
 
 [[projects]]
+  name = "github.com/kevinburke/nacl"
+  packages = [".","onetimeauth","randombytes","secretbox"]
+  revision = "e9536ea1966db534cbd804b4dbfff79276392f58"
+  version = "0.1"
+
+[[projects]]
   branch = "master"
   name = "github.com/kevinburke/raven-go"
   packages = ["."]
@@ -100,7 +106,7 @@
 [[projects]]
   branch = "master"
   name = "golang.org/x/crypto"
-  packages = ["nacl/secretbox","poly1305","salsa20/salsa"]
+  packages = ["poly1305","salsa20/salsa"]
   revision = "6914964337150723782436d56b3f21610a74ce7b"
 
 [[projects]]
@@ -148,6 +154,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "737eafa5b8d60a5d22c6d1c55637e735e2b9352e769a56a5a485de5e0de0d5ca"
+  inputs-digest = "532799dfbdc1f74bd45495d6443c79c0b2b32f28957e9c8af3388836f4803146"
   solver-name = "gps-cdcl"
   solver-version = 1

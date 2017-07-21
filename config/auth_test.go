@@ -6,7 +6,7 @@ import (
 	"testing"
 
 	log "github.com/inconshreveable/log15"
-	"github.com/kevinburke/logrole/services"
+	"github.com/kevinburke/nacl"
 )
 
 var NullLogger = log.New()
@@ -17,7 +17,7 @@ func init() {
 
 func TestLoggedInAuthenticates(t *testing.T) {
 	t.Parallel()
-	key := services.NewRandomKey()
+	key := nacl.NewKey()
 	req, _ := http.NewRequest("GET", "/", nil)
 	w := httptest.NewRecorder()
 	a := NewGoogleAuthenticator(NullLogger, "", "", "http://localhost", nil, key)
@@ -32,7 +32,7 @@ func TestLoggedInAuthenticates(t *testing.T) {
 func TestUnknownUserWithValidDomainAllowed(t *testing.T) {
 	// Should be allowed with the default user.
 	t.Parallel()
-	key := services.NewRandomKey()
+	key := nacl.NewKey()
 	req, _ := http.NewRequest("GET", "/", nil)
 	w := httptest.NewRecorder()
 	a := NewGoogleAuthenticator(NullLogger, "", "", "http://localhost", []string{"example.com"}, key)
@@ -76,7 +76,7 @@ var authTests = []struct {
 
 func TestGoogleAuth(t *testing.T) {
 	t.Parallel()
-	key := services.NewRandomKey()
+	key := nacl.NewKey()
 	for _, tt := range authTests {
 		req, _ := http.NewRequest("GET", "/", nil)
 		w := httptest.NewRecorder()

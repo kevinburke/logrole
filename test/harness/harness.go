@@ -6,8 +6,8 @@ import (
 
 	log "github.com/inconshreveable/log15"
 	"github.com/kevinburke/logrole/config"
-	"github.com/kevinburke/logrole/services"
 	"github.com/kevinburke/logrole/views"
+	"github.com/kevinburke/nacl"
 	twilio "github.com/kevinburke/twilio-go"
 )
 
@@ -35,7 +35,7 @@ func ViewsClient(harness ViewHarness) views.Client {
 		c.Base = harness.TestServer.URL
 	}
 	if harness.SecretKey == nil {
-		harness.SecretKey = services.NewRandomKey()
+		harness.SecretKey = nacl.NewKey()
 	}
 	if harness.MaxResourceAge == 0 {
 		harness.MaxResourceAge = 720 * time.Hour

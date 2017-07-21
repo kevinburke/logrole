@@ -7,14 +7,14 @@ import (
 
 	"github.com/kevinburke/handlers"
 	"github.com/kevinburke/logrole/config"
-	"github.com/kevinburke/logrole/services"
 	"github.com/kevinburke/logrole/views"
+	"github.com/kevinburke/nacl"
 	twilio "github.com/kevinburke/twilio-go"
 )
 
 func Example() {
 	c := twilio.NewClient("AC123", "123", nil)
-	key := services.NewRandomKey()
+	key := nacl.NewKey()
 	permission := config.NewPermission(24 * time.Hour)
 	user := config.NewUser(config.AllUserSettings())
 

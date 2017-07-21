@@ -4,13 +4,13 @@ import (
 	"net/http"
 
 	"github.com/kevinburke/logrole/config"
-	"github.com/kevinburke/logrole/services"
+	"github.com/kevinburke/nacl"
 )
 
 func Example() {
 	settings := &config.Settings{
 		PublicHost: "myapp.com",
-		SecretKey:  services.NewRandomKey(),
+		SecretKey:  nacl.NewKey(),
 	}
 	s, _ := NewServer(settings)
 	http.Handle("/", s)
