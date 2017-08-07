@@ -3,7 +3,6 @@ package services
 
 import (
 	"encoding/base64"
-	"errors"
 	"time"
 
 	"github.com/kevinburke/nacl"
@@ -20,9 +19,6 @@ func OpaqueByte(b []byte, secretKey nacl.Key) string {
 	encrypted := secretbox.EasySeal(b, secretKey)
 	return base64.URLEncoding.EncodeToString(encrypted)
 }
-
-var errTooShort = errors.New("services: Encrypted string is too short")
-var errInvalidInput = errors.New("services: Could not decrypt invalid input")
 
 // Unopaque decodes compressed using base64, then decrypts the decoded byte
 // array using the secretKey.

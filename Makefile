@@ -1,14 +1,14 @@
 # would be great to make the bash location portable but not sure how
 SHELL = /bin/bash
 
-BUMP_VERSION := $(shell command -v bump_version)
-GODOCDOC := $(shell command -v godocdoc)
-GO_BINDATA := $(shell command -v go-bindata)
-DEP := $(shell command -v dep)
-JUSTRUN := $(shell command -v justrun)
-BENCHSTAT := $(shell command -v benchstat)
-WRITE_MAILMAP := $(shell command -v write_mailmap)
-STATICCHECK := $(shell command -v staticcheck)
+BUMP_VERSION := $(GOPATH)/bin/bump_version
+GODOCDOC := $(GOPATH)/bin/godocdoc
+GO_BINDATA := $(GOPATH)/bin/go-bindata
+DEP := $(GOPATH)/bin/dep
+JUSTRUN := $(GOPATH)/bin/justrun
+BENCHSTAT := $(GOPATH)/bin/benchstat
+WRITE_MAILMAP := $(GOPATH)/bin/write_mailmap
+MEGACHECK := $(GOPATH)/bin/megacheck
 
 WATCH_TARGETS = static/css/style.css \
 	templates/base.html \
@@ -43,13 +43,13 @@ race-test: vet
 serve:
 	go run commands/logrole_server/main.go
 
-vet:
-ifndef STATICCHECK
-	go get -u honnef.co/go/tools/cmd/staticcheck
-endif
+$(MEGACHECK):
+	go get honnef.co/go/tools/cmd/megacheck
+
+vet: $(MEGACHECK)
 	@# We can't vet the vendor directory, it fails.
 	go list ./... | grep -v vendor | xargs go vet
-	go list ./... | grep -v vendor | xargs staticcheck
+	go list ./... | grep -v vendor | xargs $(MEGACHECK) --ignore='github.com/kevinburke/logrole/*/*.go:S1002'
 
 deploy:
 	git push heroku master
@@ -57,41 +57,43 @@ deploy:
 compile-css: static/css/bootstrap.min.css static/css/style.css
 	cat static/css/bootstrap.min.css static/css/style.css > static/css/all.css
 
-assets: $(ASSET_TARGETS) compile-css
-ifndef GO_BINDATA
+$(GO_BINDATA):
 	go get -u github.com/jteeuwen/go-bindata/...
-endif
+
+assets: $(ASSET_TARGETS) compile-css | $(GO_BINDATA)
 	go-bindata -o=assets/bindata.go --nometadata --pkg=assets templates/... static/...
 
-watch:
-ifndef JUSTRUN
+$(JUSTRUN):
 	go get -u github.com/jmhodges/justrun
-endif
-	justrun -v --delay=100ms -c 'make assets serve' $(WATCH_TARGETS)
 
-deps:
-ifndef DEP
+watch: | $(JUSTRUN)
+	$(JUSTRUN) -v --delay=100ms -c 'make assets serve' $(WATCH_TARGETS)
+
+$(DEP):
 	go get -u github.com/golang/dep/cmd/dep
-endif
-	dep ensure
 
-release: race-test
-ifndef BUMP_VERSION
+deps: | $(DEP)
+	$(DEP) ensure
+	$(DEP) prune
+
+$(BUMP_VERSION):
 	go get github.com/Shyp/bump_version
-endif
-	bump_version minor server/serve.go
 
-docs:
-ifndef GODOCDOC
+$(GODOCDOC):
 	go get github.com/kevinburke/godocdoc
-endif
-	godocdoc
+
+release: race-test | $(BUMP_VERSION) $(DIFFER)
+	$(DIFFER) $(MAKE) authors
+	bump_version minor http.go
+
+docs: | $(GODOCDOC)
+	$(GODOCDOC)
+
+$(BENCHSTAT):
+	go get rsc.io/benchstat
 
 bench:
-ifndef BENCHSTAT
-	go get rsc.io/benchstat
-endif
-	tmp=$$(mktemp); go list ./... | grep -v vendor | xargs go test -benchtime=2s -bench=. -run='^$$' > "$$tmp" 2>&1 && benchstat "$$tmp"
+	tmp=$$(mktemp); go list ./... | grep -v vendor | xargs go test -benchtime=2s -bench=. -run='^$$' > "$$tmp" 2>&1 && $(BENCHSTAT) "$$tmp"
 
 loc:
 	cloc --exclude-dir=.git,tmp,vendor --not-match-f='bootstrap.min.css|all.css|bindata.go' .
@@ -102,10 +104,13 @@ unvendored:
 	rm -rf vendor/*/
 	go get -t -u ./...
 	$(MAKE) race-test
-	dep ensure
+	$(DEP) ensure
 
-authors:
-ifndef WRITE_MAILMAP
+$(WRITE_MAILMAP):
 	go get github.com/kevinburke/write_mailmap
-endif
+
+AUTHORS.txt: | $(WRITE_MAILMAP)
+	$(WRITE_MAILMAP) > AUTHORS.txt
+
+authors: AUTHORS.txt
 	write_mailmap > AUTHORS.txt

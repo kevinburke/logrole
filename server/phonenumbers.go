@@ -14,10 +14,10 @@ import (
 	"github.com/aristanetworks/goarista/monotime"
 	log "github.com/inconshreveable/log15"
 	types "github.com/kevinburke/go-types"
-	"github.com/kevinburke/rest"
 	"github.com/kevinburke/logrole/config"
 	"github.com/kevinburke/logrole/services"
 	"github.com/kevinburke/logrole/views"
+	"github.com/kevinburke/rest"
 	twilio "github.com/kevinburke/twilio-go"
 	"golang.org/x/sync/errgroup"
 )
@@ -300,7 +300,6 @@ func (s *numberInstanceServer) redirectPN(w http.ResponseWriter, r *http.Request
 		return
 	}
 	http.Redirect(w, r, "/phone-numbers/"+string(pn), 301)
-	return
 }
 
 func (s *numberInstanceServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
@@ -336,7 +335,6 @@ func (s *numberInstanceServer) ServeHTTP(w http.ResponseWriter, r *http.Request)
 			case 404:
 				// We still want to show the calls to/from this number
 				innerData.OwnNumber = false
-				break
 			default:
 				rest.ServerError(w, r, terr)
 				return

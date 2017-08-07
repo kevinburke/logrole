@@ -133,8 +133,6 @@ type Settings struct {
 	IPSubnets []*net.IPNet
 }
 
-var errWrongLength = errors.New("Secret key has wrong length. Should be a 64-byte hex string")
-
 // NewSettingsFromConfig creates a new Settings object from the given
 // FileConfig, or an error.
 //

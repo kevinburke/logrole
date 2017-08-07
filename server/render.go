@@ -116,10 +116,6 @@ func tzTime(now time.Time, lf services.LocationFinder, loc string) string {
 	return services.FriendlyDate(now.In(l))
 }
 
-func min(age time.Duration) string {
-	return time.Now().Add(-age).Truncate(time.Hour).Format(HTML5DatetimeLocalFormat)
-}
-
 func minLoc(age time.Duration, l *time.Location) string {
 	return time.Now().In(l).Add(-age).Truncate(time.Hour).Format(HTML5DatetimeLocalFormat)
 }
