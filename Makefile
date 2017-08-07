@@ -90,9 +90,9 @@ docs: | $(GODOCDOC)
 	$(GODOCDOC)
 
 $(BENCHSTAT):
-	go get rsc.io/benchstat
+	go get golang.org/x/perf/cmd/benchstat
 
-bench:
+bench: $(BENCHSTAT)
 	tmp=$$(mktemp); go list ./... | grep -v vendor | xargs go test -benchtime=2s -bench=. -run='^$$' > "$$tmp" 2>&1 && $(BENCHSTAT) "$$tmp"
 
 loc:
