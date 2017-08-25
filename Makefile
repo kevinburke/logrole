@@ -1,12 +1,13 @@
 # would be great to make the bash location portable but not sure how
 SHELL = /bin/bash
 
+BENCHSTAT := $(GOPATH)/bin/benchstat
 BUMP_VERSION := $(GOPATH)/bin/bump_version
+DIFFER := $(GOPATH)/bin/differ
 GODOCDOC := $(GOPATH)/bin/godocdoc
 GO_BINDATA := $(GOPATH)/bin/go-bindata
 DEP := $(GOPATH)/bin/dep
 JUSTRUN := $(GOPATH)/bin/justrun
-BENCHSTAT := $(GOPATH)/bin/benchstat
 WRITE_MAILMAP := $(GOPATH)/bin/write_mailmap
 MEGACHECK := $(GOPATH)/bin/megacheck
 
@@ -61,7 +62,7 @@ $(GO_BINDATA):
 	go get -u github.com/jteeuwen/go-bindata/...
 
 assets: $(ASSET_TARGETS) compile-css | $(GO_BINDATA)
-	go-bindata -o=assets/bindata.go --nometadata --pkg=assets templates/... static/...
+	$(GO_BINDATA) -o=assets/bindata.go --nometadata --pkg=assets templates/... static/...
 
 $(JUSTRUN):
 	go get -u github.com/jmhodges/justrun
@@ -79,12 +80,15 @@ deps: | $(DEP)
 $(BUMP_VERSION):
 	go get github.com/Shyp/bump_version
 
+$(DIFFER):
+	go get github.com/kevinburke/differ
+
 $(GODOCDOC):
 	go get github.com/kevinburke/godocdoc
 
 release: race-test | $(BUMP_VERSION) $(DIFFER)
 	$(DIFFER) $(MAKE) authors
-	bump_version minor http.go
+	$(BUMP_VERSION) minor http.go
 
 docs: | $(GODOCDOC)
 	$(GODOCDOC)
