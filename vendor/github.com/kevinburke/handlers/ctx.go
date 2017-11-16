@@ -1,13 +1,11 @@
-// +build go1.7
-
 package handlers
 
 import (
 	"context"
 	"net/http"
+	"strings"
 	"time"
 
-	"github.com/aristanetworks/goarista/monotime"
 	uuid "github.com/satori/go.uuid"
 )
 
@@ -15,7 +13,6 @@ type ctxVar int
 
 var requestID ctxVar = 0
 var startTime ctxVar = 1
-var startMono ctxVar = 2
 
 // SetRequestID sets the given UUID on the request context and returns the
 // modified HTTP request.
@@ -38,11 +35,11 @@ func GetRequestID(ctx context.Context) (uuid.UUID, bool) {
 // GetDuration returns the amount of time since the Duration handler ran, or
 // 0 if no Duration was set for this context.
 func GetDuration(ctx context.Context) time.Duration {
-	t := getStartMono(ctx)
-	if t == 0 {
+	t := getStart(ctx)
+	if t.IsZero() {
 		return time.Duration(0)
 	}
-	return monotime.Since(t)
+	return time.Since(t)
 }
 
 // GetStartTime returns the time the Duration handler ran.
@@ -55,14 +52,52 @@ func GetStartTime(ctx context.Context) time.Time {
 	return time.Time{}
 }
 
-// getStartMono returns the time the Duration handler ran.
-func getStartMono(ctx context.Context) uint64 {
-	val := ctx.Value(startMono)
+// getStart returns the time the Duration handler ran.
+func getStart(ctx context.Context) time.Time {
+	val := ctx.Value(startTime)
 	if val != nil {
-		t := val.(uint64)
+		t := val.(time.Time)
 		return t
 	}
-	return 0
+	return time.Time{}
+}
+
+type startWriter struct {
+	w           http.ResponseWriter
+	start       time.Time
+	wroteHeader bool
+}
+
+func (s *startWriter) duration() string {
+	d := time.Since(s.start) / (100 * time.Microsecond) * 100 * time.Microsecond
+	return strings.Replace(d.String(), "µ", "u", 1)
+}
+
+func (s *startWriter) WriteHeader(code int) {
+	if s.wroteHeader == false {
+		s.w.Header().Set("X-Request-Duration", s.duration())
+		s.wroteHeader = true
+	}
+	s.w.WriteHeader(code)
+}
+
+func (s *startWriter) Write(b []byte) (int, error) {
+	// Some chunked encoding transfers won't ever call WriteHeader(), so set
+	// the header here.
+	if s.wroteHeader == false {
+		s.w.Header().Set("X-Request-Duration", s.duration())
+		s.wroteHeader = true
+	}
+	return s.w.Write(b)
+}
+
+func (s *startWriter) Header() http.Header {
+	return s.w.Header()
+}
+
+// Push implements the http.Pusher interface.
+func (s *startWriter) Push(target string, opts *http.PushOptions) error {
+	return push(s.w, target, opts)
 }
 
 // Duration sets the start time in the context and sets a X-Request-Duration
@@ -73,11 +108,9 @@ func Duration(h http.Handler) http.Handler {
 		sw := &startWriter{
 			w:           w,
 			start:       time.Now().UTC(),
-			monoStart:   monotime.Now(),
 			wroteHeader: false,
 		}
 		r = r.WithContext(context.WithValue(r.Context(), startTime, sw.start))
-		r = r.WithContext(context.WithValue(r.Context(), startMono, sw.monoStart))
 		h.ServeHTTP(sw, r)
 	})
 }

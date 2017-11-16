@@ -1,11 +1,17 @@
 language: go
+go_import_path: github.com/kevinburke/handlers
 
-go:
-  - 1.7
-  - 1.8
-  - tip
+os: linux
+dist: trusty
+
+sudo: required
 
 before_script:
-  - go get ./...
+  - make install-travis
 
-script: make race-test
+script:
+  - make ci
+
+cache:
+  directories:
+    - $HOME/.bzrepos

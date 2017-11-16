@@ -20,6 +20,12 @@
   version = "2017.04.17"
 
 [[projects]]
+  name = "github.com/go-stack/stack"
+  packages = ["."]
+  revision = "259ab82a6cad3992b4e21ff5cac294ccb06474bc"
+  version = "v1.7.0"
+
+[[projects]]
   branch = "master"
   name = "github.com/golang/groupcache"
   packages = ["lru","singleflight"]
@@ -34,8 +40,8 @@
 [[projects]]
   name = "github.com/inconshreveable/log15"
   packages = [".","term"]
-  revision = "b105bd37f74e5d9dc7b6ad7806715c7a2b83fd3f"
-  version = "v2.11"
+  revision = "0decfc6c20d9ca0ad143b0e89dcaa20f810b4fb3"
+  version = "v2.13"
 
 [[projects]]
   name = "github.com/kevinburke/go-types"
@@ -46,14 +52,14 @@
 [[projects]]
   name = "github.com/kevinburke/handlers"
   packages = ["."]
-  revision = "b68f4173c7e0843592cc3ac4ea1c066acb327ad5"
-  version = "0.29"
+  revision = "6a4e89dde89747341f4feb16504a67da087db799"
+  version = "0.32"
 
 [[projects]]
   name = "github.com/kevinburke/nacl"
   packages = [".","onetimeauth","randombytes","secretbox"]
-  revision = "e9536ea1966db534cbd804b4dbfff79276392f58"
-  version = "0.1"
+  revision = "247b7cfd826641547b7ee8b89c785901c4e94b0b"
+  version = "0.5"
 
 [[projects]]
   branch = "master"
@@ -140,12 +146,6 @@
   version = "v1.0.0"
 
 [[projects]]
-  name = "gopkg.in/inconshreveable/log15.v2"
-  packages = ["stack","term"]
-  revision = "dc7890abeaadcb6a79a9a5ee30bc1897bbf97713"
-  version = "v2.10"
-
-[[projects]]
   branch = "v2"
   name = "gopkg.in/yaml.v2"
   packages = ["."]
@@ -154,6 +154,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "532799dfbdc1f74bd45495d6443c79c0b2b32f28957e9c8af3388836f4803146"
+  inputs-digest = "0eeed63f4765e3714e2513bd894fa0cc15dcbc6b368a0be88d5a3945c7747523"
   solver-name = "gps-cdcl"
   solver-version = 1

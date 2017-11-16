@@ -1,10 +1,9 @@
-// +build go1.7
-
 package handlers
 
 import (
 	"net/http"
 	"net/http/httptest"
+	"strings"
 	"testing"
 	"time"
 
@@ -58,6 +57,9 @@ func TestGetDuration(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+	if !strings.Contains(dur.String(), "ms") {
+		t.Errorf("expected dur to contain 'ms', got %s", dur.String())
+	}
 	if dur == 0 {
 		t.Errorf("got 0 duration, wanted a greater than 0 duration")
 	}
@@ -93,7 +95,7 @@ func TestWithTimeout(t *testing.T) {
 		if !ok {
 			t.Error("expected Deadline() to be ok, got not ok")
 		}
-		if deadline.Sub(time.Now()) > 10*time.Millisecond {
+		if time.Until(deadline) > 10*time.Millisecond {
 			t.Errorf("too big of a deadline: %v", deadline)
 		}
 		w.WriteHeader(http.StatusBadRequest)

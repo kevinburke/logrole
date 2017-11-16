@@ -1,4 +1,4 @@
-// +build !appengine
+// +build !go1.4
 
 package log15
 
@@ -14,7 +14,11 @@ type swapHandler struct {
 }
 
 func (h *swapHandler) Log(r *Record) error {
-	return (*(*Handler)(atomic.LoadPointer(&h.handler))).Log(r)
+	return h.Get().Log(r)
+}
+
+func (h *swapHandler) Get() Handler {
+	return *(*Handler)(atomic.LoadPointer(&h.handler))
 }
 
 func (h *swapHandler) Swap(newHandler Handler) {

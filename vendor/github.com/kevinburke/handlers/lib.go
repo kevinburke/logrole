@@ -24,13 +24,19 @@ import (
 	"strings"
 	"time"
 
-	"github.com/aristanetworks/goarista/monotime"
 	log "github.com/inconshreveable/log15"
 	"github.com/kevinburke/rest"
 	"github.com/satori/go.uuid"
 )
 
-const Version = "0.29"
+const Version = "0.32"
+
+func push(w http.ResponseWriter, target string, opts *http.PushOptions) error {
+	if pusher, ok := w.(http.Pusher); ok {
+		return pusher.Push(target, opts)
+	}
+	return http.ErrNotSupported
+}
 
 // All wraps h with every handler in this file.
 func All(h http.Handler, serverName string) http.Handler {
@@ -43,42 +49,6 @@ func JSON(h http.Handler) http.Handler {
 		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		h.ServeHTTP(w, r)
 	})
-}
-
-// startWriter is used by Duration in ctx.go/noctx.go
-type startWriter struct {
-	w     http.ResponseWriter
-	start time.Time
-	// use this for durations
-	monoStart   uint64
-	wroteHeader bool
-}
-
-func (s *startWriter) duration() string {
-	d := (monotime.Since(s.monoStart) / (100 * time.Microsecond)) * (100 * time.Microsecond)
-	return d.String()
-}
-
-func (s *startWriter) WriteHeader(code int) {
-	if s.wroteHeader == false {
-		s.w.Header().Set("X-Request-Duration", s.duration())
-		s.wroteHeader = true
-	}
-	s.w.WriteHeader(code)
-}
-
-func (s *startWriter) Write(b []byte) (int, error) {
-	// Some chunked encoding transfers won't ever call WriteHeader(), so set
-	// the header here.
-	if s.wroteHeader == false {
-		s.w.Header().Set("X-Request-Duration", s.duration())
-		s.wroteHeader = true
-	}
-	return s.w.Write(b)
-}
-
-func (s *startWriter) Header() http.Header {
-	return s.w.Header()
 }
 
 type serverWriter struct {
@@ -105,6 +75,11 @@ func (s *serverWriter) Write(b []byte) (int, error) {
 
 func (s *serverWriter) Header() http.Header {
 	return s.w.Header()
+}
+
+// Push implements the http.Pusher interface.
+func (s *serverWriter) Push(target string, opts *http.PushOptions) error {
+	return push(s.w, target, opts)
 }
 
 // TrailingSlashRedirect redirects any path that ends with a "/" - say,
@@ -258,6 +233,11 @@ func (l *responseLogger) Flush() {
 	if ok {
 		f.Flush()
 	}
+}
+
+// Push implements the http.Pusher interface.
+func (l *responseLogger) Push(target string, opts *http.PushOptions) error {
+	return push(l.w, target, opts)
 }
 
 type hijackLogger struct {
