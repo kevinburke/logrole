@@ -14,10 +14,10 @@ import (
 	"github.com/aristanetworks/goarista/monotime"
 	log "github.com/inconshreveable/log15"
 	types "github.com/kevinburke/go-types"
-	"github.com/kevinburke/rest"
 	"github.com/kevinburke/logrole/config"
 	"github.com/kevinburke/logrole/services"
 	"github.com/kevinburke/logrole/views"
+	"github.com/kevinburke/rest"
 	twilio "github.com/kevinburke/twilio-go"
 	"golang.org/x/sync/errgroup"
 )
