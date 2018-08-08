@@ -1,10 +1,15 @@
 language: go
 go_import_path: github.com/kevinburke/twilio-go
 
-go:
-  - 1.7
-  - 1.8
-  - tip
+os: linux
+dist: trusty
 
 before_script:
-  - go get ./...
+  - go get -u -t ./...
+
+script:
+  - make race-test-short
+
+cache:
+  directories:
+    - $GOPATH/pkg

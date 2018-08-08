@@ -18,10 +18,10 @@ import (
 
 	"github.com/golang/groupcache/singleflight"
 	log "github.com/inconshreveable/log15"
-	"github.com/kevinburke/rest"
 	"github.com/kevinburke/logrole/cache"
 	"github.com/kevinburke/logrole/config"
 	"github.com/kevinburke/logrole/services"
+	"github.com/kevinburke/rest"
 	twilio "github.com/kevinburke/twilio-go"
 )
 
@@ -166,8 +166,8 @@ func (vc *client) GetIncomingNumberByPN(ctx context.Context, user *config.User, 
 	}
 	if len(page.IncomingPhoneNumbers) != 1 {
 		return nil, &rest.Error{
-			StatusCode: 404,
-			Title:      fmt.Sprintf("Phone number %s not found, or too many numbers match that result", pn),
+			Status: 404,
+			Title:  fmt.Sprintf("Phone number %s not found, or too many numbers match that result", pn),
 		}
 	}
 	return NewIncomingNumber(page.IncomingPhoneNumbers[0], vc.permission, user)

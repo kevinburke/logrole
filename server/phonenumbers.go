@@ -165,7 +165,7 @@ func (s *numberListServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		switch terr := err.(type) {
 		case *rest.Error:
-			switch terr.StatusCode {
+			switch terr.Status {
 			case 400:
 				s.renderError(w, r, http.StatusBadRequest, query, err)
 			case 404:
@@ -283,7 +283,7 @@ func (s *numberInstanceServer) redirectPN(w http.ResponseWriter, r *http.Request
 	default:
 		switch terr := err.(type) {
 		case *rest.Error:
-			switch terr.StatusCode {
+			switch terr.Status {
 			case 404:
 				rest.NotFound(w, r)
 			default:
@@ -331,7 +331,7 @@ func (s *numberInstanceServer) ServeHTTP(w http.ResponseWriter, r *http.Request)
 	default:
 		switch terr := err.(type) {
 		case *rest.Error:
-			switch terr.StatusCode {
+			switch terr.Status {
 			case 404:
 				// We still want to show the calls to/from this number
 				innerData.OwnNumber = false

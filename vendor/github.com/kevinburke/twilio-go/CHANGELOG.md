@@ -1,5 +1,18 @@
 # Changes
 
+## 1.1
+
+Add video and video recordings API
+
+## 1.0
+
+Update kevinburke/rest to version 2.0.
+
+## 0.66
+
+Support the Notify Credentials API. Thanks to Maksym Pavlenko for implementing
+this change.
+
 ## 0.65
 
 Support the Commands Wireless API.

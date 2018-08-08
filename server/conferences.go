@@ -14,10 +14,10 @@ import (
 	"github.com/aristanetworks/goarista/monotime"
 	log "github.com/inconshreveable/log15"
 	types "github.com/kevinburke/go-types"
-	"github.com/kevinburke/rest"
 	"github.com/kevinburke/logrole/config"
 	"github.com/kevinburke/logrole/services"
 	"github.com/kevinburke/logrole/views"
+	"github.com/kevinburke/rest"
 	twilio "github.com/kevinburke/twilio-go"
 )
 
@@ -287,7 +287,7 @@ func (c *conferenceInstanceServer) ServeHTTP(w http.ResponseWriter, r *http.Requ
 	default:
 		switch terr := err.(type) {
 		case *rest.Error:
-			switch terr.StatusCode {
+			switch terr.Status {
 			case 404:
 				rest.NotFound(w, r)
 			default:

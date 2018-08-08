@@ -102,10 +102,8 @@ func (m *MessageService) SendMessage(from string, to string, body string, mediaU
 	v.Set("Body", body)
 	v.Set("From", from)
 	v.Set("To", to)
-	if mediaURLs != nil {
-		for _, mediaURL := range mediaURLs {
-			v.Add("MediaUrl", mediaURL.String())
-		}
+	for _, mediaURL := range mediaURLs {
+		v.Add("MediaUrl", mediaURL.String())
 	}
 	return m.Create(context.Background(), v)
 }
@@ -240,7 +238,7 @@ func (c *messageDateIterator) Next(ctx context.Context) (*MessagePage, error) {
 		if len(page.Messages) == 0 {
 			return nil, NoMoreResults
 		}
-		times := make([]time.Time, len(page.Messages), len(page.Messages))
+		times := make([]time.Time, len(page.Messages))
 		for i, message := range page.Messages {
 
 			if !message.DateCreated.Valid {
@@ -287,7 +285,7 @@ func (m *MessageService) GetMediaURLs(ctx context.Context, sid string, data url.
 		return nil, err
 	}
 	if len(page.MediaList) == 0 {
-		urls := make([]*url.URL, 0, 0)
+		urls := make([]*url.URL, 0)
 		return urls, nil
 	}
 	urls := make([]*url.URL, len(page.MediaList))

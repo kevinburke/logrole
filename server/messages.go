@@ -14,10 +14,10 @@ import (
 	"github.com/aristanetworks/goarista/monotime"
 	log "github.com/inconshreveable/log15"
 	types "github.com/kevinburke/go-types"
-	"github.com/kevinburke/rest"
 	"github.com/kevinburke/logrole/config"
 	"github.com/kevinburke/logrole/services"
 	"github.com/kevinburke/logrole/views"
+	"github.com/kevinburke/rest"
 	twilio "github.com/kevinburke/twilio-go"
 )
 
@@ -95,7 +95,7 @@ func (s *messageInstanceServer) ServeHTTP(w http.ResponseWriter, r *http.Request
 	default:
 		switch terr := err.(type) {
 		case *rest.Error:
-			switch terr.StatusCode {
+			switch terr.Status {
 			case 404:
 				rest.NotFound(w, r)
 			default:
@@ -318,7 +318,7 @@ func (s *messageListServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		switch terr := err.(type) {
 		case *rest.Error:
-			switch terr.StatusCode {
+			switch terr.Status {
 			case 400:
 				s.renderError(w, r, http.StatusBadRequest, query, err)
 			case 404:

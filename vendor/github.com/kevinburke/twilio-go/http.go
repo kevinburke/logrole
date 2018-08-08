@@ -15,7 +15,7 @@ import (
 )
 
 // The twilio-go version. Run "make release" to bump this number.
-const Version = "0.65"
+const Version = "1.1"
 const userAgent = "twilio-go/" + Version
 
 // The base URL serving the API. Override this for testing.
@@ -47,12 +47,27 @@ const WirelessVersion = "v1"
 // APIVersion; the resource representations may not match.
 const APIVersion = "2010-04-01"
 
+const NotifyBaseURL = "https://notify.twilio.com"
+const NotifyVersion = "v1"
+
+// Lookup service
+const LookupBaseURL = "https://lookups.twilio.com"
+const LookupVersion = "v1"
+
+// Video service
+var VideoBaseUrl = "https://video.twilio.com"
+
+const VideoVersion = "v1"
+
 type Client struct {
 	*rest.Client
 	Monitor  *Client
 	Pricing  *Client
 	Fax      *Client
 	Wireless *Client
+	Notify   *Client
+	Lookup   *Client
+	Video    *Client
 
 	// FullPath takes a path part (e.g. "Messages") and
 	// returns the full API path, including the version (e.g.
@@ -63,7 +78,6 @@ type Client struct {
 
 	AccountSid string
 	AuthToken  string
-	secretKey  string
 
 	// The API Client uses these resources
 	Accounts          *AccountService
@@ -94,6 +108,16 @@ type Client struct {
 	// NewWirelessClient initializes these services
 	Sims     *SimService
 	Commands *CommandService
+
+	// NewNotifyClient initializes these services
+	Credentials *NotifyCredentialsService
+
+	// NewLookupClient initializes these services
+	LookupPhoneNumbers *LookupPhoneNumbersService
+
+	// NewVideoClient initializes these services
+	Rooms           *RoomService
+	VideoRecordings *VideoRecordingService
 }
 
 const defaultTimeout = 30*time.Second + 500*time.Millisecond
@@ -134,10 +158,10 @@ func parseTwilioError(resp *http.Response) error {
 		return fmt.Errorf("invalid response body: %s", string(resBody))
 	}
 	return &rest.Error{
-		Title:      rerr.Message,
-		Type:       rerr.MoreInfo,
-		ID:         strconv.FormatInt(int64(rerr.Code), 10),
-		StatusCode: resp.StatusCode,
+		Title:  rerr.Message,
+		Type:   rerr.MoreInfo,
+		ID:     strconv.Itoa(rerr.Code),
+		Status: resp.StatusCode,
 	}
 }
 
@@ -216,6 +240,30 @@ func NewPricingClient(accountSid string, authToken string, httpClient *http.Clie
 	return c
 }
 
+func NewNotifyClient(accountSid string, authToken string, httpClient *http.Client) *Client {
+	c := newNewClient(accountSid, authToken, NotifyBaseURL, httpClient)
+	c.APIVersion = NotifyVersion
+	c.Credentials = &NotifyCredentialsService{client: c}
+	return c
+}
+
+// NewLookupClient returns a new Client to use the lookups API
+func NewLookupClient(accountSid string, authToken string, httpClient *http.Client) *Client {
+	c := newNewClient(accountSid, authToken, LookupBaseURL, httpClient)
+	c.APIVersion = LookupVersion
+	c.LookupPhoneNumbers = &LookupPhoneNumbersService{client: c}
+	return c
+}
+
+// NewVideoClient returns a new Client to use the video API
+func NewVideoClient(accountSid string, authToken string, httpClient *http.Client) *Client {
+	c := newNewClient(accountSid, authToken, VideoBaseUrl, httpClient)
+	c.APIVersion = VideoVersion
+	c.Rooms = &RoomService{client: c}
+	c.VideoRecordings = &VideoRecordingService{client: c}
+	return c
+}
+
 // NewClient creates a Client for interacting with the Twilio API. This is the
 // main entrypoint for API interactions; view the methods on the subresources
 // for more information.
@@ -238,6 +286,9 @@ func NewClient(accountSid string, authToken string, httpClient *http.Client) *Cl
 	c.Pricing = NewPricingClient(accountSid, authToken, httpClient)
 	c.Fax = NewFaxClient(accountSid, authToken, httpClient)
 	c.Wireless = NewWirelessClient(accountSid, authToken, httpClient)
+	c.Notify = NewNotifyClient(accountSid, authToken, httpClient)
+	c.Lookup = NewLookupClient(accountSid, authToken, httpClient)
+	c.Video = NewVideoClient(accountSid, authToken, httpClient)
 
 	c.Accounts = &AccountService{client: c}
 	c.Applications = &ApplicationService{client: c}
@@ -351,7 +402,7 @@ func (c *Client) DeleteResource(ctx context.Context, pathPart string, sid string
 		return nil
 	}
 	rerr, ok := err.(*rest.Error)
-	if ok && rerr.StatusCode == http.StatusNotFound {
+	if ok && rerr.Status == http.StatusNotFound {
 		return nil
 	}
 	return err
@@ -366,9 +417,7 @@ func (c *Client) ListResource(ctx context.Context, pathPart string, data url.Val
 // should be the full path, eg "/2010-04-01/.../Messages?Page=1&PageToken=..."
 func (c *Client) GetNextPage(ctx context.Context, fullUri string, v interface{}) error {
 	// for monitor etc.
-	if strings.HasPrefix(fullUri, c.Base) {
-		fullUri = fullUri[len(c.Base):]
-	}
+	fullUri = strings.TrimPrefix(fullUri, c.Base)
 	return c.MakeRequest(ctx, "GET", fullUri, nil, v)
 }
 

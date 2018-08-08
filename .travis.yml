@@ -3,8 +3,8 @@ go_import_path: github.com/kevinburke/logrole
 language: go
 
 go:
-  - 1.8
-  - 1.9
+  - 1.9.x
+  - 1.10.x
   - master
 
 before_script:

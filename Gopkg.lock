@@ -2,158 +2,258 @@
 
 
 [[projects]]
+  digest = "1:28181cff95634e84b01ac5d9d5bffd201cd02404b78a0e69ba29e9bc41703ff0"
   name = "cloud.google.com/go"
   packages = ["compute/metadata"]
+  pruneopts = "UT"
   revision = "a5913b3f7deecba45e98ff33cefbac4fd204ddd7"
   version = "v0.10.0"
 
 [[projects]]
   branch = "master"
+  digest = "1:0a83fd106b8dc39fa6ea8b075124f5637828860265fca4abdaaf3a19f9a30ae9"
   name = "github.com/aristanetworks/goarista"
   packages = ["monotime"]
+  pruneopts = "UT"
   revision = "8ab803d6502ea1e05a8c9b73193b405291efb7ce"
 
 [[projects]]
+  digest = "1:18c993cbe3c8e36bfdc1e77dc7b7c8df742c309626b156f5d548c71be1acdcee"
   name = "github.com/certifi/gocertifi"
   packages = ["."]
+  pruneopts = "UT"
   revision = "a9c833d2837d3b16888d55d5aafa9ffe9afb22b0"
   version = "2017.04.17"
 
 [[projects]]
+  digest = "1:c4a2528ccbcabf90f9f3c464a5fc9e302d592861bbfd0b7135a7de8a943d0406"
   name = "github.com/go-stack/stack"
   packages = ["."]
+  pruneopts = "UT"
   revision = "259ab82a6cad3992b4e21ff5cac294ccb06474bc"
   version = "v1.7.0"
 
 [[projects]]
   branch = "master"
+  digest = "1:de5c01e9a68479631145f67d32b738a8c256aa2dbfe6d0c8b3f998e774179581"
   name = "github.com/golang/groupcache"
-  packages = ["lru","singleflight"]
+  packages = [
+    "lru",
+    "singleflight",
+  ]
+  pruneopts = "UT"
   revision = "b710c8433bd175204919eb38776e944233235d03"
 
 [[projects]]
   branch = "master"
+  digest = "1:9b0e71863f18fc5de645a263184c8a6409ae731e847b35b25da4be818f1975fa"
   name = "github.com/golang/protobuf"
   packages = ["proto"]
+  pruneopts = "UT"
   revision = "0a4f71a498b7c4812f64969510bcb4eca251e33a"
 
 [[projects]]
+  digest = "1:f9b248303792091177b213a2395301ef041d5101365860ae90f80c8070b0b32c"
   name = "github.com/inconshreveable/log15"
-  packages = [".","term"]
+  packages = [
+    ".",
+    "term",
+  ]
+  pruneopts = "UT"
   revision = "0decfc6c20d9ca0ad143b0e89dcaa20f810b4fb3"
   version = "v2.13"
 
 [[projects]]
+  digest = "1:de5f741504abb682b3ce6f7f4396e9afc4430367301d2482e3ec040ca4bf4330"
   name = "github.com/kevinburke/go-types"
   packages = ["."]
+  pruneopts = "UT"
   revision = "ba9c6cec202c82e052f686d0640181b99f851970"
   version = "0.20"
 
 [[projects]]
+  digest = "1:e10c089888632558d1fe331e08049163e424140096785b6093ae497b9c755a1c"
   name = "github.com/kevinburke/handlers"
   packages = ["."]
+  pruneopts = "UT"
   revision = "6a4e89dde89747341f4feb16504a67da087db799"
   version = "0.32"
 
 [[projects]]
+  digest = "1:c5a912093ac7c11b00701fc29174113a60305952c4534a9ac23623141aa651c8"
   name = "github.com/kevinburke/nacl"
-  packages = [".","onetimeauth","randombytes","secretbox"]
+  packages = [
+    ".",
+    "onetimeauth",
+    "randombytes",
+    "secretbox",
+  ]
+  pruneopts = "UT"
   revision = "247b7cfd826641547b7ee8b89c785901c4e94b0b"
   version = "0.5"
 
 [[projects]]
   branch = "master"
+  digest = "1:4325fc157b3f38c8d560613f2652b87b65dacee317b458216cabffdc3e88f89d"
   name = "github.com/kevinburke/raven-go"
   packages = ["."]
+  pruneopts = "UT"
   revision = "b8684db99b339af19aa6f067df3be9de6e995f89"
 
 [[projects]]
+  digest = "1:845499a098466583d495702a2945c19da6b5c6c436397726f00b4da1aee3da2e"
   name = "github.com/kevinburke/rest"
   packages = ["."]
-  revision = "67ce29f826f2153dfdb5df53c0ff7f655efb36f0"
-  version = "1.0"
+  pruneopts = "UT"
+  revision = "54a8b110959553907c102f05f4182840d8f1c92c"
+  version = "2.1"
 
 [[projects]]
+  digest = "1:eec73307c7547f05d8c856e9ccf603e8a7986e42a3d2933ca1c87ea38de9cca1"
   name = "github.com/kevinburke/twilio-go"
   packages = ["."]
-  revision = "9ee8c4e5d9f73a4912ab23979a7a3e0e08c12a02"
-  version = "0.65"
+  pruneopts = "UT"
+  revision = "64ec8508f3d920084ee80a43403621d85a5bf375"
+  version = "1.1"
 
 [[projects]]
+  digest = "1:264088feb68d004d9d4b9030dd2bbe39cfd79825fcb99959b1a0080008fe730c"
   name = "github.com/mattn/go-colorable"
   packages = ["."]
+  pruneopts = "UT"
   revision = "941b50ebc6efddf4c41c8e4537a5f68a4e686b24"
   version = "v0.0.8"
 
 [[projects]]
+  digest = "1:fa610f9fe6a93f4a75e64c83673dfff9bf1a34bbb21e6102021b6bc7850834a3"
   name = "github.com/mattn/go-isatty"
   packages = ["."]
+  pruneopts = "UT"
   revision = "fc9e8d8ef48496124e79ae0df75490096eccf6fe"
   version = "v0.0.2"
 
 [[projects]]
+  digest = "1:34a99dd0852c5c9c16e9b86884e9e0cb3e4a7a01df4dea7913f85ea7fb786bbe"
   name = "github.com/satori/go.uuid"
   packages = ["."]
+  pruneopts = "UT"
   revision = "879c5887cd475cd7864858769793b2ceb0d44feb"
   version = "v1.1.0"
 
 [[projects]]
   branch = "master"
+  digest = "1:5a73b4e1f20bd3480321a24aace506204e87ef73f7dc2e23d21f24478e94cd34"
   name = "github.com/ttacon/builder"
   packages = ["."]
+  pruneopts = "UT"
   revision = "c099f663e1c235176c175644792c5eb282017ad7"
 
 [[projects]]
   branch = "master"
+  digest = "1:19be614156481cf4c1ed061f6bd82fe2f6774eb6ce250aed4d2fbd3d31281f69"
   name = "github.com/ttacon/libphonenumber"
   packages = ["."]
+  pruneopts = "UT"
   revision = "f9c5ddf85ffa9cc802cb511f9ab4733d7d8fbb0e"
 
 [[projects]]
   branch = "master"
+  digest = "1:aa5dd2917a3cdfd5b1a3d6527dd68dc343ff2deadff238b4b82c32e909297adf"
   name = "golang.org/x/crypto"
-  packages = ["poly1305","salsa20/salsa"]
+  packages = [
+    "poly1305",
+    "salsa20/salsa",
+  ]
+  pruneopts = "UT"
   revision = "6914964337150723782436d56b3f21610a74ce7b"
 
 [[projects]]
   branch = "master"
+  digest = "1:cb2c7a3956a0b04d0ddca74cc7a008b467db63d3b6cbdc678111e9ea1416fc95"
   name = "golang.org/x/net"
-  packages = ["context","context/ctxhttp"]
+  packages = [
+    "context",
+    "context/ctxhttp",
+  ]
+  pruneopts = "UT"
   revision = "7b7efd8000731a766f6cbfa2c04010627521c66e"
 
 [[projects]]
   branch = "master"
+  digest = "1:c6c6fd960b2e8d8a0c0bce7b2c190720f732b643e7cf2e29b8c374e039eac5e6"
   name = "golang.org/x/oauth2"
-  packages = [".","google","internal","jws","jwt"]
+  packages = [
+    ".",
+    "google",
+    "internal",
+    "jws",
+    "jwt",
+  ]
+  pruneopts = "UT"
   revision = "b53b38ad8a6435bd399ea76d0fa74f23149cca4e"
 
 [[projects]]
   branch = "master"
+  digest = "1:39ebcc2b11457b703ae9ee2e8cca0f68df21969c6102cb3b705f76cca0ea0239"
   name = "golang.org/x/sync"
   packages = ["errgroup"]
+  pruneopts = "UT"
   revision = "f52d1811a62927559de87708c8913c1650ce4f26"
 
 [[projects]]
   branch = "master"
+  digest = "1:46ac0d8d38d6cbe5e6668d9e6ec042330eb790aa9d2aec2ebaf438924cf75830"
   name = "golang.org/x/sys"
   packages = ["unix"]
+  pruneopts = "UT"
   revision = "7a4fde3fda8ef580a89dbae8138c26041be14299"
 
 [[projects]]
+  digest = "1:a48f97fb737d5d61cf13e81cfef040942d217d086766b823757d39d4f6a4c547"
   name = "google.golang.org/appengine"
-  packages = [".","internal","internal/app_identity","internal/base","internal/datastore","internal/log","internal/modules","internal/remote_api","internal/urlfetch","urlfetch"]
+  packages = [
+    ".",
+    "internal",
+    "internal/app_identity",
+    "internal/base",
+    "internal/datastore",
+    "internal/log",
+    "internal/modules",
+    "internal/remote_api",
+    "internal/urlfetch",
+    "urlfetch",
+  ]
+  pruneopts = "UT"
   revision = "150dc57a1b433e64154302bdc40b6bb8aefa313a"
   version = "v1.0.0"
 
 [[projects]]
   branch = "v2"
+  digest = "1:d66308679f88f2a8778433fc06245f5812b4f98cbfa3a17375c3968815255321"
   name = "gopkg.in/yaml.v2"
   packages = ["."]
+  pruneopts = "UT"
   revision = "3b4ad1db5b2a649883ff3782f5f9f6fb52be71af"
 
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "0eeed63f4765e3714e2513bd894fa0cc15dcbc6b368a0be88d5a3945c7747523"
+  input-imports = [
+    "github.com/aristanetworks/goarista/monotime",
+    "github.com/golang/groupcache/lru",
+    "github.com/golang/groupcache/singleflight",
+    "github.com/inconshreveable/log15",
+    "github.com/kevinburke/go-types",
+    "github.com/kevinburke/handlers",
+    "github.com/kevinburke/nacl",
+    "github.com/kevinburke/nacl/secretbox",
+    "github.com/kevinburke/raven-go",
+    "github.com/kevinburke/rest",
+    "github.com/kevinburke/twilio-go",
+    "golang.org/x/oauth2",
+    "golang.org/x/oauth2/google",
+    "golang.org/x/sync/errgroup",
+    "gopkg.in/yaml.v2",
+  ]
   solver-name = "gps-cdcl"
   solver-version = 1
