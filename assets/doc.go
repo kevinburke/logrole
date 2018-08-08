@@ -5,7 +5,3 @@
 // read them from Go code. See the staticServer in server/serve.go for an
 // example.
 package assets
-
-func MustAssetString(name string) string {
-	return string(MustAsset(name))
-}
