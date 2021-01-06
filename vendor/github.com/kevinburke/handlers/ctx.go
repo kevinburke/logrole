@@ -6,7 +6,7 @@ import (
 	"strings"
 	"time"
 
-	uuid "github.com/satori/go.uuid"
+	uuid "github.com/kevinburke/go.uuid"
 )
 
 type ctxVar int
@@ -17,8 +17,10 @@ var startTime ctxVar = 1
 // SetRequestID sets the given UUID on the request context and returns the
 // modified HTTP request.
 func SetRequestID(r *http.Request, u uuid.UUID) *http.Request {
-	r.Header.Set("X-Request-Id", u.String())
-	return r.WithContext(context.WithValue(r.Context(), requestID, u))
+	r2 := new(http.Request)
+	*r2 = *r
+	r2.Header.Set("X-Request-Id", u.String())
+	return r2.WithContext(context.WithValue(r2.Context(), requestID, u))
 }
 
 // GetRequestID returns a UUID (if it exists in the context) or false if none
@@ -110,8 +112,15 @@ func Duration(h http.Handler) http.Handler {
 			start:       time.Now().UTC(),
 			wroteHeader: false,
 		}
-		r = r.WithContext(context.WithValue(r.Context(), startTime, sw.start))
-		h.ServeHTTP(sw, r)
+		r2 := new(http.Request)
+		*r2 = *r
+		r2 = r2.WithContext(context.WithValue(r2.Context(), startTime, sw.start))
+		h.ServeHTTP(sw, r2)
+		if sw.wroteHeader == false {
+			// never called Write() or WriteHeader()
+			sw.w.Header().Set("X-Request-Duration", sw.duration())
+			sw.wroteHeader = true
+		}
 	})
 }
 
@@ -126,7 +135,9 @@ func WithTimeout(h http.Handler, timeout time.Duration) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		ctx, cancel := context.WithTimeout(r.Context(), timeout)
 		defer cancel()
-		r = r.WithContext(ctx)
-		h.ServeHTTP(w, r)
+		r2 := new(http.Request)
+		*r2 = *r
+		r2 = r2.WithContext(ctx)
+		h.ServeHTTP(w, r2)
 	})
 }

@@ -11,11 +11,12 @@ import (
 	"strings"
 	"time"
 
-	"github.com/kevinburke/rest"
+	"github.com/kevinburke/rest/restclient"
+	"github.com/kevinburke/rest/resterror"
 )
 
 // The twilio-go version. Run "make release" to bump this number.
-const Version = "1.1"
+const Version = "2.5"
 const userAgent = "twilio-go/" + Version
 
 // The base URL serving the API. Override this for testing.
@@ -31,7 +32,7 @@ const MonitorVersion = "v1"
 var PricingBaseURL = "https://pricing.twilio.com"
 
 // Version of the Twilio Pricing API.
-const PricingVersion = "v1"
+const PricingVersion = "v2"
 
 var FaxBaseURL = "https://fax.twilio.com"
 
@@ -54,20 +55,36 @@ const NotifyVersion = "v1"
 const LookupBaseURL = "https://lookups.twilio.com"
 const LookupVersion = "v1"
 
+// Verify service
+const VerifyBaseURL = "https://verify.twilio.com"
+const VerifyVersion = "v2"
+
 // Video service
 var VideoBaseUrl = "https://video.twilio.com"
 
 const VideoVersion = "v1"
 
+var TaskRouterBaseUrl = "https://taskrouter.twilio.com"
+
+const TaskRouterVersion = "v1"
+
+// Voice Insights service
+var InsightsBaseUrl = "https://insights.twilio.com"
+
+const InsightsVersion = "v1"
+
 type Client struct {
-	*rest.Client
-	Monitor  *Client
-	Pricing  *Client
-	Fax      *Client
-	Wireless *Client
-	Notify   *Client
-	Lookup   *Client
-	Video    *Client
+	*restclient.Client
+	Monitor    *Client
+	Pricing    *Client
+	Fax        *Client
+	Wireless   *Client
+	Notify     *Client
+	Lookup     *Client
+	Verify     *Client
+	Video      *Client
+	TaskRouter *Client
+	Insights   *Client
 
 	// FullPath takes a path part (e.g. "Messages") and
 	// returns the full API path, including the version (e.g.
@@ -115,9 +132,18 @@ type Client struct {
 	// NewLookupClient initializes these services
 	LookupPhoneNumbers *LookupPhoneNumbersService
 
+	// NewVerifyClient initializes these services
+	Verifications *VerifyPhoneNumberService
+
 	// NewVideoClient initializes these services
 	Rooms           *RoomService
 	VideoRecordings *VideoRecordingService
+
+	// NewTaskRouterClient initializes these services
+	Workspace func(sid string) *WorkspaceService
+
+	// NewInsightsClient initializes these services
+	VoiceInsights func(sid string) *VoiceInsightsService
 }
 
 const defaultTimeout = 30*time.Second + 500*time.Millisecond
@@ -127,7 +153,7 @@ var defaultHttpClient *http.Client
 func init() {
 	defaultHttpClient = &http.Client{
 		Timeout:   defaultTimeout,
-		Transport: rest.DefaultTransport,
+		Transport: restclient.DefaultTransport,
 	}
 }
 
@@ -157,7 +183,7 @@ func parseTwilioError(resp *http.Response) error {
 	if rerr.Message == "" {
 		return fmt.Errorf("invalid response body: %s", string(resBody))
 	}
-	return &rest.Error{
+	return &resterror.Error{
 		Title:  rerr.Message,
 		Type:   rerr.MoreInfo,
 		ID:     strconv.Itoa(rerr.Code),
@@ -170,9 +196,9 @@ func NewFaxClient(accountSid string, authToken string, httpClient *http.Client) 
 	if httpClient == nil {
 		httpClient = defaultHttpClient
 	}
-	restClient := rest.NewClient(accountSid, authToken, FaxBaseURL)
+	restClient := restclient.New(accountSid, authToken, FaxBaseURL)
 	restClient.Client = httpClient
-	restClient.UploadType = rest.FormURLEncoded
+	restClient.UploadType = restclient.FormURLEncoded
 	restClient.ErrorParser = parseTwilioError
 	c := &Client{
 		Client:     restClient,
@@ -191,9 +217,9 @@ func newNewClient(sid, token, baseURL string, client *http.Client) *Client {
 	if client == nil {
 		client = defaultHttpClient
 	}
-	restClient := rest.NewClient(sid, token, baseURL)
+	restClient := restclient.New(sid, token, baseURL)
 	restClient.Client = client
-	restClient.UploadType = rest.FormURLEncoded
+	restClient.UploadType = restclient.FormURLEncoded
 	restClient.ErrorParser = parseTwilioError
 	c := &Client{
 		Client:     restClient,
@@ -220,6 +246,58 @@ func NewMonitorClient(accountSid string, authToken string, httpClient *http.Clie
 	c := newNewClient(accountSid, authToken, MonitorBaseURL, httpClient)
 	c.APIVersion = MonitorVersion
 	c.Alerts = &AlertService{client: c}
+	return c
+}
+
+// NewTaskRouterClient returns a Client for use with the Twilio TaskRouter API.
+func NewTaskRouterClient(accountSid string, authToken string, httpClient *http.Client) *Client {
+	if httpClient == nil {
+		httpClient = &http.Client{Timeout: defaultTimeout}
+	}
+	c := newNewClient(accountSid, authToken, TaskRouterBaseUrl, httpClient)
+	c.APIVersion = TaskRouterVersion
+	c.Workspace = func(sid string) *WorkspaceService {
+		return &WorkspaceService{
+			Activities: &ActivityService{
+				workspaceSid: sid,
+				client:       c,
+			},
+			Queues: &TaskQueueService{
+				workspaceSid: sid,
+				client:       c,
+			},
+			Workflows: &WorkflowService{
+				workspaceSid: sid,
+				client:       c,
+			},
+			Workers: &WorkerService{
+				workspaceSid: sid,
+				client:       c,
+			},
+		}
+	}
+	return c
+}
+
+func NewInsightsClient(accountSid string, authToken string, httpClient *http.Client) *Client {
+	c := newNewClient(accountSid, authToken, InsightsBaseUrl, httpClient)
+	c.APIVersion = InsightsVersion
+	c.VoiceInsights = func(callSid string) *VoiceInsightsService {
+		return &VoiceInsightsService{
+			Summary: &CallSummaryService{
+				callSid: callSid,
+				client:  c,
+			},
+			Metrics: &CallMetricsService{
+				callSid: callSid,
+				client:  c,
+			},
+			Events: &CallEventsService{
+				callSid: callSid,
+				client:  c,
+			},
+		}
+	}
 	return c
 }
 
@@ -255,6 +333,14 @@ func NewLookupClient(accountSid string, authToken string, httpClient *http.Clien
 	return c
 }
 
+// NewVerifyClient returns a new Client to use the verify API
+func NewVerifyClient(accountSid string, authToken string, httpClient *http.Client) *Client {
+	c := newNewClient(accountSid, authToken, VerifyBaseURL, httpClient)
+	c.APIVersion = VerifyVersion
+	c.Verifications = &VerifyPhoneNumberService{client: c}
+	return c
+}
+
 // NewVideoClient returns a new Client to use the video API
 func NewVideoClient(accountSid string, authToken string, httpClient *http.Client) *Client {
 	c := newNewClient(accountSid, authToken, VideoBaseUrl, httpClient)
@@ -271,9 +357,9 @@ func NewClient(accountSid string, authToken string, httpClient *http.Client) *Cl
 	if httpClient == nil {
 		httpClient = defaultHttpClient
 	}
-	restClient := rest.NewClient(accountSid, authToken, BaseURL)
+	restClient := restclient.New(accountSid, authToken, BaseURL)
 	restClient.Client = httpClient
-	restClient.UploadType = rest.FormURLEncoded
+	restClient.UploadType = restclient.FormURLEncoded
 	restClient.ErrorParser = parseTwilioError
 
 	c := &Client{Client: restClient, AccountSid: accountSid, AuthToken: authToken}
@@ -288,7 +374,10 @@ func NewClient(accountSid string, authToken string, httpClient *http.Client) *Cl
 	c.Wireless = NewWirelessClient(accountSid, authToken, httpClient)
 	c.Notify = NewNotifyClient(accountSid, authToken, httpClient)
 	c.Lookup = NewLookupClient(accountSid, authToken, httpClient)
+	c.Verify = NewVerifyClient(accountSid, authToken, httpClient)
 	c.Video = NewVideoClient(accountSid, authToken, httpClient)
+	c.TaskRouter = NewTaskRouterClient(accountSid, authToken, httpClient)
+	c.Insights = NewInsightsClient(accountSid, authToken, httpClient)
 
 	c.Accounts = &AccountService{client: c}
 	c.Applications = &ApplicationService{client: c}
@@ -323,7 +412,6 @@ func NewClient(accountSid string, authToken string, httpClient *http.Client) *Cl
 			client:   c,
 			pathPart: "Local",
 		},
-
 		Mobile: &AvailableNumberBase{
 			client:   c,
 			pathPart: "Mobile",
@@ -332,6 +420,9 @@ func NewClient(accountSid string, authToken string, httpClient *http.Client) *Cl
 		TollFree: &AvailableNumberBase{
 			client:   c,
 			pathPart: "TollFree",
+		},
+		SupportedCountries: &SupportedCountriesService{
+			client: c,
 		},
 	}
 
@@ -376,6 +467,9 @@ func (c *Client) UseSecretKey(key string) {
 	if c.Wireless != nil {
 		c.Wireless.UseSecretKey(key)
 	}
+	if c.Insights != nil {
+		c.Insights.UseSecretKey(key)
+	}
 }
 
 // GetResource retrieves an instance resource with the given path part (e.g.
@@ -401,7 +495,7 @@ func (c *Client) DeleteResource(ctx context.Context, pathPart string, sid string
 	if err == nil {
 		return nil
 	}
-	rerr, ok := err.(*rest.Error)
+	rerr, ok := err.(*resterror.Error)
 	if ok && rerr.Status == http.StatusNotFound {
 		return nil
 	}

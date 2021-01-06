@@ -1,5 +1,92 @@
 # Changes
 
+## 2.5
+
+Use a new version of github.com/kevinburke/rest that reduces the number of
+imports necessary to run the library.
+
+## 2.4
+
+Add Voice Insights API (thank you @yeoji)
+
+Add more fields to Conference struct (thank you @zmei95 for the issue report).
+
+## 2.3
+
+The Twilio Calls API recently started returning calls by StartTime instead of by
+Date Created, which broke our GetCallsInRange in-memory filtering. Use StartTime
+as the sort order key if present, falling back to DateCreated. Update the tests
+to match.
+
+Add Programmable Grant chat type to the list of tokens. Thanks Kelmer Perez for
+the patch.
+
+## 2.2
+
+Implement Twilio Verify API. Thanks Elijah Oyekunle for the patch.
+
+## 2.1
+
+- Support deleting messages via `client.Messages.Delete(sid)`.
+
+- Support a different default region for local phone number parsing than "US" by
+  overriding the value of `twilio.DefaultRegion` in an init function.
+
+Thanks Kevin Golding for the suggestions and issue reports.
+
+## 2.0
+
+Update Pricing API to v2. This is a breaking change.
+
+To upgrade from the v1 Pricing API:
+
+* `VoicePrice` is now `VoicePrices`.
+* `VoiceNumberPrice` is now `VoiceNumberPrices`.
+* `NumberPrice` is now `NumberPrices`.
+* `MessagePrice` is now `MessagePrices`
+* The `Prefixes` field in the `PrefixPrice` struct is now `DestinationPrefixes`.
+* `OriginationPrefixes` field has been added to the `PrefixPrice` struct.
+* The `OutboundCallPrice` field in the `VoiceNumberPrices` struct is now
+`OutboundCallPrices`. Add the old `OutboundCallPrice` as the first entry in the
+array.
+* `OriginationPrefixes` field has been added to the `OutboundCallPrice` struct.
+
+* `NumberVoicePriceService.Get` now has 2 parameters: `destinationNumber` and
+`data` url.Values. `destinationNumber` is same as the previous `number` field.
+`data` can contain additional parameters like `OriginationNumber`.
+* Several other `*PriceService.Get` functions now have a third `url.Values`
+  parameter. Pass `nil` for this third parameter to maintain compatibility with
+  the v1 API.
+
+## 1.8
+
+Add Task Router Workers API.
+
+## 1.7
+
+Add Task Router Workflow API.
+
+## 1.6
+
+Add Task Router TaskQueue API.
+
+## 1.5
+
+Add Task Router Activity API.
+
+## 1.4
+
+Add Supported Countries service. (via Andrei Schneider @megaherz)
+
+## 1.3
+
+Remove dependency on jwt-go (functionality is the same, we just generate JWT's
+by hand now.)
+
+## 1.2
+
+Fix key for ConferenceSid.
+
 ## 1.1
 
 Add video and video recordings API

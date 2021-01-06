@@ -152,6 +152,13 @@ func (m *MessageService) GetPage(ctx context.Context, data url.Values) (*Message
 	return iter.Next(ctx)
 }
 
+// Delete the Message with the given sid. If the Message has already been
+// deleted, or does not exist, Delete returns nil. If another error or a
+// timeout occurs, the error is returned.
+func (m *MessageService) Delete(ctx context.Context, sid string) error {
+	return m.client.DeleteResource(ctx, messagesPathPart, sid)
+}
+
 // GetMessagesInRange gets an Iterator containing calls in the range [start,
 // end), optionally further filtered by data. GetMessagesInRange panics if
 // start is not before end. Any date filters provided in data will be ignored.
@@ -169,10 +176,8 @@ func (c *MessageService) GetMessagesInRange(start time.Time, end time.Time, data
 		panic("start date is after end date")
 	}
 	d := url.Values{}
-	if data != nil {
-		for k, v := range data {
-			d[k] = v
-		}
+	for k, v := range data {
+		d[k] = v
 	}
 	d.Del("DateSent")
 	d.Del("Page") // just in case
@@ -240,14 +245,20 @@ func (c *messageDateIterator) Next(ctx context.Context) (*MessagePage, error) {
 		}
 		times := make([]time.Time, len(page.Messages))
 		for i, message := range page.Messages {
-
 			if !message.DateCreated.Valid {
 				// we really should not ever hit this case but if we can't parse
 				// a date, better to give you back an error than to give you back
 				// a list of messages that may or may not be in the time range
-				return nil, fmt.Errorf("Couldn't verify the date of message: %#v", message)
+				return nil, fmt.Errorf("twilio: couldn't verify the date of message: %#v", message)
 			}
-			times[i] = message.DateCreated.Time
+			// this isn't ideal, but DateSent is used as the sort field if
+			// present, and it is not populated for all records, so we need
+			// a fallback.
+			if message.DateSent.Valid {
+				times[i] = message.DateSent.Time
+			} else {
+				times[i] = message.DateCreated.Time
+			}
 		}
 		if containsResultsInRange(c.start, c.end, times) {
 			indexesToDelete := indexesOutsideRange(c.start, c.end, times)

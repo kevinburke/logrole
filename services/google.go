@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"net/mail"
 
-	"github.com/kevinburke/rest"
+	"github.com/kevinburke/rest/restclient"
 )
 
 // Base URL to get user data from.
@@ -34,7 +34,7 @@ func GetGoogleUserData(ctx context.Context, client *http.Client) (*GoogleUser, e
 	if client == nil {
 		client = http.DefaultClient
 	}
-	rc := rest.NewClient("", "", UserDataBase)
+	rc := restclient.New("", "", UserDataBase)
 	rc.Client = client
 	req, err := rc.NewRequest("GET", UserDataPath, nil)
 	if err != nil {

@@ -1,20 +1,23 @@
 SHELL = /bin/bash -o pipefail
 
 BUMP_VERSION := $(GOPATH)/bin/bump_version
-MEGACHECK := $(GOPATH)/bin/megacheck
+STATICCHECK := $(GOPATH)/bin/staticcheck
 
 deps:
 	go get -u ./...
 
+test-deps:
+	go get -t -v ./...
+
 test: lint
 	go test ./...
 
-lint: | $(MEGACHECK)
+lint: | $(STATICCHECK)
 	go vet ./...
-	$(MEGACHECK) ./...
+	$(STATICCHECK) ./...
 
-$(MEGACHECK):
-	go get honnef.co/go/tools/cmd/megacheck
+$(STATICCHECK):
+	go get honnef.co/go/tools/cmd/staticcheck
 
 race-test: lint
 	go test -race ./...
@@ -23,4 +26,6 @@ $(BUMP_VERSION):
 	go get github.com/kevinburke/bump_version
 
 release: race-test | $(BUMP_VERSION)
-	$(BUMP_VERSION) minor client.go
+	$(BUMP_VERSION) minor restclient/client.go
+
+ci: test-deps lint race-test
