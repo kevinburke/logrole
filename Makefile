@@ -9,7 +9,7 @@ GO_BINDATA := $(GOPATH)/bin/go-bindata
 DEP := $(GOPATH)/bin/dep
 JUSTRUN := $(GOPATH)/bin/justrun
 WRITE_MAILMAP := $(GOPATH)/bin/write_mailmap
-MEGACHECK := $(GOPATH)/bin/megacheck
+STATICCHECK := $(GOPATH)/bin/staticcheck
 
 WATCH_TARGETS = static/css/style.css \
 	templates/base.html \
@@ -44,13 +44,13 @@ race-test: vet
 serve:
 	go run commands/logrole_server/main.go
 
-$(MEGACHECK):
-	go get honnef.co/go/tools/cmd/megacheck
+$(STATICCHECK):
+	go get honnef.co/go/tools/cmd/staticcheck
 
-vet: $(MEGACHECK)
+vet: $(STATICCHECK)
 	@# We can't vet the vendor directory, it fails.
-	go list ./... | grep -v vendor | xargs go vet
-	go list ./... | grep -v vendor | xargs $(MEGACHECK) --ignore='github.com/kevinburke/logrole/*/*.go:S1002'
+	go vet ./...
+	$(STATICCHECK) --checks='["all", "-ST1005", "-S1002"]' ./...
 
 deploy:
 	git push heroku master
@@ -104,11 +104,13 @@ loc:
 
 # For Travis. Run the tests with unvendored dependencies, just check the latest
 # version of everything out to the GOPATH.
-unvendored:
+unvendored: $(DEP)
 	rm -rf vendor/*/
 	go get -t -u ./...
 	$(MAKE) race-test
 	$(DEP) ensure
+
+ci: race-test bench unvendored
 
 $(WRITE_MAILMAP):
 	go get github.com/kevinburke/write_mailmap
