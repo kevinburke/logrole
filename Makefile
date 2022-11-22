@@ -44,13 +44,10 @@ race-test: vet
 serve:
 	go run commands/logrole_server/main.go
 
-$(STATICCHECK):
-	go get honnef.co/go/tools/cmd/staticcheck
-
-vet: $(STATICCHECK)
+vet:
 	@# We can't vet the vendor directory, it fails.
 	go vet ./...
-	$(STATICCHECK) --checks='["all", "-ST1005", "-S1002"]' ./...
+	go run honnef.co/go/tools/cmd/staticcheck@latest --checks='["all", "-ST1005", "-S1002"]' ./...
 
 deploy:
 	git push heroku master
@@ -93,11 +90,8 @@ release: race-test | $(BUMP_VERSION) $(DIFFER)
 docs: | $(GODOCDOC)
 	$(GODOCDOC)
 
-$(BENCHSTAT):
-	go get golang.org/x/perf/cmd/benchstat
-
-bench: $(BENCHSTAT)
-	tmp=$$(mktemp); go list ./... | grep -v vendor | xargs go test -benchtime=2s -bench=. -run='^$$' > "$$tmp" 2>&1 && $(BENCHSTAT) "$$tmp"
+bench:
+	tmp=$$(mktemp); go list ./... | grep -v vendor | xargs go test -benchtime=2s -bench=. -run='^$$' > "$$tmp" 2>&1 && go run golang.org/x/perf/cmd/benchstat@latest "$$tmp"
 
 loc:
 	cloc --exclude-dir=.git,tmp,vendor --not-match-f='bootstrap.min.css|all.css|bindata.go' .
@@ -105,10 +99,9 @@ loc:
 # For Travis. Run the tests with unvendored dependencies, just check the latest
 # version of everything out to the GOPATH.
 unvendored: $(DEP)
-	rm -rf vendor/*/
-	go get -t -u ./...
+	rm -rf vendor
 	$(MAKE) race-test
-	$(DEP) ensure
+	go mod vendor
 
 ci: race-test bench unvendored
 
