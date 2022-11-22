@@ -12,6 +12,8 @@ import (
 	"unicode/utf8"
 
 	"github.com/ttacon/libphonenumber"
+	"golang.org/x/text/cases"
+	"golang.org/x/text/language"
 )
 
 // DefaultRegion is the region used to parse phone numbers without a leading
@@ -95,6 +97,11 @@ func (seg *Segments) UnmarshalJSON(b []byte) (err error) {
 	return
 }
 
+func (seg Segments) MarshalJSON() ([]byte, error) {
+	s := strconv.AppendUint(nil, uint64(seg), 10)
+	return json.Marshal(string(s))
+}
+
 func (n *NumMedia) UnmarshalJSON(b []byte) (err error) {
 	u := new(uintStr)
 	if err = json.Unmarshal(b, u); err != nil {
@@ -102,6 +109,11 @@ func (n *NumMedia) UnmarshalJSON(b []byte) (err error) {
 	}
 	*n = NumMedia(*u)
 	return
+}
+
+func (n NumMedia) MarshalJSON() ([]byte, error) {
+	s := strconv.AppendUint(nil, uint64(n), 10)
+	return json.Marshal(string(s))
 }
 
 // TwilioTime can parse a timestamp returned in the Twilio API and turn it into
@@ -158,11 +170,11 @@ func (t *TwilioTime) UnmarshalJSON(b []byte) error {
 	return nil
 }
 
-func (tt *TwilioTime) MarshalJSON() ([]byte, error) {
-	if !tt.Valid {
+func (t TwilioTime) MarshalJSON() ([]byte, error) {
+	if !t.Valid {
 		return []byte("null"), nil
 	}
-	b, err := json.Marshal(tt.Time)
+	b, err := json.Marshal(t.Time)
 	if err != nil {
 		return []byte{}, err
 	}
@@ -195,9 +207,7 @@ func price(unit string, amount string) string {
 	for strings.Contains(amount, ".") && strings.HasSuffix(amount, "0") {
 		amount = amount[:len(amount)-1]
 	}
-	if strings.HasSuffix(amount, ".") {
-		amount = amount[:len(amount)-1]
-	}
+	amount = strings.TrimSuffix(amount, ".")
 	unit = strings.ToUpper(unit)
 	if sym, ok := symbols[unit]; ok {
 		return sym + amount
@@ -209,6 +219,8 @@ func price(unit string, amount string) string {
 	}
 }
 
+// TwilioDuration represents a duration in the Twilio API that Twilio returns to
+// us as a number of seconds.
 type TwilioDuration time.Duration
 
 func (td *TwilioDuration) UnmarshalJSON(b []byte) error {
@@ -228,8 +240,41 @@ func (td *TwilioDuration) UnmarshalJSON(b []byte) error {
 	return nil
 }
 
+func (td TwilioDuration) MarshalJSON() ([]byte, error) {
+	if td == 0 {
+		return []byte("null"), nil
+	}
+	s := strconv.AppendInt(nil, int64(td/TwilioDuration(time.Second)), 10)
+	return json.Marshal(string(s))
+}
+
 func (td TwilioDuration) String() string {
 	return time.Duration(td).String()
+}
+
+// TwilioDurationMS represents a duration in the Twilio API that Twilio returns
+// to us as a number of milliseconds.
+type TwilioDurationMS time.Duration
+
+func (tdm *TwilioDurationMS) UnmarshalJSON(b []byte) error {
+	s := new(string)
+	if err := json.Unmarshal(b, s); err != nil {
+		return err
+	}
+	if *s == "null" || *s == "" {
+		*tdm = 0
+		return nil
+	}
+	i, err := strconv.ParseInt(*s, 10, 64)
+	if err != nil {
+		return err
+	}
+	*tdm = TwilioDurationMS(i) * TwilioDurationMS(time.Millisecond)
+	return nil
+}
+
+func (t TwilioDurationMS) String() string {
+	return time.Duration(t).String()
 }
 
 type AnsweredBy string
@@ -256,7 +301,7 @@ func (s Status) Friendly() string {
 	case StatusNoAnswer:
 		return "No Answer"
 	default:
-		return strings.Title(string(s))
+		return cases.Title(language.AmericanEnglish).String(string(s))
 	}
 }
 

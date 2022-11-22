@@ -1,0 +1,149 @@
+# cloud.google.com/go/compute v1.12.1
+## explicit; go 1.19
+cloud.google.com/go/compute/internal
+# cloud.google.com/go/compute/metadata v0.2.1
+## explicit; go 1.19
+cloud.google.com/go/compute/metadata
+# github.com/aristanetworks/goarista v0.0.0-20221101123548-fda6a90d1d2b
+## explicit; go 1.19
+github.com/aristanetworks/goarista/monotime
+# github.com/certifi/gocertifi v0.0.0-20210429200110-83314bf6d27c
+## explicit; go 1.12
+github.com/certifi/gocertifi
+# github.com/go-stack/stack v1.8.1
+## explicit; go 1.17
+github.com/go-stack/stack
+# github.com/gofrs/uuid v4.3.1+incompatible
+## explicit
+github.com/gofrs/uuid
+# github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da
+## explicit
+github.com/golang/groupcache/lru
+github.com/golang/groupcache/singleflight
+# github.com/golang/protobuf v1.5.2
+## explicit; go 1.9
+github.com/golang/protobuf/proto
+# github.com/inconshreveable/log15 v0.0.0-20221122034931-555555054819
+## explicit
+github.com/inconshreveable/log15
+# github.com/kevinburke/go-types v0.0.0-20210723172823-2deba1f80ba7
+## explicit
+github.com/kevinburke/go-types
+# github.com/kevinburke/handlers v0.0.0-20221122041956-e19cda53bf92
+## explicit
+github.com/kevinburke/handlers
+# github.com/kevinburke/nacl v0.0.0-20210405173606-cd9060f5f776
+## explicit
+github.com/kevinburke/nacl
+github.com/kevinburke/nacl/internal/subtle
+github.com/kevinburke/nacl/onetimeauth
+github.com/kevinburke/nacl/randombytes
+github.com/kevinburke/nacl/secretbox
+# github.com/kevinburke/raven-go v0.0.0-20161009192639-b8684db99b33
+## explicit
+github.com/kevinburke/raven-go
+# github.com/kevinburke/rest v0.0.0-20210506044642-5611499aa33c
+## explicit
+github.com/kevinburke/rest
+github.com/kevinburke/rest/restclient
+github.com/kevinburke/rest/resterror
+# github.com/kevinburke/twilio-go v0.0.0-20221122012537-65f3dd7539e2
+## explicit; go 1.18
+github.com/kevinburke/twilio-go
+# github.com/mattn/go-colorable v0.1.13
+## explicit; go 1.15
+github.com/mattn/go-colorable
+# github.com/mattn/go-isatty v0.0.16
+## explicit; go 1.15
+github.com/mattn/go-isatty
+# github.com/ttacon/builder v0.0.0-20170518171403-c099f663e1c2
+## explicit
+github.com/ttacon/builder
+# github.com/ttacon/libphonenumber v1.2.1
+## explicit
+github.com/ttacon/libphonenumber
+# golang.org/x/crypto v0.3.1-0.20221117191849-2c476679df9a
+## explicit; go 1.17
+golang.org/x/crypto/internal/poly1305
+golang.org/x/crypto/poly1305
+golang.org/x/crypto/salsa20/salsa
+# golang.org/x/net v0.2.1-0.20221117215542-ecf7fda6a59e
+## explicit; go 1.17
+golang.org/x/net/context
+golang.org/x/net/context/ctxhttp
+# golang.org/x/oauth2 v0.2.1-0.20221117220629-ec4a9b2ff231
+## explicit; go 1.17
+golang.org/x/oauth2
+golang.org/x/oauth2/authhandler
+golang.org/x/oauth2/google
+golang.org/x/oauth2/google/internal/externalaccount
+golang.org/x/oauth2/internal
+golang.org/x/oauth2/jws
+golang.org/x/oauth2/jwt
+# golang.org/x/sync v0.1.0
+## explicit
+golang.org/x/sync/errgroup
+# golang.org/x/sys v0.2.1-0.20221110211117-d684c6f88669
+## explicit; go 1.17
+golang.org/x/sys/cpu
+golang.org/x/sys/internal/unsafeheader
+golang.org/x/sys/plan9
+golang.org/x/sys/unix
+golang.org/x/sys/windows
+# golang.org/x/term v0.2.0
+## explicit; go 1.17
+golang.org/x/term
+# golang.org/x/text v0.4.1-0.20221110184632-c8236a6712b1
+## explicit; go 1.17
+golang.org/x/text/cases
+golang.org/x/text/internal
+golang.org/x/text/internal/language
+golang.org/x/text/internal/language/compact
+golang.org/x/text/internal/tag
+golang.org/x/text/language
+golang.org/x/text/transform
+golang.org/x/text/unicode/norm
+# google.golang.org/appengine v1.6.7
+## explicit; go 1.11
+google.golang.org/appengine
+google.golang.org/appengine/internal
+google.golang.org/appengine/internal/app_identity
+google.golang.org/appengine/internal/base
+google.golang.org/appengine/internal/datastore
+google.golang.org/appengine/internal/log
+google.golang.org/appengine/internal/modules
+google.golang.org/appengine/internal/remote_api
+google.golang.org/appengine/internal/urlfetch
+google.golang.org/appengine/urlfetch
+# google.golang.org/protobuf v1.28.1
+## explicit; go 1.11
+google.golang.org/protobuf/encoding/prototext
+google.golang.org/protobuf/encoding/protowire
+google.golang.org/protobuf/internal/descfmt
+google.golang.org/protobuf/internal/descopts
+google.golang.org/protobuf/internal/detrand
+google.golang.org/protobuf/internal/encoding/defval
+google.golang.org/protobuf/internal/encoding/messageset
+google.golang.org/protobuf/internal/encoding/tag
+google.golang.org/protobuf/internal/encoding/text
+google.golang.org/protobuf/internal/errors
+google.golang.org/protobuf/internal/filedesc
+google.golang.org/protobuf/internal/filetype
+google.golang.org/protobuf/internal/flags
+google.golang.org/protobuf/internal/genid
+google.golang.org/protobuf/internal/impl
+google.golang.org/protobuf/internal/order
+google.golang.org/protobuf/internal/pragma
+google.golang.org/protobuf/internal/set
+google.golang.org/protobuf/internal/strs
+google.golang.org/protobuf/internal/version
+google.golang.org/protobuf/proto
+google.golang.org/protobuf/reflect/protodesc
+google.golang.org/protobuf/reflect/protoreflect
+google.golang.org/protobuf/reflect/protoregistry
+google.golang.org/protobuf/runtime/protoiface
+google.golang.org/protobuf/runtime/protoimpl
+google.golang.org/protobuf/types/descriptorpb
+# gopkg.in/yaml.v2 v2.4.0
+## explicit; go 1.15
+gopkg.in/yaml.v2

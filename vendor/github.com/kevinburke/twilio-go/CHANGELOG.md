@@ -1,5 +1,28 @@
 # Changes
 
+## 2.6
+
+Add "incoming" option for VoiceGrant.
+
+Tags in VoiceCallSummary are a []string, not a map[string]string (the docs have
+them as "null", so this wasn't clear).
+
+Segments, NumMedia and TwilioTime can be marshaled back to JSON as strings.
+
+ChatGrant now accepts a PushCredentialSid as a second argument.
+
+The Verify client now has support for AccessTokens and Challenges.
+
+Calls now support the "queue_time" attribute, with help from a new
+"TwilioDurationMS" type.
+
+IntervalMetrics response object now marshals types correctly from the Twilio API
+(the response format changed).
+
+Use Go modules to track dependencies.
+
+Update source code to be formatted with Go 1.19 doc styles.
+
 ## 2.5
 
 Use a new version of github.com/kevinburke/rest that reduces the number of

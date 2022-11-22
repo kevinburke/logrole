@@ -1471,7 +1471,7 @@ func FormatInOriginalFormat(number *PhoneNumber, regionCallingFrom string) strin
 		nationalPrefix := GetNddPrefixForRegion(
 			regionCode, true /* strip non-digits */)
 		nationalFormat := Format(number, NATIONAL)
-		if len(nationalPrefix) == 0 || len(nationalPrefix) == 0 {
+		if len(nationalPrefix) == 0 {
 			// If the region doesn't have a national prefix at all,
 			// we can safely return the national format without worrying
 			// about a national prefix being added.
@@ -1960,7 +1960,12 @@ func GetExampleNumberForNonGeoEntity(countryCallingCode int) *PhoneNumber {
 	if metadata == nil {
 		return nil
 	}
-	var desc *PhoneNumberDesc = metadata.GetGeneralDesc()
+	var desc *PhoneNumberDesc = metadata.GetTollFree()
+
+	if countryCallingCode == 979 {
+		desc = metadata.GetPremiumRate()
+	}
+
 	exNum := desc.GetExampleNumber()
 	if len(exNum) > 0 {
 		num, err := Parse("+"+strconv.Itoa(countryCallingCode)+exNum, "ZZ")
@@ -2366,9 +2371,9 @@ func isShorterThanPossibleNormalNumber(
 	regionMetadata *PhoneMetadata,
 	number string) bool {
 
-	pat, ok := readFromRegexCache(regionMetadata.GetGeneralDesc().GetPossibleNumberPattern())
+	pat, ok := readFromRegexCache(regionMetadata.GetGeneralDesc().GetNationalNumberPattern())
 	if !ok {
-		patP := regionMetadata.GetGeneralDesc().GetPossibleNumberPattern()
+		patP := regionMetadata.GetGeneralDesc().GetNationalNumberPattern()
 		pat = regexp.MustCompile(patP)
 		writeToRegexCache(patP, pat)
 	}
@@ -2421,9 +2426,9 @@ func IsPossibleNumberWithReason(number *PhoneNumber) ValidationResult {
 			return IS_POSSIBLE
 		}
 	}
-	pat, ok := readFromRegexCache(generalNumDesc.GetPossibleNumberPattern())
+	pat, ok := readFromRegexCache(generalNumDesc.GetNationalNumberPattern())
 	if !ok {
-		patP := generalNumDesc.GetPossibleNumberPattern()
+		patP := generalNumDesc.GetNationalNumberPattern()
 		pat = regexp.MustCompile(patP)
 		writeToRegexCache(patP, pat)
 	}
@@ -2586,11 +2591,11 @@ func maybeExtractCountryCode(
 				potentialNationalNumber,
 				defaultRegionMetadata,
 				builder.NewBuilder(nil) /* Don't need the carrier code */)
-			possibleNumberPattern, ok := readFromRegexCache(generalDesc.GetPossibleNumberPattern())
+			nationalNumberPattern, ok := readFromRegexCache(generalDesc.GetNationalNumberPattern())
 			if !ok {
-				pat := generalDesc.GetPossibleNumberPattern()
-				possibleNumberPattern = regexp.MustCompile(pat)
-				writeToRegexCache(pat, possibleNumberPattern)
+				pat := generalDesc.GetNationalNumberPattern()
+				nationalNumberPattern = regexp.MustCompile(pat)
+				writeToRegexCache(pat, nationalNumberPattern)
 			}
 			// If the number was not valid before but is valid now, or
 			// if it was too long before, we consider the number with
@@ -2599,7 +2604,7 @@ func maybeExtractCountryCode(
 			if (!validNumberPattern.MatchString(fullNumber.String()) &&
 				validNumberPattern.MatchString(potentialNationalNumber.String())) ||
 				testNumberLengthAgainstPattern(
-					possibleNumberPattern, fullNumber.String()) == TOO_LONG {
+					nationalNumberPattern, fullNumber.String()) == TOO_LONG {
 				nationalNumber.Write(potentialNationalNumber.Bytes())
 				if keepRawInput {
 					val := PhoneNumber_FROM_NUMBER_WITHOUT_PLUS_SIGN

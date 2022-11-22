@@ -10,7 +10,6 @@ import (
 	"image/jpeg"
 	"image/png"
 	"io"
-	"io/ioutil"
 	"net/http"
 	"net/http/httputil"
 	"net/url"
@@ -60,9 +59,7 @@ func (m *MediaService) GetURL(ctx context.Context, messageSid string, sid string
 	uriEnd := strings.Join([]string{mediaPathPart(messageSid), sid}, "/")
 	path := m.client.FullPath(uriEnd)
 	// We want the media, not the .json representation
-	if strings.HasSuffix(path, ".json") {
-		path = path[:len(path)-len(".json")]
-	}
+	path = strings.TrimSuffix(path, ".json")
 	urlStr := m.client.Client.Base + path
 	count := 0
 	for {
@@ -95,7 +92,7 @@ func (m *MediaService) GetURL(ctx context.Context, messageSid string, sid string
 			b.Write(bits)
 			io.Copy(os.Stderr, b)
 		} else {
-			io.Copy(ioutil.Discard, resp.Body)
+			io.Copy(io.Discard, resp.Body)
 		}
 
 		resp.Body.Close()
@@ -167,7 +164,7 @@ func (m *MediaService) GetImage(ctx context.Context, messageSid string, sid stri
 	case "image/png":
 		return png.Decode(resp.Body)
 	default:
-		io.Copy(ioutil.Discard, resp.Body)
+		io.Copy(io.Discard, resp.Body)
 		return nil, fmt.Errorf("twilio: Unknown content-type %s", ctype)
 	}
 }

@@ -8,22 +8,10 @@ golang port of Google's libphonenumber
 [![Build Status](https://travis-ci.org/ttacon/libphonenumber.svg?branch=master)](https://travis-ci.org/ttacon/libphonenumber)
 [![GoDoc](https://godoc.org/github.com/ttacon/libphonenumber?status.png)](https://godoc.org/github.com/ttacon/libphonenumber)
 
-WARNING
-=======
+Status
+======
 
-There is currently a lot going on, I started this a while ago and
-recently picked it back up and got it functional. It was initially
-translated from the Java version of libphonenumber, but I wasn't a
-fan of always relying on loading proto files that were encoded in
-ObjectStreams (so all metadata is embedded in the code, and I'm
-exploring better ways to do this). 
-
-Pull requests are of course welcome, but things will be moving fast
-at first so they may not be accepted until I get this repo to a more
-stable state - currently it is VERY fragile.
-
-I should get it cleaned up soon (think a few days) in which case
-I would love for help finishing this off :).
+This library is fully stable and is used in production by several companies.
 
 Examples
 ========
@@ -41,4 +29,24 @@ num, err := libphonenumber.Parse("6502530000", "US")
 ```go
 // num is a *libphonenumber.PhoneNumber
 formattedNum := libphonenumber.Format(num, libphonenumber.NATIONAL)
+```
+
+### To get the area code of a number
+```go
+// Parse the number.
+num, err := libphonenumber.Parse("1234567890", "US")
+if err != nil {
+        // Handle error appropriately.
+}
+
+// Get the cleaned number and the length of the area code.
+natSigNumber := libphonenumber.GetNationalSignificantNumber(num)
+geoCodeLength := libphonenumber.GetLengthOfGeographicalAreaCode(num)
+
+// Extract the area code.
+areaCode := ""
+if geoCodeLength > 0 {
+        areaCode = natSigNumber[0:geoCodeLength]
+}
+fmt.Println(areaCode)
 ```

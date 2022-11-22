@@ -4,7 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"net/url"
 	"strconv"
@@ -16,7 +16,7 @@ import (
 )
 
 // The twilio-go version. Run "make release" to bump this number.
-const Version = "2.5"
+const Version = "2.6"
 const userAgent = "twilio-go/" + Version
 
 // The base URL serving the API. Override this for testing.
@@ -56,7 +56,8 @@ const LookupBaseURL = "https://lookups.twilio.com"
 const LookupVersion = "v1"
 
 // Verify service
-const VerifyBaseURL = "https://verify.twilio.com"
+var VerifyBaseURL = "https://verify.twilio.com"
+
 const VerifyVersion = "v2"
 
 // Video service
@@ -134,6 +135,8 @@ type Client struct {
 
 	// NewVerifyClient initializes these services
 	Verifications *VerifyPhoneNumberService
+	AccessTokens  *VerifyAccessTokenService
+	Challenges    *VerifyChallengeService
 
 	// NewVideoClient initializes these services
 	Rooms           *RoomService
@@ -168,7 +171,7 @@ type twilioError struct {
 }
 
 func parseTwilioError(resp *http.Response) error {
-	resBody, err := ioutil.ReadAll(resp.Body)
+	resBody, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return err
 	}
@@ -338,6 +341,8 @@ func NewVerifyClient(accountSid string, authToken string, httpClient *http.Clien
 	c := newNewClient(accountSid, authToken, VerifyBaseURL, httpClient)
 	c.APIVersion = VerifyVersion
 	c.Verifications = &VerifyPhoneNumberService{client: c}
+	c.AccessTokens = &VerifyAccessTokenService{client: c}
+	c.Challenges = &VerifyChallengeService{client: c}
 	return c
 }
 

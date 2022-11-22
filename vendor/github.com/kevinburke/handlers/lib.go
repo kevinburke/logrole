@@ -3,15 +3,16 @@
 // The general format of the middlewares in this package is to wrap an existing
 // http.Handler in another one. So if you have a ServeMux, you can simply do:
 //
-//     mux := http.NewServeMux()
-//     h := handlers.Log(handlers.Debug(mux))
-//     http.ListenAndServe(":5050", h)
+//	mux := http.NewServeMux()
+//	h := handlers.Log(handlers.Debug(mux))
+//	http.ListenAndServe(":5050", h)
 //
 // And wrap as many handlers as you'd like using that idiom.
 package handlers
 
 import (
 	"bytes"
+	"context"
 	"crypto/subtle"
 	"fmt"
 	"io"
@@ -22,14 +23,16 @@ import (
 	"os"
 	"strconv"
 	"strings"
+	"sync"
 	"time"
 
+	uuid "github.com/gofrs/uuid"
 	log "github.com/inconshreveable/log15"
-	"github.com/kevinburke/go.uuid"
 	"github.com/kevinburke/rest"
+	"github.com/kevinburke/rest/resterror"
 )
 
-const Version = "0.39"
+const Version = "0.43"
 
 func push(w http.ResponseWriter, target string, opts *http.PushOptions) error {
 	if pusher, ok := w.(http.Pusher); ok {
@@ -58,6 +61,7 @@ type serverWriter struct {
 }
 
 func (s *serverWriter) WriteHeader(code int) {
+	//lint:ignore S1002 prefer it this way
 	if s.wroteHeader == false {
 		s.w.Header().Set("Server", s.name)
 		s.wroteHeader = true
@@ -66,6 +70,7 @@ func (s *serverWriter) WriteHeader(code int) {
 }
 
 func (s *serverWriter) Write(b []byte) (int, error) {
+	//lint:ignore S1002 prefer it this way
 	if s.wroteHeader == false {
 		s.w.Header().Set("Server", s.name)
 		s.wroteHeader = true
@@ -103,6 +108,7 @@ func Server(h http.Handler, serverName string) http.Handler {
 			wroteHeader: false,
 		}
 		h.ServeHTTP(sw, r)
+		//lint:ignore S1002 prefer it this way
 		if sw.wroteHeader == false {
 			sw.w.Header().Set("Server", sw.name)
 			sw.wroteHeader = true
@@ -116,7 +122,8 @@ func UUID(h http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		rid := r.Header.Get("X-Request-Id")
 		if rid == "" {
-			r = SetRequestID(r, uuid.NewV4())
+			id, _ := uuid.NewV4()
+			r = SetRequestID(r, id)
 		}
 		h.ServeHTTP(w, r)
 	})
@@ -137,7 +144,7 @@ func BasicAuth(h http.Handler, realm string, users map[string]string) http.Handl
 			if user == "" {
 				rest.Unauthorized(w, r, realm)
 			} else {
-				rest.Forbidden(w, r, &rest.Error{
+				rest.Forbidden(w, r, &resterror.Error{
 					Title: "Username or password are invalid. Please double check your credentials",
 					ID:    "forbidden",
 				})
@@ -145,7 +152,7 @@ func BasicAuth(h http.Handler, realm string, users map[string]string) http.Handl
 			return
 		}
 		if subtle.ConstantTimeCompare([]byte(pass), []byte(serverPass)) != 1 {
-			rest.Forbidden(w, r, &rest.Error{
+			rest.Forbidden(w, r, &resterror.Error{
 				Title:    fmt.Sprintf("Incorrect password for user %s", user),
 				ID:       "incorrect_password",
 				Instance: r.URL.Path,
@@ -156,45 +163,54 @@ func BasicAuth(h http.Handler, realm string, users map[string]string) http.Handl
 	})
 }
 
-// Debug prints debugging information about the request to stdout if the
-// DEBUG_HTTP_TRAFFIC environment variable is set to true.
-func Debug(h http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if os.Getenv("DEBUG_HTTP_TRAFFIC") == "true" {
-			// You need to write the entire thing in one Write, otherwise the
-			// output will be jumbled with other requests.
-			b := new(bytes.Buffer)
-			bits, err := httputil.DumpRequest(r, true)
-			if err != nil {
-				_, _ = b.WriteString(err.Error())
-			} else {
-				if w.Header().Get("Content-Encoding") == "gzip" {
-					_, _ = b.WriteString("[binary data omitted]")
-				} else {
-					_, _ = b.Write(bits)
-				}
-			}
-			res := httptest.NewRecorder()
-			h.ServeHTTP(res, r)
+var envFunc = os.Getenv
 
-			_, _ = b.WriteString(fmt.Sprintf("HTTP/1.1 %d\r\n", res.Code))
-			_ = res.HeaderMap.Write(b)
-			for k, v := range res.HeaderMap {
-				w.Header()[k] = v
-			}
-			w.WriteHeader(res.Code)
-			_, _ = b.WriteString("\r\n")
-			writer := io.MultiWriter(w, b)
-			_, _ = res.Body.WriteTo(writer)
-			if w.Header().Get("Content-Encoding") == "gzip" {
-				os.Stderr.WriteString("[binary data omitted]")
-			} else {
-				_, _ = b.WriteTo(os.Stderr)
-			}
-		} else {
+// Debug prints debugging information about the request to output if the
+// DEBUG_HTTP_TRAFFIC environment variable is set to "true".
+func DebugWriter(h http.Handler, output io.Writer) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if envFunc("DEBUG_HTTP_TRAFFIC") != "true" && envFunc("DEBUG_HTTP_SERVER_TRAFFIC") != "true" {
 			h.ServeHTTP(w, r)
+			return
 		}
+		// You need to write the entire thing in one Write, otherwise the
+		// output will be jumbled with other requests.
+		b := new(bytes.Buffer)
+		bits, err := httputil.DumpRequest(r, true)
+		if err != nil {
+			_, _ = b.WriteString(err.Error())
+		} else {
+			if w.Header().Get("Content-Encoding") == "gzip" {
+				_, _ = b.WriteString("[binary data omitted]")
+			} else {
+				_, _ = b.Write(bits)
+			}
+		}
+		res := httptest.NewRecorder()
+		h.ServeHTTP(res, r)
+
+		_, _ = b.WriteString(fmt.Sprintf("HTTP/1.1 %d\r\n", res.Code))
+		_ = res.Header().Write(b)
+		for k, v := range res.Header() {
+			w.Header()[k] = v
+		}
+		w.WriteHeader(res.Code)
+		_, _ = b.WriteString("\r\n")
+		if w.Header().Get("Content-Encoding") == "gzip" {
+			io.WriteString(b, "[binary data omitted]")
+			res.Body.WriteTo(w)
+		} else {
+			writer := io.MultiWriter(w, b)
+			res.Body.WriteTo(writer)
+		}
+		_, _ = b.WriteTo(output)
 	})
+}
+
+// Debug prints debugging information about the request to stderr if the
+// DEBUG_HTTP_TRAFFIC environment variable is set to "true".
+func Debug(h http.Handler) http.Handler {
+	return DebugWriter(h, os.Stderr)
 }
 
 // responseLogger is wrapper of http.ResponseWriter that keeps track of its HTTP
@@ -251,29 +267,10 @@ type hijackLogger struct {
 	responseLogger
 }
 
-type hijackCloseNotifier struct {
-	loggingResponseWriter
-	http.Hijacker
-	http.CloseNotifier
-}
-
-type closeNotifyWriter struct {
-	loggingResponseWriter
-	http.CloseNotifier
-}
-
 func makeLogger(w http.ResponseWriter) loggingResponseWriter {
 	var logger loggingResponseWriter = &responseLogger{w: w}
 	if _, ok := w.(http.Hijacker); ok {
 		logger = &hijackLogger{responseLogger{w: w}}
-	}
-	h, ok1 := logger.(http.Hijacker)
-	c, ok2 := w.(http.CloseNotifier)
-	if ok1 && ok2 {
-		return hijackCloseNotifier{logger, h, c}
-	}
-	if ok2 {
-		return &closeNotifyWriter{logger, c}
 	}
 	return logger
 }
@@ -294,6 +291,7 @@ func (l logHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	t := time.Now()
 	logWriter := makeLogger(w)
 	u := *r.URL
+	r = r.WithContext(context.WithValue(r.Context(), extraLog, &logHolder{}))
 	l.h.ServeHTTP(logWriter, r)
 	writeLog(l.l, r, u, t, logWriter.Status(), logWriter.Size())
 }
@@ -321,6 +319,7 @@ func writeLog(l log.Logger, r *http.Request, u url.URL, t time.Time, status int,
 		"time", strconv.FormatInt(timeSinceMs(t), 10),
 		"bytes", strconv.Itoa(size),
 		"status", strconv.Itoa(status),
+		// Set X-Forwarded-For to pass through headers from a proxy.
 		"remote_addr", getRemoteIP(r),
 		"host", r.Host,
 		"user_agent", r.UserAgent(),
@@ -331,7 +330,37 @@ func writeLog(l log.Logger, r *http.Request, u url.URL, t time.Time, status int,
 	if id := r.Header.Get("X-Request-Id"); id != "" {
 		args = append(args, "request_id", id)
 	}
+	holder := r.Context().Value(extraLog).(*logHolder)
+	args = append(args, holder.logs...)
 	l.Info("", args...)
+}
+
+type logHolder struct {
+	mu   sync.Mutex
+	logs []interface{}
+}
+
+// Append will append the logctx arguments to the log line for this request.
+// The logctx arguments should come in pairs and match those provided to a
+// log15.Logger.
+func AppendLog(r *http.Request, logctx ...interface{}) {
+	val := r.Context().Value(extraLog)
+	if val == nil {
+		// This should always be set by logHandler.ServeHTTP; if it's not set,
+		// it means you're trying to append to something that was not wrapped
+		// with Log or WithLogger().
+		//
+		// In practice, it's not uncommon in places like tests or sub-routers to
+		// not have this value set, so silently ignore it for now.
+		return
+	}
+	holder := val.(*logHolder)
+	holder.mu.Lock()
+	defer holder.mu.Unlock()
+	if holder.logs == nil {
+		holder.logs = make([]interface{}, 0)
+	}
+	holder.logs = append(holder.logs, logctx...)
 }
 
 // Log serves the http request and writes information about the

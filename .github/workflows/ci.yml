@@ -17,11 +17,7 @@ jobs:
     # staticcheck needs this for GOPATH
     - run: |
         echo "GOPATH=$GITHUB_WORKSPACE" >> $GITHUB_ENV
-        echo "GO111MODULE=off" >> $GITHUB_ENV
         echo "PATH=$GITHUB_WORKSPACE/bin:$PATH" >> $GITHUB_ENV
-    - name: Download dependencies
-      run: go get -t -v ./...
-      working-directory: './src/github.com/kevinburke/logrole'
     - name: Run tests
       run: make ci
       working-directory: './src/github.com/kevinburke/logrole'

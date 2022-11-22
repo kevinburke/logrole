@@ -1,36 +1,30 @@
-.PHONY: install build test
-BUMP_VERSION := $(shell command -v bump_version)
-GODOCDOC := $(shell command -v godocdoc)
-MEGACHECK := $(shell command -v megacheck)
+.PHONY: install test
+BUMP_VERSION := $(GOPATH)/bin/bump_version
+GODOCDOC := $(GOPATH)/bin/godocdoc
+STATICCHECK := $(GOPATH)/bin/staticcheck
+
+test: lint
+	go test ./...
 
 install:
 	go get ./...
 	go install ./...
 
-build:
-	go build ./...
+$(STATICCHECK):
+	go get honnef.co/go/tools/cmd/staticcheck
 
-vet:
-ifndef MEGACHECK
-	go get -u honnef.co/go/tools/cmd/megacheck
-endif
-	megacheck ./...
+lint: | $(STATICCHECK)
+	$(STATICCHECK) ./...
 	go vet ./...
 
-test: vet
-	go test ./...
-
 race-test:
-	go test -race -v ./...
+	go test -race ./...
 
-release: test
-ifndef BUMP_VERSION
-	go get github.com/Shyp/bump_version
-endif
-	bump_version minor types.go
+$(BUMP_VERSION):
+	go get github.com/kevinburke/bump_version
 
-docs:
-ifndef GODOCDOC
-	go get -u github.com/kevinburke/godocdoc
-endif
-	godocdoc
+release: test | $(BUMP_VERSION)
+	$(BUMP_VERSION) minor types.go
+
+docs: | $(GODOCDOC)
+	$(GODOCDOC)
