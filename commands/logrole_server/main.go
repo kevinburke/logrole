@@ -5,7 +5,6 @@ package main
 import (
 	"flag"
 	"fmt"
-	"io/ioutil"
 	"net"
 	"net/http"
 	"os"
@@ -58,7 +57,7 @@ func main() {
 			os.Exit(2)
 		}
 	}
-	data, err := ioutil.ReadFile(*cfg)
+	data, err := os.ReadFile(*cfg)
 	c := new(config.FileConfig)
 	if err == nil {
 		if err := yaml.Unmarshal(data, c); err != nil {
@@ -95,7 +94,7 @@ func main() {
 		WriteTimeout: 60 * time.Second,
 		Handler:      publicMux,
 	}
-	listener, err := net.Listen("tcp", fmt.Sprintf(":%s", c.Port))
+	listener, err := net.Listen("tcp", net.JoinHostPort("localhost", c.Port))
 	if err != nil {
 		logger.Error("Error listening", "err", err, "port", c.Port)
 		os.Exit(2)
