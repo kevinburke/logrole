@@ -282,6 +282,14 @@ func NewServer(settings *config.Settings) (*Server, error) {
 	if err != nil {
 		return nil, err
 	}
+	sms, err := newSendMessageServer(settings.Logger, vc, settings.DefaultSendingPhoneNumber, settings.SecretKey)
+	if err != nil {
+		return nil, err
+	}
+	mcs, err := newMessageCollectionServer(settings.Logger, vc, settings.DefaultSendingPhoneNumber, settings.SecretKey)
+	if err != nil {
+		return nil, err
+	}
 	cls, err := newCallListServer(settings.Logger, vc, settings.LocationFinder,
 		settings.PageSize, settings.MaxResourceAge, settings.SecretKey)
 	if err != nil {
@@ -379,6 +387,8 @@ func NewServer(settings *config.Settings) (*Server, error) {
 	authR.Handle(regexp.MustCompile(`^/conferences$`), []string{"GET"}, confs)
 	authR.Handle(regexp.MustCompile(`^/phone-numbers$`), []string{"GET"}, ns)
 	authR.Handle(regexp.MustCompile(`^/messages$`), []string{"GET"}, mls)
+	authR.Handle(regexp.MustCompile(`^/messages$`), []string{"POST"}, mcs)
+	authR.Handle(sendMessageRoute, []string{"GET"}, sms)
 	authR.Handle(regexp.MustCompile(`^/alerts$`), []string{"GET"}, als)
 	authR.Handle(regexp.MustCompile(`^/tz$`), []string{"POST"}, tz)
 	authR.Handle(alertInstanceRoute, []string{"GET"}, ais)

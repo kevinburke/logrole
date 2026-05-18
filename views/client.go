@@ -60,6 +60,13 @@ type Client interface {
 	GetCallAlerts(context.Context, *config.User, string) (*AlertPage, error)
 	CacheCommonQueries(uint, <-chan bool)
 	IsTwilioNumber(num twilio.PhoneNumber) bool
+	// GetTwilioNumbers returns the account's incoming phone numbers. If the
+	// periodic loader has not yet populated the cache, this fetches the first
+	// page synchronously.
+	GetTwilioNumbers(ctx context.Context) ([]twilio.PhoneNumber, error)
+	// SendMessage sends an outbound SMS from the given Twilio number to the
+	// given recipient. The user must have CanSendMessages permission.
+	SendMessage(ctx context.Context, u *config.User, from, to, body string) (*Message, error)
 }
 
 type client struct {
@@ -581,4 +588,55 @@ func (vc *client) IsTwilioNumber(num twilio.PhoneNumber) bool {
 	_, ok := vc.numbers[num]
 	vc.numbersMu.RUnlock()
 	return ok
+}
+
+// GetTwilioNumbers returns the account's incoming phone numbers. If the
+// periodic loader has not populated the cache yet, this fetches the first
+// page synchronously using the given context.
+func (vc *client) GetTwilioNumbers(ctx context.Context) ([]twilio.PhoneNumber, error) {
+	vc.numbersMu.RLock()
+	nums := make([]twilio.PhoneNumber, 0, len(vc.numbers))
+	for pn := range vc.numbers {
+		nums = append(nums, pn)
+	}
+	vc.numbersMu.RUnlock()
+	if len(nums) > 0 {
+		return nums, nil
+	}
+	iter := vc.client.IncomingNumbers.GetPageIterator(nil)
+	page, err := iter.Next(ctx)
+	if err != nil && err != twilio.NoMoreResults {
+		return nil, err
+	}
+	mp := make(map[twilio.PhoneNumber]bool)
+	if page != nil {
+		nums = make([]twilio.PhoneNumber, 0, len(page.IncomingPhoneNumbers))
+		for _, pn := range page.IncomingPhoneNumbers {
+			mp[pn.PhoneNumber] = true
+			nums = append(nums, pn.PhoneNumber)
+		}
+	}
+	vc.numbersMu.Lock()
+	if len(vc.numbers) == 0 {
+		vc.numbers = mp
+	}
+	vc.numbersMu.Unlock()
+	return nums, nil
+}
+
+// SendMessage sends an outbound SMS via the Twilio API. Returns
+// config.PermissionDenied if the user lacks CanSendMessages.
+func (vc *client) SendMessage(ctx context.Context, user *config.User, from, to, body string) (*Message, error) {
+	if !user.CanSendMessages() {
+		return nil, config.PermissionDenied
+	}
+	data := url.Values{}
+	data.Set("From", from)
+	data.Set("To", to)
+	data.Set("Body", body)
+	msg, err := vc.client.Messages.Create(ctx, data)
+	if err != nil {
+		return nil, err
+	}
+	return NewMessage(msg, vc.permission, user)
 }

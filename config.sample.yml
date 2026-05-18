@@ -64,6 +64,12 @@ max_resource_age: 720h
 # instance pages, instead of seeing the photo on page load.
 show_media_by_default: true
 
+# Default "From" phone number used when sending an outbound SMS through the
+# "New Message" form. If empty and the account has exactly one phone number,
+# that number is used automatically. Users with can_send_messages permission
+# may pick from any of the account's numbers if more than one exists.
+# default_sending_phone_number: "+15551234567"
+
 # This is shown as a "Contact Me" message on 401/403/404/500 error pages.
 email_address: test@example.com
 

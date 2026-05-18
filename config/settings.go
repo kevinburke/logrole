@@ -68,6 +68,11 @@ type FileConfig struct {
 	SecretKey      string        `yaml:"secret_key"`
 	MaxResourceAge time.Duration `yaml:"max_resource_age"`
 
+	// Default phone number used as the "From" when sending an outbound
+	// message. If empty and the account has exactly one IncomingPhoneNumber,
+	// that number is auto-populated at startup.
+	DefaultSendingPhoneNumber string `yaml:"default_sending_phone_number"`
+
 	// Need a pointer to a boolean here since we want to be able to distinguish
 	// "false" from "omitted"
 	ShowMediaByDefault *bool `yaml:"show_media_by_default,omitempty"`
@@ -120,6 +125,10 @@ type Settings struct {
 
 	// Should a user have to click a button to view media attached to a MMS?
 	ShowMediaByDefault bool
+
+	// Default phone number used as the "From" when sending an outbound
+	// message. May be empty.
+	DefaultSendingPhoneNumber string
 
 	// Email address for server errors / "contact me" on error pages.
 	Mailto *mail.Address
@@ -291,19 +300,20 @@ func NewSettingsFromConfig(c *FileConfig, l *slog.Logger) (settings *Settings, e
 	}
 
 	settings = &Settings{
-		Logger:                  l,
-		AllowUnencryptedTraffic: allowHTTP,
-		Client:                  client,
-		LocationFinder:          locationFinder,
-		PublicHost:              c.PublicHost,
-		PageSize:                c.PageSize,
-		SecretKey:               secretKey,
-		MaxResourceAge:          c.MaxResourceAge,
-		ShowMediaByDefault:      *c.ShowMediaByDefault,
-		Mailto:                  address,
-		Reporter:                reporter,
-		Authenticator:           authenticator,
-		IPSubnets:               nets,
+		Logger:                    l,
+		AllowUnencryptedTraffic:   allowHTTP,
+		Client:                    client,
+		LocationFinder:            locationFinder,
+		PublicHost:                c.PublicHost,
+		PageSize:                  c.PageSize,
+		SecretKey:                 secretKey,
+		MaxResourceAge:            c.MaxResourceAge,
+		ShowMediaByDefault:        *c.ShowMediaByDefault,
+		Mailto:                    address,
+		Reporter:                  reporter,
+		Authenticator:             authenticator,
+		IPSubnets:                 nets,
+		DefaultSendingPhoneNumber: c.DefaultSendingPhoneNumber,
 	}
 	return
 }

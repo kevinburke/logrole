@@ -1,0 +1,42 @@
+{{ define "content" }}
+{{- if .Err }}
+<div class="row">
+  <div class="col-md-12">
+    <div class="alert alert-danger">
+      <p>{{ .Err }}</p>
+    </div>
+  </div>
+</div>
+{{- end }}
+<div class="row">
+  <div class="col-md-8">
+    <form method="POST" action="/messages">
+      <input type="hidden" name="csrf_token" value="{{ .CSRFToken }}" />
+      <div class="form-group">
+        <label for="from">From</label>
+        {{- if .AvailableNumbers }}
+        <select name="from" id="from" class="form-control">
+          {{- range .AvailableNumbers }}
+          <option value="{{ . }}" {{ if eq (printf "%s" .) $.From }}selected="selected"{{ end }}>{{ . }}</option>
+          {{- end }}
+        </select>
+        {{- else }}
+        <input type="text" name="from" id="from" class="form-control" value="{{ .From }}" placeholder="+15551234567" />
+        {{- end }}
+      </div>
+      <div class="form-group">
+        <label for="to">To</label>
+        <input type="text" name="to" id="to" class="form-control" value="{{ .To }}" placeholder="+15557654321" required />
+      </div>
+      <div class="form-group">
+        <label for="body">Body</label>
+        <textarea name="body" id="body" rows="4" class="form-control" required>{{ .Body }}</textarea>
+      </div>
+      <div class="form-group">
+        <input type="submit" value="Send" class="btn btn-primary" />
+        <a href="/messages" class="btn btn-default">Cancel</a>
+      </div>
+    </form>
+  </div>
+</div>
+{{ end }}

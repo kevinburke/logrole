@@ -8,6 +8,13 @@
   </div>
 </div>
 {{- end }}
+{{- if .CanSendMessages }}
+<div class="row message-actions">
+  <div class="col-md-12">
+    <a class="btn btn-primary" href="/messages/new">New Message</a>
+  </div>
+</div>
+{{- end }}
 <div class="row row-search">
   <form class="form-inline" method="get" action="{{ .Path }}">
     <div class="form-search form-messages-search col-md-10">

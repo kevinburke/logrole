@@ -232,6 +232,26 @@ func (m *Message) CanViewMedia() bool {
 	return m.user != nil && m.user.CanViewMedia()
 }
 
+// ReplyTo returns the phone number to pre-fill the "To" field of a reply
+// form with. For inbound messages this is the original sender; for outbound
+// messages it is the original recipient. Returns "" if the user lacks
+// permission to view the relevant party.
+func (m *Message) ReplyTo() string {
+	if m.message == nil || m.user == nil {
+		return ""
+	}
+	if m.message.Direction == twilio.DirectionInbound {
+		if !m.user.CanViewMessageFrom() {
+			return ""
+		}
+		return string(m.message.From)
+	}
+	if !m.user.CanViewMessageTo() {
+		return ""
+	}
+	return string(m.message.To)
+}
+
 // NewMessage creates a new Message, setting fields to be hidden or shown as
 // appropriate for the given Permission and User.
 func NewMessage(msg *twilio.Message, p *config.Permission, u *config.User) (*Message, error) {

@@ -57,6 +57,7 @@ type messageInstanceData struct {
 	Loc                *time.Location
 	Media              *mediaResp
 	ShowMediaByDefault bool
+	CanSendMessages    bool
 }
 
 func (m *messageInstanceData) Title() string {
@@ -120,6 +121,7 @@ func (s *messageInstanceServer) ServeHTTP(w http.ResponseWriter, r *http.Request
 		Message:            message,
 		Loc:                s.LocationFinder.GetLocationReq(r),
 		ShowMediaByDefault: s.ShowMediaByDefault,
+		CanSendMessages:    u.CanSendMessages(),
 	}
 	numMedia, err := message.NumMedia()
 	switch {
@@ -196,6 +198,7 @@ type messageListData struct {
 	Query                 url.Values
 	Err                   string
 	MaxResourceAge        time.Duration
+	CanSendMessages       bool
 }
 
 func (m *messageListData) Title() string {
@@ -351,6 +354,7 @@ func (s *messageListServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			MaxResourceAge:        s.MaxResourceAge,
 			EncryptedPreviousPage: getEncryptedPage(page.PreviousPageURI(), s.secretKey),
 			EncryptedNextPage:     getEncryptedPage(page.NextPageURI(), s.secretKey),
+			CanSendMessages:       u.CanSendMessages(),
 		}}
 	if cachedAt > 0 {
 		data.CachedDuration = monotime.Since(cachedAt)

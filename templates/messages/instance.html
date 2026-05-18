@@ -1,4 +1,11 @@
 {{ define "content" }}
+{{- if and .CanSendMessages (ne .Message.ReplyTo "") }}
+<div class="row">
+  <div class="col-md-12 message-actions">
+    <a class="btn btn-primary" href="/messages/new?to={{ .Message.ReplyTo }}">Reply</a>
+  </div>
+</div>
+{{- end }}
 <div class="row">
   <div class="col-md-6">
     <table class="table table-striped">

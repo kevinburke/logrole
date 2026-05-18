@@ -19,7 +19,7 @@ import (
 )
 
 var base, phoneTpl, copyScript, sidTpl, messageInstanceTpl, messageListTpl,
-	callInstanceTpl, callListTpl, conferenceListTpl, conferenceInstanceTpl,
+	sendMessageTpl, callInstanceTpl, callListTpl, conferenceListTpl, conferenceInstanceTpl,
 	alertListTpl, alertInstanceTpl, numberListTpl, numberInstanceTpl,
 	indexTpl, loginTpl, recordingTpl, pagingTpl, openSearchTpl,
 	messageStatusTpl, messageSummaryTpl, callSummaryTpl, openSourceTpl,
@@ -36,6 +36,7 @@ func init() {
 	callSummaryTpl = assets.MustAssetString("templates/snippets/call-summary-table.html")
 	messageInstanceTpl = assets.MustAssetString("templates/messages/instance.html")
 	messageListTpl = assets.MustAssetString("templates/messages/list.html")
+	sendMessageTpl = assets.MustAssetString("templates/messages/new.html")
 	callInstanceTpl = assets.MustAssetString("templates/calls/instance.html")
 	callListTpl = assets.MustAssetString("templates/calls/list.html")
 	conferenceInstanceTpl = assets.MustAssetString("templates/conferences/instance.html")

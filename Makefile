@@ -21,6 +21,7 @@ WATCH_TARGETS = static/css/style.css \
 
 ASSET_TARGETS = templates/base.html templates/index.html \
 	templates/messages/list.html templates/messages/instance.html \
+	templates/messages/new.html \
 	templates/calls/list.html templates/calls/instance.html \
 	templates/calls/recordings.html \
 	templates/conferences/list.html templates/conferences/instance.html \
