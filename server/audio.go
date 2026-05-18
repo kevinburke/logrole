@@ -6,8 +6,8 @@ import (
 	"net/url"
 	"regexp"
 
-	twilio "github.com/kevinburke/twilio-go"
 	"github.com/kevinburke/logrole/views"
+	twilio "github.com/kevinburke/twilio-go"
 )
 
 type audioServer struct {
@@ -24,9 +24,9 @@ func newAudioReverseProxy() (*httputil.ReverseProxy, error) {
 		return nil, err
 	}
 	return &httputil.ReverseProxy{
-		Director: func(r *http.Request) {
-			r.URL.Host = u.Host
-			r.URL.Scheme = "https"
+		Rewrite: func(r *httputil.ProxyRequest) {
+			r.Out.URL.Host = u.Host
+			r.Out.URL.Scheme = "https"
 		},
 	}, nil
 }

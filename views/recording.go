@@ -1,12 +1,14 @@
+//lint:file-ignore ST1005 pre-existing capitalized error strings; cleanup tracked separately
+
 package views
 
 import (
 	"errors"
 
 	types "github.com/kevinburke/go-types"
-	twilio "github.com/kevinburke/twilio-go"
 	"github.com/kevinburke/logrole/config"
 	"github.com/kevinburke/logrole/services"
+	twilio "github.com/kevinburke/twilio-go"
 )
 
 type RecordingPage struct {
@@ -110,7 +112,7 @@ func (r *Recording) MediaType() string {
 }
 
 func NewRecording(r *twilio.Recording, p *config.Permission, u *config.User, key *[32]byte) (*Recording, error) {
-	if r.DateCreated.Valid == false {
+	if !r.DateCreated.Valid {
 		return nil, errors.New("Invalid DateCreated for recording")
 	}
 	if !u.CanViewResource(r.DateCreated.Time, p.MaxResourceAge()) {

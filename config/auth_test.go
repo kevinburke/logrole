@@ -1,19 +1,15 @@
 package config
 
 import (
+	"log/slog"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 
-	log "github.com/inconshreveable/log15"
 	"github.com/kevinburke/nacl"
 )
 
-var NullLogger = log.New()
-
-func init() {
-	NullLogger.SetHandler(log.DiscardHandler())
-}
+var NullLogger = slog.New(slog.DiscardHandler)
 
 func TestLoggedInAuthenticates(t *testing.T) {
 	t.Parallel()

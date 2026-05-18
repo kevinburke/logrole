@@ -1,3 +1,5 @@
+//lint:file-ignore ST1005 pre-existing capitalized error strings; cleanup tracked separately
+
 // Package views retrieves data and controls which of it is visible.
 //
 // This is the only package that should interact directly with Twilio - all
@@ -9,6 +11,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"log/slog"
 	"net/http"
 	"net/url"
 	"strconv"
@@ -17,7 +20,6 @@ import (
 	"time"
 
 	"github.com/golang/groupcache/singleflight"
-	log "github.com/inconshreveable/log15"
 	"github.com/kevinburke/logrole/cache"
 	"github.com/kevinburke/logrole/config"
 	"github.com/kevinburke/logrole/services"
@@ -61,7 +63,7 @@ type Client interface {
 }
 
 type client struct {
-	log.Logger
+	*slog.Logger
 	group      singleflight.Group
 	cache      *cache.Cache
 	client     *twilio.Client
@@ -76,7 +78,7 @@ const cacheSizeMB = 25
 const averageCacheEntryBytes = 3000
 
 // NewClient creates a new Client encapsulating the provided values.
-func NewClient(l log.Logger, c *twilio.Client, secretKey *[32]byte, p *config.Permission) Client {
+func NewClient(l *slog.Logger, c *twilio.Client, secretKey *[32]byte, p *config.Permission) Client {
 	return &client{
 		Logger:     l,
 		group:      singleflight.Group{},
@@ -191,7 +193,7 @@ var mediaUrlsFilters = url.Values{
 // GetMediaURLs retrieves all media URL's for a given client, but encrypts and
 // obscures them behind our image proxy first.
 func (vc *client) GetMediaURLs(ctx context.Context, u *config.User, sid string) ([]*url.URL, error) {
-	if u.CanViewMedia() == false {
+	if !u.CanViewMedia() {
 		return nil, config.PermissionDenied
 	}
 	urls, err := vc.client.Messages.GetMediaURLs(ctx, sid, mediaUrlsFilters)
@@ -266,10 +268,10 @@ func (vc *client) getAndCacheNumber(ctx context.Context, data url.Values) (*Cach
 
 type CacheResult struct {
 	Time  uint64
-	Value interface{}
+	Value any
 }
 
-func (vc *client) cacheToMsg(user *config.User, val interface{}) (*MessagePage, uint64, error) {
+func (vc *client) cacheToMsg(user *config.User, val any) (*MessagePage, uint64, error) {
 	result, ok := val.(*CacheResult)
 	if !ok {
 		return nil, 0, errors.New("Could not cast fetch result to a CacheResult")
@@ -284,7 +286,7 @@ func (vc *client) cacheToMsg(user *config.User, val interface{}) (*MessagePage, 
 
 func (vc *client) GetMessagePageInRange(ctx context.Context, user *config.User, start time.Time, end time.Time, data url.Values) (*MessagePage, uint64, error) {
 	key := hash("messages", data.Encode(), start, end)
-	val, err := vc.group.Do(key, func() (interface{}, error) {
+	val, err := vc.group.Do(key, func() (any, error) {
 		page := new(twilio.MessagePage)
 		t, err := vc.cache.Get(key, page)
 		if err == nil {
@@ -300,7 +302,7 @@ func (vc *client) GetMessagePageInRange(ctx context.Context, user *config.User, 
 
 func (vc *client) GetNextMessagePageInRange(ctx context.Context, user *config.User, start time.Time, end time.Time, nextPage string) (*MessagePage, uint64, error) {
 	key := hash("messages", nextPage, start, end)
-	val, err := vc.group.Do(key, func() (interface{}, error) {
+	val, err := vc.group.Do(key, func() (any, error) {
 		page := new(twilio.MessagePage)
 		t, err := vc.cache.Get(key, page)
 		if err == nil {
@@ -319,7 +321,7 @@ func (vc *client) GetNextMessagePageInRange(ctx context.Context, user *config.Us
 	return vc.cacheToMsg(user, val)
 }
 
-func (vc *client) cacheToCall(user *config.User, val interface{}) (*CallPage, uint64, error) {
+func (vc *client) cacheToCall(user *config.User, val any) (*CallPage, uint64, error) {
 	result, ok := val.(*CacheResult)
 	if !ok {
 		return nil, 0, errors.New("Could not cast fetch result to a CacheResult")
@@ -334,7 +336,7 @@ func (vc *client) cacheToCall(user *config.User, val interface{}) (*CallPage, ui
 
 func (vc *client) GetCallPageInRange(ctx context.Context, user *config.User, start time.Time, end time.Time, data url.Values) (*CallPage, uint64, error) {
 	key := hash("calls", data.Encode(), start, end)
-	val, err := vc.group.Do(key, func() (interface{}, error) {
+	val, err := vc.group.Do(key, func() (any, error) {
 		page := new(twilio.CallPage)
 		t, err := vc.cache.Get(key, page)
 		if err == nil {
@@ -350,7 +352,7 @@ func (vc *client) GetCallPageInRange(ctx context.Context, user *config.User, sta
 
 func (vc *client) GetNextCallPageInRange(ctx context.Context, user *config.User, start time.Time, end time.Time, nextPage string) (*CallPage, uint64, error) {
 	key := hash("calls", nextPage, start, end)
-	val, err := vc.group.Do(key, func() (interface{}, error) {
+	val, err := vc.group.Do(key, func() (any, error) {
 		page := new(twilio.CallPage)
 		t, err := vc.cache.Get(key, page)
 		if err == nil {
@@ -369,7 +371,7 @@ func (vc *client) GetNextCallPageInRange(ctx context.Context, user *config.User,
 	return vc.cacheToCall(user, val)
 }
 
-func (vc *client) cacheToNumber(user *config.User, val interface{}) (*IncomingNumberPage, uint64, error) {
+func (vc *client) cacheToNumber(user *config.User, val any) (*IncomingNumberPage, uint64, error) {
 	result, ok := val.(*CacheResult)
 	if !ok {
 		return nil, 0, errors.New("Could not cast fetch result to a CacheResult")
@@ -384,7 +386,7 @@ func (vc *client) cacheToNumber(user *config.User, val interface{}) (*IncomingNu
 
 func (vc *client) GetNumberPage(ctx context.Context, user *config.User, data url.Values) (*IncomingNumberPage, uint64, error) {
 	key := hash("incoming-numbers", data.Encode(), twilio.Epoch, twilio.HeatDeath)
-	val, err := vc.group.Do(key, func() (interface{}, error) {
+	val, err := vc.group.Do(key, func() (any, error) {
 		page := new(twilio.IncomingPhoneNumberPage)
 		t, err := vc.cache.Get(key, page)
 		if err == nil {
@@ -400,7 +402,7 @@ func (vc *client) GetNumberPage(ctx context.Context, user *config.User, data url
 
 func (vc *client) GetNextNumberPage(ctx context.Context, user *config.User, nextPage string) (*IncomingNumberPage, uint64, error) {
 	key := hash("incoming-numbers", nextPage, twilio.Epoch, twilio.HeatDeath)
-	val, err := vc.group.Do(key, func() (interface{}, error) {
+	val, err := vc.group.Do(key, func() (any, error) {
 		page := new(twilio.IncomingPhoneNumberPage)
 		t, err := vc.cache.Get(key, page)
 		if err == nil {
@@ -418,7 +420,7 @@ func (vc *client) GetNextNumberPage(ctx context.Context, user *config.User, next
 	return vc.cacheToNumber(user, val)
 }
 
-func (vc *client) cacheToConference(user *config.User, val interface{}) (*ConferencePage, uint64, error) {
+func (vc *client) cacheToConference(user *config.User, val any) (*ConferencePage, uint64, error) {
 	result, ok := val.(*CacheResult)
 	if !ok {
 		return nil, 0, errors.New("Could not cast fetch result to a CacheResult")
@@ -433,7 +435,7 @@ func (vc *client) cacheToConference(user *config.User, val interface{}) (*Confer
 
 func (vc *client) GetConferencePageInRange(ctx context.Context, user *config.User, start time.Time, end time.Time, data url.Values) (*ConferencePage, uint64, error) {
 	key := hash("conferences", data.Encode(), start, end)
-	val, err := vc.group.Do(key, func() (interface{}, error) {
+	val, err := vc.group.Do(key, func() (any, error) {
 		page := new(twilio.ConferencePage)
 		t, err := vc.cache.Get(key, page)
 		if err == nil {
@@ -454,7 +456,7 @@ func (vc *client) GetConferencePageInRange(ctx context.Context, user *config.Use
 
 func (vc *client) GetNextConferencePageInRange(ctx context.Context, user *config.User, start time.Time, end time.Time, nextPage string) (*ConferencePage, uint64, error) {
 	key := hash("conferences", nextPage, start, end)
-	val, err := vc.group.Do(key, func() (interface{}, error) {
+	val, err := vc.group.Do(key, func() (any, error) {
 		page := new(twilio.ConferencePage)
 		t, err := vc.cache.Get(key, page)
 		if err == nil {
@@ -473,7 +475,7 @@ func (vc *client) GetNextConferencePageInRange(ctx context.Context, user *config
 	return vc.cacheToConference(user, val)
 }
 
-func (vc *client) cacheToAlert(user *config.User, val interface{}) (*AlertPage, uint64, error) {
+func (vc *client) cacheToAlert(user *config.User, val any) (*AlertPage, uint64, error) {
 	result, ok := val.(*CacheResult)
 	if !ok {
 		return nil, 0, errors.New("Could not cast fetch result to a CacheResult")
@@ -488,7 +490,7 @@ func (vc *client) cacheToAlert(user *config.User, val interface{}) (*AlertPage, 
 
 func (vc *client) GetAlertPageInRange(ctx context.Context, user *config.User, start time.Time, end time.Time, data url.Values) (*AlertPage, uint64, error) {
 	key := hash("alerts", data.Encode(), start, end)
-	val, err := vc.group.Do(key, func() (interface{}, error) {
+	val, err := vc.group.Do(key, func() (any, error) {
 		page := new(twilio.AlertPage)
 		t, err := vc.cache.Get(key, page)
 		if err == nil {
@@ -504,7 +506,7 @@ func (vc *client) GetAlertPageInRange(ctx context.Context, user *config.User, st
 
 func (vc *client) GetNextAlertPageInRange(ctx context.Context, user *config.User, start time.Time, end time.Time, nextPage string) (*AlertPage, uint64, error) {
 	key := hash("alerts", nextPage, start, end)
-	val, err := vc.group.Do(key, func() (interface{}, error) {
+	val, err := vc.group.Do(key, func() (any, error) {
 		page := new(twilio.AlertPage)
 		t, err := vc.cache.Get(key, page)
 		if err == nil {

@@ -1,3 +1,5 @@
+//lint:file-ignore ST1005 pre-existing capitalized error strings; cleanup tracked separately
+
 package server
 
 import (
@@ -9,9 +11,9 @@ import (
 	"time"
 
 	"github.com/kevinburke/handlers"
+	"github.com/kevinburke/logrole/services"
 	"github.com/kevinburke/rest"
 	twilio "github.com/kevinburke/twilio-go"
-	"github.com/kevinburke/logrole/services"
 )
 
 // An imageServer provides an opaque proxy for image requests.

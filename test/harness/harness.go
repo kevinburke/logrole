@@ -1,21 +1,17 @@
 package harness
 
 import (
+	"log/slog"
 	"net/http/httptest"
 	"time"
 
-	log "github.com/inconshreveable/log15"
 	"github.com/kevinburke/logrole/config"
 	"github.com/kevinburke/logrole/views"
 	"github.com/kevinburke/nacl"
 	twilio "github.com/kevinburke/twilio-go"
 )
 
-var NullLogger = log.New()
-
-func init() {
-	NullLogger.SetHandler(log.DiscardHandler())
-}
+var NullLogger = slog.New(slog.DiscardHandler)
 
 type ViewHarness struct {
 	TestServer     *httptest.Server

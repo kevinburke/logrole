@@ -1,9 +1,12 @@
+//lint:file-ignore ST1005 pre-existing capitalized error strings; cleanup tracked separately
+
 package server
 
 import (
 	"context"
 	"errors"
 	"html/template"
+	"log/slog"
 	"net/http"
 	"net/url"
 	"regexp"
@@ -12,7 +15,6 @@ import (
 	"time"
 
 	"github.com/aristanetworks/goarista/monotime"
-	log "github.com/inconshreveable/log15"
 	types "github.com/kevinburke/go-types"
 	"github.com/kevinburke/logrole/config"
 	"github.com/kevinburke/logrole/services"
@@ -33,7 +35,7 @@ var numberInstanceRoute = regexp.MustCompile("^/phone-numbers/" + numberInstance
 var numberSidRegex = regexp.MustCompile(numberSidPattern)
 
 type numberListServer struct {
-	log.Logger
+	*slog.Logger
 	Client         views.Client
 	PageSize       uint
 	MaxResourceAge time.Duration
@@ -42,7 +44,7 @@ type numberListServer struct {
 	tpl            *template.Template
 }
 
-func newNumberListServer(l log.Logger, vc views.Client,
+func newNumberListServer(l *slog.Logger, vc views.Client,
 	lf services.LocationFinder, pageSize uint, maxResourceAge time.Duration,
 	secretKey *[32]byte) (*numberListServer, error) {
 	s := &numberListServer{
@@ -206,13 +208,13 @@ func (s *numberListServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 }
 
 type numberInstanceServer struct {
-	log.Logger
+	*slog.Logger
 	Client         views.Client
 	LocationFinder services.LocationFinder
 	tpl            *template.Template
 }
 
-func newNumberInstanceServer(l log.Logger, vc views.Client, lf services.LocationFinder) (*numberInstanceServer, error) {
+func newNumberInstanceServer(l *slog.Logger, vc views.Client, lf services.LocationFinder) (*numberInstanceServer, error) {
 	s := &numberInstanceServer{
 		Logger:         l,
 		Client:         vc,
@@ -299,7 +301,7 @@ func (s *numberInstanceServer) redirectPN(w http.ResponseWriter, r *http.Request
 		rest.Forbidden(w, r, &rest.Error{Title: err.Error()})
 		return
 	}
-	http.Redirect(w, r, "/phone-numbers/"+string(pn), 301)
+	http.Redirect(w, r, "/phone-numbers/"+string(pn), http.StatusMovedPermanently)
 }
 
 func (s *numberInstanceServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {

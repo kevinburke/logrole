@@ -2,13 +2,13 @@ package server
 
 import (
 	"fmt"
+	"log/slog"
 	"net/http"
 	"net/http/httptest"
 	"strings"
 	"testing"
 	"time"
 
-	log "github.com/inconshreveable/log15"
 	"github.com/kevinburke/logrole/config"
 	"github.com/kevinburke/logrole/services"
 	"github.com/kevinburke/logrole/test"
@@ -17,12 +17,11 @@ import (
 	twilio "github.com/kevinburke/twilio-go"
 )
 
-var dlog = log.New()
+var dlog = slog.New(slog.DiscardHandler)
 var key = nacl.NewKey()
 var lf services.LocationFinder
 
 func init() {
-	dlog.SetHandler(log.DiscardHandler())
 	var err error
 	lf, err = services.NewLocationFinder("America/New_York")
 	if err != nil {

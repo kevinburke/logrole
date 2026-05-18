@@ -1,12 +1,8 @@
-# would be great to make the bash location portable but not sure how
-SHELL = /bin/bash
+SHELL = /bin/bash -o pipefail
 
-BENCHSTAT := $(GOPATH)/bin/benchstat
 BUMP_VERSION := $(GOPATH)/bin/bump_version
 DIFFER := $(GOPATH)/bin/differ
-GODOCDOC := $(GOPATH)/bin/godocdoc
 GO_BINDATA := $(GOPATH)/bin/go-bindata
-DEP := $(GOPATH)/bin/dep
 JUSTRUN := $(GOPATH)/bin/justrun
 WRITE_MAILMAP := $(GOPATH)/bin/write_mailmap
 STATICCHECK := $(GOPATH)/bin/staticcheck
@@ -34,82 +30,63 @@ ASSET_TARGETS = templates/base.html templates/index.html \
 	templates/errors.html templates/login.html \
 	static/css/style.css static/css/bootstrap.min.css
 
-test: vet
-	@# this target should always be listed first so "make" runs the tests.
-	go list ./... | grep -v vendor | xargs go test -short
+.PHONY: test race-test serve lint assets watch release docs bench loc authors ci
 
-race-test: vet
-	go list ./... | grep -v vendor | xargs go test -race
+test: lint
+	@# this target should always be listed first so "make" runs the tests.
+	go test -trimpath -short ./...
+
+race-test: lint
+	go test -trimpath -race ./...
 
 serve:
-	go run commands/logrole_server/main.go
+	go run -trimpath ./commands/logrole_server
 
-vet:
-	@# We can't vet the vendor directory, it fails.
+$(STATICCHECK):
+	go install honnef.co/go/tools/cmd/staticcheck@latest
+
+lint: | $(STATICCHECK)
 	go vet ./...
-	go run honnef.co/go/tools/cmd/staticcheck@latest --checks='["all", "-ST1005", "-S1002"]' ./...
-
-deploy:
-	git push heroku master
+	$(STATICCHECK) --checks='["all", "-ST1005", "-S1002"]' ./...
 
 compile-css: static/css/bootstrap.min.css static/css/style.css
 	cat static/css/bootstrap.min.css static/css/style.css > static/css/all.css
 
 $(GO_BINDATA):
-	go get -u github.com/kevinburke/go-bindata/...
+	go install github.com/kevinburke/go-bindata/v4/go-bindata@latest
 
 assets: $(ASSET_TARGETS) compile-css | $(GO_BINDATA)
 	$(GO_BINDATA) -o=assets/bindata.go --nometadata --pkg=assets templates/... static/...
 
 $(JUSTRUN):
-	go get -u github.com/jmhodges/justrun
+	go install github.com/jmhodges/justrun@latest
 
 watch: | $(JUSTRUN)
 	$(JUSTRUN) -v --delay=100ms -c 'make assets serve' $(WATCH_TARGETS)
 
-$(DEP):
-	go get -u github.com/golang/dep/cmd/dep
-
-deps: | $(DEP)
-	$(DEP) ensure
-	$(DEP) prune
-
 $(BUMP_VERSION):
-	go get github.com/Shyp/bump_version
+	go install github.com/kevinburke/bump_version@latest
 
 $(DIFFER):
-	go get github.com/kevinburke/differ
-
-$(GODOCDOC):
-	go get github.com/kevinburke/godocdoc
+	go install github.com/kevinburke/differ@latest
 
 release: race-test | $(BUMP_VERSION) $(DIFFER)
 	$(DIFFER) $(MAKE) authors
-	$(BUMP_VERSION) minor http.go
-
-docs: | $(GODOCDOC)
-	$(GODOCDOC)
+	$(BUMP_VERSION) --tag-prefix=v minor server/serve.go
 
 bench:
-	tmp=$$(mktemp); go list ./... | grep -v vendor | xargs go test -benchtime=2s -bench=. -run='^$$' > "$$tmp" 2>&1 && go run golang.org/x/perf/cmd/benchstat@latest "$$tmp"
+	tmp=$$(mktemp); go test -trimpath -benchtime=2s -bench=. -run='^$$' ./... > "$$tmp" 2>&1 && go run golang.org/x/perf/cmd/benchstat@latest "$$tmp"
 
 loc:
-	cloc --exclude-dir=.git,tmp,vendor --not-match-f='bootstrap.min.css|all.css|bindata.go' .
+	cloc --exclude-dir=.git,tmp,vendor,worktrees --not-match-f='bootstrap.min.css|all.css|bindata.go' .
 
-# For Travis. Run the tests with unvendored dependencies, just check the latest
-# version of everything out to the GOPATH.
-unvendored: $(DEP)
-	rm -rf vendor
-	$(MAKE) race-test
-	go mod vendor
-
-ci: race-test bench unvendored
+ci: race-test bench
 
 $(WRITE_MAILMAP):
-	go get github.com/kevinburke/write_mailmap
+	go install github.com/kevinburke/write_mailmap@latest
 
 AUTHORS.txt: | $(WRITE_MAILMAP)
 	$(WRITE_MAILMAP) > AUTHORS.txt
 
 authors: AUTHORS.txt
-	write_mailmap > AUTHORS.txt
+	$(WRITE_MAILMAP) > AUTHORS.txt

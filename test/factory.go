@@ -1,9 +1,5 @@
 package test
 
-import log "github.com/inconshreveable/log15"
+import "log/slog"
 
-var NullLogger = log.New()
-
-func init() {
-	NullLogger.SetHandler(log.DiscardHandler())
-}
+var NullLogger = slog.New(slog.DiscardHandler)

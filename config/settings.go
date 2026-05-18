@@ -1,14 +1,17 @@
+//lint:file-ignore ST1005 pre-existing capitalized error strings; cleanup tracked separately
+//lint:file-ignore ST1012 pre-existing error var naming; cleanup tracked separately
+
 package config
 
 import (
 	"errors"
 	"fmt"
-	"io/ioutil"
+	"log/slog"
 	"net"
 	"net/mail"
+	"os"
 	"time"
 
-	log "github.com/inconshreveable/log15"
 	"github.com/kevinburke/handlers"
 	"github.com/kevinburke/logrole/services"
 	"github.com/kevinburke/nacl"
@@ -91,7 +94,7 @@ type FileConfig struct {
 // Settings are used to configure a Server and apply to all of the website's
 // users.
 type Settings struct {
-	Logger log.Logger
+	Logger *slog.Logger
 
 	// The host the user visits to get to this site.
 	PublicHost string
@@ -136,9 +139,9 @@ type Settings struct {
 // NewSettingsFromConfig creates a new Settings object from the given
 // FileConfig, or an error.
 //
-// Pass a log.Logger to configure how messages are logged. If the Logger is
+// Pass a *slog.Logger to configure how messages are logged. If the Logger is
 // nil, github.com/kevinburke/handlers.Logger will be used.
-func NewSettingsFromConfig(c *FileConfig, l log.Logger) (settings *Settings, err error) {
+func NewSettingsFromConfig(c *FileConfig, l *slog.Logger) (settings *Settings, err error) {
 	defer func() {
 		if r := recover(); r != nil {
 			if c.Debug {
@@ -151,7 +154,7 @@ func NewSettingsFromConfig(c *FileConfig, l log.Logger) (settings *Settings, err
 	}()
 	if l == nil {
 		if c.Debug {
-			l = handlers.NewLoggerLevel(log.LvlDebug)
+			l = handlers.NewLoggerLevel(slog.LevelDebug)
 		} else {
 			l = handlers.Logger
 		}
@@ -195,7 +198,7 @@ func NewSettingsFromConfig(c *FileConfig, l log.Logger) (settings *Settings, err
 
 	if c.PolicyFile != "" {
 		// we checked above that Policy is nil in this case
-		data, err := ioutil.ReadFile(c.PolicyFile)
+		data, err := os.ReadFile(c.PolicyFile)
 		if err != nil {
 			l.Error("Couldn't load permission file", "loc", c.PolicyFile)
 			return nil, err

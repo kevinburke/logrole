@@ -1,11 +1,13 @@
+//lint:file-ignore ST1005 pre-existing capitalized error strings; cleanup tracked separately
+
 package views
 
 import (
 	"errors"
 
 	types "github.com/kevinburke/go-types"
-	twilio "github.com/kevinburke/twilio-go"
 	"github.com/kevinburke/logrole/config"
+	twilio "github.com/kevinburke/twilio-go"
 )
 
 type Message struct {
@@ -53,7 +55,7 @@ func (mp *MessagePage) ShowHeader(fieldName string) bool {
 }
 
 func NewMessagePage(mp *twilio.MessagePage, p *config.Permission, u *config.User) (*MessagePage, error) {
-	if u.CanViewMessages() == false {
+	if !u.CanViewMessages() {
 		return nil, config.PermissionDenied
 	}
 	messages := make([]*Message, 0)
@@ -233,10 +235,10 @@ func (m *Message) CanViewMedia() bool {
 // NewMessage creates a new Message, setting fields to be hidden or shown as
 // appropriate for the given Permission and User.
 func NewMessage(msg *twilio.Message, p *config.Permission, u *config.User) (*Message, error) {
-	if u.CanViewMessages() == false {
+	if !u.CanViewMessages() {
 		return nil, config.PermissionDenied
 	}
-	if msg.DateCreated.Valid == false {
+	if !msg.DateCreated.Valid {
 		return nil, errors.New("Invalid DateCreated for message")
 	}
 	if !u.CanViewResource(msg.DateCreated.Time, p.MaxResourceAge()) {

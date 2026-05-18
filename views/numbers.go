@@ -1,11 +1,13 @@
+//lint:file-ignore ST1005 pre-existing capitalized error strings; cleanup tracked separately
+
 package views
 
 import (
 	"errors"
 
 	types "github.com/kevinburke/go-types"
-	twilio "github.com/kevinburke/twilio-go"
 	"github.com/kevinburke/logrole/config"
+	twilio "github.com/kevinburke/twilio-go"
 )
 
 type IncomingNumberPage struct {
@@ -32,7 +34,7 @@ type IncomingNumber struct {
 }
 
 func NewIncomingNumber(pn *twilio.IncomingPhoneNumber, p *config.Permission, u *config.User) (*IncomingNumber, error) {
-	if pn.DateCreated.Valid == false {
+	if !pn.DateCreated.Valid {
 		return nil, errors.New("Invalid DateCreated for phone number")
 	}
 	// NB: Phone numbers are *exempt* from max resource age rules, they don't

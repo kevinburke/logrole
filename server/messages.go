@@ -1,9 +1,12 @@
+//lint:file-ignore ST1005 pre-existing capitalized error strings; cleanup tracked separately
+
 package server
 
 import (
 	"context"
 	"errors"
 	"html/template"
+	"log/slog"
 	"net/http"
 	"net/url"
 	"regexp"
@@ -12,7 +15,6 @@ import (
 	"time"
 
 	"github.com/aristanetworks/goarista/monotime"
-	log "github.com/inconshreveable/log15"
 	types "github.com/kevinburke/go-types"
 	"github.com/kevinburke/logrole/config"
 	"github.com/kevinburke/logrole/services"
@@ -26,14 +28,14 @@ const messagePattern = `(?P<sid>(MM|SM)[a-f0-9]{32})`
 var messageInstanceRoute = regexp.MustCompile("^/messages/" + messagePattern + "$")
 
 type messageInstanceServer struct {
-	log.Logger
+	*slog.Logger
 	Client             views.Client
 	LocationFinder     services.LocationFinder
 	ShowMediaByDefault bool
 	tpl                *template.Template
 }
 
-func newMessageInstanceServer(l log.Logger, vc views.Client, lf services.LocationFinder, smbd bool) (*messageInstanceServer, error) {
+func newMessageInstanceServer(l *slog.Logger, vc views.Client, lf services.LocationFinder, smbd bool) (*messageInstanceServer, error) {
 	s := &messageInstanceServer{
 		Logger:             l,
 		Client:             vc,
@@ -135,7 +137,7 @@ func (s *messageInstanceServer) ServeHTTP(w http.ResponseWriter, r *http.Request
 }
 
 type messageListServer struct {
-	log.Logger
+	*slog.Logger
 	Client         views.Client
 	LocationFinder services.LocationFinder
 	PageSize       uint
@@ -163,7 +165,7 @@ func (s *messageListServer) EndSearchVal(query url.Values, loc *time.Location) s
 	return maxLoc(loc)
 }
 
-func newMessageListServer(l log.Logger, vc views.Client, lf services.LocationFinder, pageSize uint, maxResourceAge time.Duration, secretKey *[32]byte) (*messageListServer, error) {
+func newMessageListServer(l *slog.Logger, vc views.Client, lf services.LocationFinder, pageSize uint, maxResourceAge time.Duration, secretKey *[32]byte) (*messageListServer, error) {
 	s := &messageListServer{
 		Logger:         l,
 		Client:         vc,

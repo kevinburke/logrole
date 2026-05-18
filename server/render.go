@@ -1,3 +1,5 @@
+//lint:file-ignore ST1005 pre-existing capitalized error strings; cleanup tracked separately
+
 package server
 
 import (
@@ -88,7 +90,7 @@ func stripPrefix(pfx string) func(string) string {
 }
 
 var templatePool = sync.Pool{
-	New: func() interface{} { return new(bytes.Buffer) },
+	New: func() any { return new(bytes.Buffer) },
 }
 
 type baseData struct {
@@ -104,7 +106,7 @@ type baseData struct {
 	LF             services.LocationFinder
 	// Whatever data gets sent to the child template. Should have a Title
 	// property or Title() function.
-	Data interface{}
+	Data any
 }
 
 func (bd *baseData) Version() string {

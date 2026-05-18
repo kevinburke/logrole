@@ -1,3 +1,5 @@
+//lint:file-ignore ST1005 pre-existing capitalized error strings; cleanup tracked separately
+
 // Package server responds to incoming HTTP requests and renders the site.
 //
 // There are a number of smaller servers in this package, each of which takes
@@ -9,19 +11,19 @@ import (
 	"errors"
 	"fmt"
 	"html/template"
+	"log/slog"
 	"net"
 	"net/http"
 	"regexp"
 	"strings"
 	"time"
 
-	log "github.com/inconshreveable/log15"
 	"github.com/kevinburke/handlers"
-	"github.com/kevinburke/rest"
 	"github.com/kevinburke/logrole/assets"
 	"github.com/kevinburke/logrole/config"
 	"github.com/kevinburke/logrole/services"
 	"github.com/kevinburke/logrole/views"
+	"github.com/kevinburke/rest"
 )
 
 // Server version, run "make release" to increase this value
@@ -43,7 +45,7 @@ func getRemoteIP(r *http.Request) string {
 // THIS IS NOT A SECURITY FEATURE. It is possible to spoof IP addresses or
 // construct an X-Forwarded-For header that contains a different IP address
 // than the request's originating address.
-func whitelistIPs(h http.Handler, l log.Logger, nets []*net.IPNet) http.Handler {
+func whitelistIPs(h http.Handler, l *slog.Logger, nets []*net.IPNet) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		ipStr := getRemoteIP(r)
 		// RemoteHost reports both
@@ -75,7 +77,7 @@ func whitelistIPs(h http.Handler, l log.Logger, nets []*net.IPNet) http.Handler 
 
 func UpgradeInsecureHandler(h http.Handler, allowUnencryptedTraffic bool) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if allowUnencryptedTraffic == false {
+		if !allowUnencryptedTraffic {
 			if r.Header.Get("X-Forwarded-Proto") == "http" {
 				u := r.URL
 				u.Scheme = "https"
@@ -208,7 +210,7 @@ func newLoginServer() (*loginServer, error) {
 
 func (ls *loginServer) Serve(w http.ResponseWriter, r *http.Request, URL string) {
 	if r.URL.Path != "/login" {
-		http.Redirect(w, r, "/login?g="+r.URL.Path, 302)
+		http.Redirect(w, r, "/login?g="+r.URL.Path, http.StatusFound)
 		return
 	}
 	bd := &baseData{
@@ -254,7 +256,7 @@ func NewServer(settings *config.Settings) (*Server, error) {
 		settings.Reporter = services.GetReporter("noop", "")
 	}
 	validKey := false
-	for i := 0; i < len(settings.SecretKey); i++ {
+	for i := range len(settings.SecretKey) {
 		if settings.SecretKey[i] != 0x0 {
 			validKey = true
 			break

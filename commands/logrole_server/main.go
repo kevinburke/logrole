@@ -5,12 +5,12 @@ package main
 import (
 	"flag"
 	"fmt"
+	"log/slog"
 	"net"
 	"net/http"
 	"os"
 	"time"
 
-	log "github.com/inconshreveable/log15"
 	"github.com/kevinburke/handlers"
 	"github.com/kevinburke/logrole/config"
 	"github.com/kevinburke/logrole/server"
@@ -19,7 +19,7 @@ import (
 	yaml "gopkg.in/yaml.v2"
 )
 
-var logger log.Logger
+var logger *slog.Logger
 
 func init() {
 	flag.Usage = func() {
@@ -74,7 +74,7 @@ func main() {
 		c.Realm = services.Local
 	}
 	if c.Debug {
-		logger = handlers.NewLoggerLevel(log.LvlDebug)
+		logger = handlers.NewLoggerLevel(slog.LevelDebug)
 	}
 	settings, err := config.NewSettingsFromConfig(c, logger)
 	if err != nil {

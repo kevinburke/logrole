@@ -2,16 +2,16 @@ package server
 
 import (
 	"html/template"
+	"log/slog"
 	"net/http"
 	"regexp"
 
-	log "github.com/inconshreveable/log15"
 	"github.com/kevinburke/rest"
 	twilio "github.com/kevinburke/twilio-go"
 )
 
 type searchServer struct {
-	log.Logger
+	*slog.Logger
 }
 
 var smsSid = regexp.MustCompile("^" + messagePattern + "$")
@@ -69,7 +69,7 @@ func newOpenSearchServer(publicHost string, allowUnencryptedTraffic bool) (*open
 	return &openSearchXMLServer{
 		PublicHost:              publicHost,
 		AllowUnencryptedTraffic: allowUnencryptedTraffic,
-		tpl: openSearchTemplate,
+		tpl:                     openSearchTemplate,
 	}, nil
 }
 

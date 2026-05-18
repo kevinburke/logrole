@@ -1,11 +1,13 @@
+//lint:file-ignore ST1005 pre-existing capitalized error strings; cleanup tracked separately
+
 package views
 
 import (
 	"errors"
 
 	types "github.com/kevinburke/go-types"
-	twilio "github.com/kevinburke/twilio-go"
 	"github.com/kevinburke/logrole/config"
+	twilio "github.com/kevinburke/twilio-go"
 )
 
 type Conference struct {
@@ -48,7 +50,7 @@ func (cp *ConferencePage) ShowHeader(fieldName string) bool {
 }
 
 func NewConference(conference *twilio.Conference, p *config.Permission, u *config.User) (*Conference, error) {
-	if conference.DateCreated.Valid == false {
+	if !conference.DateCreated.Valid {
 		return nil, errors.New("Invalid DateCreated for conference")
 	}
 	if !u.CanViewResource(conference.DateCreated.Time, p.MaxResourceAge()) {

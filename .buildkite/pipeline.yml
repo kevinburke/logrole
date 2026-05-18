@@ -1,0 +1,53 @@
+env:
+  TZ: UTC
+  # staticcheck v0.7.0 doesn't support Go 1.26+ (export data version
+  # mismatch). Track master until the next tagged release.
+  STATICCHECK_VERSION: "master"
+  DIFFER_VERSION: "v0.0.0-20260403230520-c0574ebcacb2"
+
+steps:
+  - label: ":go: Format"
+    key: "format"
+    command: ".buildkite/ci/format.sh"
+    timeout_in_minutes: 10
+    agents:
+      vm: "buildkite"
+      host: "caracal"
+    artifact_paths:
+      - "reports/format/**/*"
+
+  - label: ":go: Lint"
+    key: "lint"
+    command: ".buildkite/ci/lint.sh"
+    timeout_in_minutes: 10
+    agents:
+      vm: "buildkite"
+      host: "caracal"
+    artifact_paths:
+      - "reports/lint/**/*"
+
+  - label: ":go: Test"
+    key: "test"
+    command: ".buildkite/ci/test.sh"
+    timeout_in_minutes: 15
+    agents:
+      vm: "buildkite"
+      host: "caracal"
+    artifact_paths:
+      - "coverage/**/*"
+      - "reports/tests/**/*"
+
+  - label: ":go: Build"
+    key: "build"
+    command: ".buildkite/ci/build.sh"
+    timeout_in_minutes: 10
+    depends_on:
+      - "format"
+      - "lint"
+      - "test"
+    agents:
+      vm: "buildkite"
+      host: "caracal"
+    artifact_paths:
+      - "reports/build/**/*"
+      - "tmp/dist/**/*"

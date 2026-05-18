@@ -1,9 +1,12 @@
+//lint:file-ignore ST1005 pre-existing capitalized error strings; cleanup tracked separately
+
 package server
 
 import (
 	"context"
 	"errors"
 	"html/template"
+	"log/slog"
 	"net/http"
 	"net/url"
 	"regexp"
@@ -12,7 +15,6 @@ import (
 	"time"
 
 	"github.com/aristanetworks/goarista/monotime"
-	log "github.com/inconshreveable/log15"
 	types "github.com/kevinburke/go-types"
 	"github.com/kevinburke/logrole/config"
 	"github.com/kevinburke/logrole/services"
@@ -27,7 +29,7 @@ const callPattern = `(?P<sid>CA[a-f0-9]{32})`
 var callInstanceRoute = regexp.MustCompile("^/calls/" + callPattern + "$")
 
 type callListServer struct {
-	log.Logger
+	*slog.Logger
 	Client         views.Client
 	LocationFinder services.LocationFinder
 	PageSize       uint
@@ -36,7 +38,7 @@ type callListServer struct {
 	tpl            *template.Template
 }
 
-func newCallListServer(l log.Logger, vc views.Client, lf services.LocationFinder,
+func newCallListServer(l *slog.Logger, vc views.Client, lf services.LocationFinder,
 	pageSize uint, maxResourceAge time.Duration,
 	secretKey *[32]byte) (*callListServer, error) {
 	cs := &callListServer{
@@ -62,13 +64,13 @@ func newCallListServer(l log.Logger, vc views.Client, lf services.LocationFinder
 }
 
 type callInstanceServer struct {
-	log.Logger
+	*slog.Logger
 	Client         views.Client
 	LocationFinder services.LocationFinder
 	tpl            *template.Template
 }
 
-func newCallInstanceServer(l log.Logger, vc views.Client,
+func newCallInstanceServer(l *slog.Logger, vc views.Client,
 	lf services.LocationFinder) (*callInstanceServer, error) {
 	c := &callInstanceServer{
 		Logger:         l,
@@ -290,7 +292,7 @@ type recordingResp struct {
 
 func (c *callInstanceServer) fetchRecordings(ctx context.Context, sid string, u *config.User, rch chan<- *recordingResp) {
 	defer close(rch)
-	if u.CanViewNumRecordings() == false {
+	if !u.CanViewNumRecordings() {
 		rch <- &recordingResp{
 			Err:                  config.PermissionDenied,
 			CanViewNumRecordings: false,

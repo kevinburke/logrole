@@ -1,3 +1,5 @@
+//lint:file-ignore ST1005 pre-existing capitalized error strings; cleanup tracked separately
+
 package server
 
 import (
@@ -8,8 +10,8 @@ import (
 	"time"
 
 	types "github.com/kevinburke/go-types"
-	twilio "github.com/kevinburke/twilio-go"
 	"github.com/kevinburke/logrole/services"
+	twilio "github.com/kevinburke/twilio-go"
 )
 
 const HTML5DatetimeLocalFormat = "2006-01-02T15:04"

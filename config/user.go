@@ -88,7 +88,7 @@ type yamlSettings UserSettings
 
 // Unmarshal YAML into the UserSettings object. By default, unspecified values
 // are set to true.
-func (us *UserSettings) UnmarshalYAML(unmarshal func(interface{}) error) error {
+func (us *UserSettings) UnmarshalYAML(unmarshal func(any) error) error {
 	if us == nil {
 		us = new(UserSettings)
 	}

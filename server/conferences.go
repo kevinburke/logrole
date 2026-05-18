@@ -1,9 +1,12 @@
+//lint:file-ignore ST1005 pre-existing capitalized error strings; cleanup tracked separately
+
 package server
 
 import (
 	"context"
 	"errors"
 	"html/template"
+	"log/slog"
 	"net/http"
 	"net/url"
 	"regexp"
@@ -12,7 +15,6 @@ import (
 	"time"
 
 	"github.com/aristanetworks/goarista/monotime"
-	log "github.com/inconshreveable/log15"
 	types "github.com/kevinburke/go-types"
 	"github.com/kevinburke/logrole/config"
 	"github.com/kevinburke/logrole/services"
@@ -26,7 +28,7 @@ const conferencePattern = `(?P<sid>CF[a-f0-9]{32})`
 var conferenceInstanceRoute = regexp.MustCompile("^/conferences/" + conferencePattern + "$")
 
 type conferenceListServer struct {
-	log.Logger
+	*slog.Logger
 	Client         views.Client
 	PageSize       uint
 	MaxResourceAge time.Duration
@@ -53,13 +55,13 @@ func (d *conferenceListData) Path() string {
 }
 
 type conferenceInstanceServer struct {
-	log.Logger
+	*slog.Logger
 	Client         views.Client
 	LocationFinder services.LocationFinder
 	tpl            *template.Template
 }
 
-func newConferenceInstanceServer(l log.Logger, vc views.Client,
+func newConferenceInstanceServer(l *slog.Logger, vc views.Client,
 	lf services.LocationFinder) (*conferenceInstanceServer, error) {
 	c := &conferenceInstanceServer{
 		Logger:         l,
@@ -82,7 +84,7 @@ func (d *conferenceListData) Statuses() []twilio.Status {
 	return validConferenceStatuses
 }
 
-func newConferenceListServer(l log.Logger, vc views.Client,
+func newConferenceListServer(l *slog.Logger, vc views.Client,
 	lf services.LocationFinder, pageSize uint, maxResourceAge time.Duration,
 	secretKey *[32]byte) (*conferenceListServer, error) {
 	s := &conferenceListServer{

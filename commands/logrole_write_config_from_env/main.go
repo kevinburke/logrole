@@ -1,3 +1,5 @@
+//lint:file-ignore ST1005 pre-existing capitalized error strings; cleanup tracked separately
+
 package main
 
 import (
@@ -6,7 +8,6 @@ import (
 	"flag"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"net/http"
 	"net/url"
 	"os"
@@ -103,8 +104,8 @@ func writeCommaSeparatedVal(w io.Writer, e environment, env string, cfgval strin
 	if v, ok := e.LookupEnv(env); ok {
 		_, err := fmt.Fprintf(w, "%s:\n", cfgval)
 		checkErr(err, "writing config")
-		vals := strings.Split(v, ",")
-		for _, val := range vals {
+		vals := strings.SplitSeq(v, ",")
+		for val := range vals {
 			_, err := fmt.Fprintf(w, "  - %s\n", strings.TrimSpace(val))
 			checkErr(err, "writing config")
 		}
@@ -192,7 +193,7 @@ func downloadFile(w io.Writer, e environment, varname string, cfgval string) (bo
 		return false, err
 	}
 	defer resp.Body.Close()
-	f, err := ioutil.TempFile("", "logrole-policy-")
+	f, err := os.CreateTemp("", "logrole-policy-")
 	if err != nil {
 		handlers.Logger.Warn("Error opening temp file", "err", err)
 		return false, err

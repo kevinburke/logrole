@@ -1,3 +1,5 @@
+//lint:file-ignore ST1005 pre-existing capitalized error strings; cleanup tracked separately
+
 package services
 
 import (
@@ -52,7 +54,7 @@ func GetGoogleUserData(ctx context.Context, client *http.Client) (*GoogleUser, e
 	if _, err := mail.ParseAddress(u.Email); err != nil {
 		return nil, err
 	}
-	if u.EmailVerified == false {
+	if !u.EmailVerified {
 		return nil, fmt.Errorf("User %s does not have a verified email address", u.Name)
 	}
 	return u, err

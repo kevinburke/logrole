@@ -1,7 +1,6 @@
 package config
 
 import (
-	"io/ioutil"
 	"os"
 	"strings"
 	"testing"
@@ -97,7 +96,7 @@ func TestBasicAuthNoPolicyOK(t *testing.T) {
 
 func TestPolicyLoadedFromFile(t *testing.T) {
 	t.Parallel()
-	f, err := ioutil.TempFile("", "logrole-tests-")
+	f, err := os.CreateTemp("", "logrole-tests-")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -105,7 +104,7 @@ func TestPolicyLoadedFromFile(t *testing.T) {
 	defer func(name string) {
 		os.Remove(name)
 	}(name)
-	if err := ioutil.WriteFile(f.Name(), policy, 0644); err != nil {
+	if err := os.WriteFile(f.Name(), policy, 0644); err != nil {
 		t.Fatal(err)
 	}
 	if err := f.Close(); err != nil {

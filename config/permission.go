@@ -1,3 +1,6 @@
+//lint:file-ignore ST1005 pre-existing capitalized error strings; cleanup tracked separately
+//lint:file-ignore ST1012 pre-existing error var naming; cleanup tracked separately
+
 // Package config maintains information about permissions.
 //
 // The format and API's in this package will probably change over time.
@@ -6,6 +9,7 @@ package config
 import (
 	"errors"
 	"fmt"
+	"slices"
 	"time"
 )
 
@@ -28,7 +32,7 @@ type yamlPolicy Policy
 // Unmarshal a YAML file into a Policy. Need a custom Unmarshaler so we can
 // detect a nil UserSettings object and replace it with one where all
 // permissions are set to true.
-func (p *Policy) UnmarshalYAML(unmarshal func(interface{}) error) error {
+func (p *Policy) UnmarshalYAML(unmarshal func(any) error) error {
 	if p == nil {
 		p = new(Policy)
 	}
@@ -64,12 +68,10 @@ func (p *Policy) Lookup(id string) (*User, bool, error) {
 	}
 	var defaultGroup *Group
 	for _, group := range *p {
-		for _, user := range group.Users {
-			if user == id {
-				return NewUser(group.Permissions), true, nil
-			}
+		if slices.Contains(group.Users, id) {
+			return NewUser(group.Permissions), true, nil
 		}
-		if group.Default == true {
+		if group.Default {
 			defaultGroup = group
 		}
 	}
@@ -113,7 +115,7 @@ func validatePolicy(p *Policy) error {
 			return fmt.Errorf("Group name %s appears twice in the list", group.Name)
 		}
 		names[group.Name] = true
-		if group.Default == true {
+		if group.Default {
 			defaultCount++
 			if defaultCount > 1 {
 				return errors.New("More than one group marked as default")

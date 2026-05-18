@@ -1,14 +1,14 @@
 package server
 
 import (
+	"log/slog"
 	"net/http"
 
-	log "github.com/inconshreveable/log15"
 	"github.com/kevinburke/logrole/config"
 )
 
 type logoutServer struct {
-	log.Logger
+	*slog.Logger
 	Authenticator config.Authenticator
 }
 

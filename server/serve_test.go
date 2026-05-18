@@ -1,12 +1,12 @@
 package server
 
 import (
+	"log/slog"
 	"net/http"
 	"net/http/httptest"
 	"strings"
 	"testing"
 
-	log "github.com/inconshreveable/log15"
 	"github.com/kevinburke/logrole/config"
 	"github.com/kevinburke/nacl"
 )
@@ -60,11 +60,7 @@ func TestIndex(t *testing.T) {
 	}
 }
 
-var NullLogger = log.New()
-
-func init() {
-	NullLogger.SetHandler(log.DiscardHandler())
-}
+var NullLogger = slog.New(slog.DiscardHandler)
 
 func getGoogleAuthServer(t *testing.T) *Server {
 	key := nacl.NewKey()

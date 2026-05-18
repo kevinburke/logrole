@@ -1,9 +1,12 @@
+//lint:file-ignore ST1005 pre-existing capitalized error strings; cleanup tracked separately
+
 package server
 
 import (
 	"context"
 	"errors"
 	"html/template"
+	"log/slog"
 	"net/http"
 	"net/url"
 	"regexp"
@@ -13,7 +16,6 @@ import (
 	"time"
 
 	"github.com/aristanetworks/goarista/monotime"
-	log "github.com/inconshreveable/log15"
 	types "github.com/kevinburke/go-types"
 	"github.com/kevinburke/logrole/config"
 	"github.com/kevinburke/logrole/services"
@@ -34,7 +36,7 @@ var validAlertLevels = []twilio.LogLevel{
 }
 
 type alertInstanceServer struct {
-	log.Logger
+	*slog.Logger
 	Client         views.Client
 	LocationFinder services.LocationFinder
 	tpl            *template.Template
@@ -77,7 +79,7 @@ func halve(firstHalf bool, vals url.Values) map[string]string {
 	}
 }
 
-func newAlertInstanceServer(l log.Logger, vc views.Client, lf services.LocationFinder) (*alertInstanceServer, error) {
+func newAlertInstanceServer(l *slog.Logger, vc views.Client, lf services.LocationFinder) (*alertInstanceServer, error) {
 	tpl, err := newTpl(template.FuncMap{
 		"has_prefix":  strings.HasPrefix,
 		"status_text": http.StatusText,
@@ -152,7 +154,7 @@ func (s *alertInstanceServer) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 }
 
 type alertListServer struct {
-	log.Logger
+	*slog.Logger
 	Client         views.Client
 	PageSize       uint
 	MaxResourceAge time.Duration
@@ -238,7 +240,7 @@ func getAlertFrequency(alerts []*views.Alert, name string, since time.Duration) 
 	}
 }
 
-func newAlertListServer(l log.Logger, vc views.Client,
+func newAlertListServer(l *slog.Logger, vc views.Client,
 	lf services.LocationFinder, pageSize uint, maxResourceAge time.Duration,
 	secretKey *[32]byte) (*alertListServer, error) {
 	s := &alertListServer{

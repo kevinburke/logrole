@@ -1,3 +1,6 @@
+//lint:file-ignore ST1005 pre-existing capitalized error strings; cleanup tracked separately
+//lint:file-ignore ST1012 pre-existing error var naming; cleanup tracked separately
+
 // Package cache caches Twilio API requests for fast loading.
 //
 // Fetching a second page of resources from Twilio can be extremely slow - one
@@ -15,13 +18,14 @@ import (
 	"sync"
 	"time"
 
+	"log/slog"
+
 	"github.com/aristanetworks/goarista/monotime"
 	"github.com/golang/groupcache/lru"
-	log "github.com/inconshreveable/log15"
 )
 
 type Cache struct {
-	log.Logger
+	*slog.Logger
 	c  *lru.Cache
 	mu sync.RWMutex
 }
@@ -29,7 +33,7 @@ type Cache struct {
 var expired = errors.New("expired")
 var errNotFound = errors.New("Key not found in cache")
 
-func NewCache(size int, l log.Logger) *Cache {
+func NewCache(size int, l *slog.Logger) *Cache {
 	return &Cache{
 		Logger: l,
 		c:      lru.New(size),
@@ -37,7 +41,7 @@ func NewCache(size int, l log.Logger) *Cache {
 }
 
 // enc gob.Encodes + gzips data. do not try to gob.Encode an interface
-func enc(data interface{}) []byte {
+func enc(data any) []byte {
 	var buf bytes.Buffer
 	writer := gzip.NewWriter(&buf)
 	ec := gob.NewEncoder(writer)
@@ -53,7 +57,7 @@ func enc(data interface{}) []byte {
 // Get gets the value at the key and decodes it into val. Returns the time the
 // value was stored in the cache, or an error, if the value was not found,
 // expired, or could not be decoded into val.
-func (c *Cache) Get(key string, val interface{}) (uint64, error) {
+func (c *Cache) Get(key string, val any) (uint64, error) {
 	c.mu.RLock()
 	defer c.mu.RUnlock()
 	cacheVal, ok := c.c.Get(key)
@@ -84,7 +88,7 @@ func (c *Cache) Get(key string, val interface{}) (uint64, error) {
 	return e.Set, nil
 }
 
-func (c *Cache) Set(key string, val interface{}, timeout time.Duration) {
+func (c *Cache) Set(key string, val any, timeout time.Duration) {
 	if timeout < 0 {
 		panic("invalid timeout")
 	}

@@ -1,3 +1,6 @@
+//lint:file-ignore ST1005 pre-existing capitalized error strings; cleanup tracked separately
+//lint:file-ignore ST1012 pre-existing error var naming; cleanup tracked separately
+
 package config
 
 import (
@@ -6,15 +9,15 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"log/slog"
 	"net/http"
 	"net/url"
 	"strings"
 	"sync"
 	"time"
 
-	log "github.com/inconshreveable/log15"
-	"github.com/kevinburke/rest"
 	"github.com/kevinburke/logrole/services"
+	"github.com/kevinburke/rest"
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/google"
 )
@@ -146,7 +149,7 @@ func (b *BasicAuthAuthenticator) Logout(w http.ResponseWriter, r *http.Request) 
 }
 
 type GoogleAuthenticator struct {
-	log.Logger
+	*slog.Logger
 	AllowUnencryptedTraffic bool
 	Conf                    *oauth2.Config
 	RenderLogin             func(http.ResponseWriter, *http.Request, string)
@@ -162,7 +165,7 @@ type GoogleAuthenticator struct {
 //
 // To get a clientID and clientSecret, see
 // https://github.com/kevinburke/logrole/blob/master/docs/google.md
-func NewGoogleAuthenticator(logger log.Logger, clientID string, clientSecret string, baseURL string, allowedDomains []string, secretKey *[32]byte) *GoogleAuthenticator {
+func NewGoogleAuthenticator(logger *slog.Logger, clientID string, clientSecret string, baseURL string, allowedDomains []string, secretKey *[32]byte) *GoogleAuthenticator {
 	conf := &oauth2.Config{
 		ClientID:     clientID,
 		ClientSecret: clientSecret,
@@ -259,7 +262,7 @@ func (g *GoogleAuthenticator) newCookie(id string) *http.Cookie {
 		Name:     "token",
 		Value:    text,
 		Path:     "/",
-		Secure:   g.AllowUnencryptedTraffic == false,
+		Secure:   !g.AllowUnencryptedTraffic,
 		Expires:  t.Expiry,
 		HttpOnly: true,
 	}
@@ -270,13 +273,13 @@ func (g *GoogleAuthenticator) handleGoogleCallback(w http.ResponseWriter, r *htt
 	st := query.Get("state")
 	currentURL, ok := g.validState(st)
 	if !ok {
-		http.Redirect(w, r, "/", 302)
+		http.Redirect(w, r, "/", http.StatusFound)
 		return errors.New("invalid state")
 	}
 	code := query.Get("code")
 	if code == "" {
 		g.Warn("Callback request has valid state, no code")
-		http.Redirect(w, r, "/", 302)
+		http.Redirect(w, r, "/", http.StatusFound)
 		return errors.New("invalid state")
 	}
 	ctx, cancel := context.WithTimeout(r.Context(), GoogleTimeout)
@@ -311,7 +314,7 @@ func (g *GoogleAuthenticator) handleGoogleCallback(w http.ResponseWriter, r *htt
 	}
 	cookie := g.newCookie(u.Email)
 	http.SetCookie(w, cookie)
-	http.Redirect(w, r, currentURL, 302)
+	http.Redirect(w, r, currentURL, http.StatusFound)
 	return errors.New("redirected, make another request")
 }
 
@@ -359,7 +362,7 @@ func (g *GoogleAuthenticator) Authenticate(w http.ResponseWriter, r *http.Reques
 	// if you got to this point you have a valid login cookie, don't show you
 	// the login page.
 	if r.URL.Path == "/login" {
-		http.Redirect(w, r, "/", 302)
+		http.Redirect(w, r, "/", http.StatusFound)
 		return nil, errors.New("redirected logged in user to homepage")
 	}
 	u, err := g.lookupUser(t.ID)
@@ -414,10 +417,10 @@ func (g *GoogleAuthenticator) SetPolicy(p *Policy) {
 func (g *GoogleAuthenticator) Logout(w http.ResponseWriter, r *http.Request) {
 	http.SetCookie(w, &http.Cookie{
 		Name:     "token",
-		Secure:   g.AllowUnencryptedTraffic == false,
+		Secure:   !g.AllowUnencryptedTraffic,
 		HttpOnly: true,
 		MaxAge:   -1,
 		Path:     "/",
 	})
-	http.Redirect(w, r, "/", 302)
+	http.Redirect(w, r, "/", http.StatusFound)
 }

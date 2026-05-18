@@ -1,11 +1,13 @@
+//lint:file-ignore ST1005 pre-existing capitalized error strings; cleanup tracked separately
+
 package views
 
 import (
 	"errors"
 
 	types "github.com/kevinburke/go-types"
-	twilio "github.com/kevinburke/twilio-go"
 	"github.com/kevinburke/logrole/config"
+	twilio "github.com/kevinburke/twilio-go"
 )
 
 type CallPage struct {
@@ -20,10 +22,10 @@ type Call struct {
 }
 
 func NewCall(call *twilio.Call, p *config.Permission, u *config.User) (*Call, error) {
-	if u.CanViewCalls() == false {
+	if !u.CanViewCalls() {
 		return nil, config.PermissionDenied
 	}
-	if call.DateCreated.Valid == false {
+	if !call.DateCreated.Valid {
 		return nil, errors.New("Invalid DateCreated for call")
 	}
 	if !u.CanViewResource(call.DateCreated.Time, p.MaxResourceAge()) {
@@ -140,7 +142,7 @@ func (c *Call) Failed() (bool, error) {
 }
 
 func NewCallPage(cp *twilio.CallPage, p *config.Permission, u *config.User) (*CallPage, error) {
-	if u.CanViewCalls() == false {
+	if !u.CanViewCalls() {
 		return nil, config.PermissionDenied
 	}
 	calls := make([]*Call, 0)

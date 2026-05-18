@@ -1,3 +1,5 @@
+//lint:file-ignore ST1005 pre-existing capitalized error strings; cleanup tracked separately
+
 package views
 
 import (
@@ -5,8 +7,8 @@ import (
 	"strings"
 
 	types "github.com/kevinburke/go-types"
-	twilio "github.com/kevinburke/twilio-go"
 	"github.com/kevinburke/logrole/config"
+	twilio "github.com/kevinburke/twilio-go"
 )
 
 type AlertPage struct {
@@ -21,10 +23,10 @@ type Alert struct {
 }
 
 func NewAlert(alert *twilio.Alert, p *config.Permission, u *config.User) (*Alert, error) {
-	if u.CanViewAlerts() == false {
+	if !u.CanViewAlerts() {
 		return nil, config.PermissionDenied
 	}
-	if alert.DateCreated.Valid == false {
+	if !alert.DateCreated.Valid {
 		return nil, errors.New("Invalid DateCreated for alert")
 	}
 	if !u.CanViewResource(alert.DateCreated.Time, p.MaxResourceAge()) {
@@ -34,7 +36,7 @@ func NewAlert(alert *twilio.Alert, p *config.Permission, u *config.User) (*Alert
 }
 
 func NewAlertPage(ap *twilio.AlertPage, p *config.Permission, u *config.User) (*AlertPage, error) {
-	if u.CanViewAlerts() == false {
+	if !u.CanViewAlerts() {
 		return nil, config.PermissionDenied
 	}
 	alerts := make([]*Alert, 0)
