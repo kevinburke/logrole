@@ -50,6 +50,6 @@
     {{- end }}
   </tbody>
 </table>
-<a class="btn btn-info btn-lg btn-default btn-next" href="/messages?{{ if .IsFrom }}from={{ else }}to={{ end }}{{ .Number }}">More Messages</a>
+<a class="btn btn-info btn-lg btn-next" href="/messages?{{ if .IsFrom }}from={{ else }}to={{ end }}{{ .Number }}">More Messages</a>
 {{- end }}{{/* end "page has messages" block */}}
 {{- end }}{{/* end define */}}

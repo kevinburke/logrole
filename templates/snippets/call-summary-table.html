@@ -58,6 +58,6 @@
     {{- end }}
   </tbody>
 </table>
-<a class="btn btn-info btn-lg btn-default btn-next" href="/calls?{{ if .IsFrom }}from={{ else }}to={{ end }}{{ .Number }}">More Calls</a>
+<a class="btn btn-info btn-lg btn-next" href="/calls?{{ if .IsFrom }}from={{ else }}to={{ end }}{{ .Number }}">More Calls</a>
 {{- end }}{{/* end "page has calls" block */}}
 {{- end }}{{/* end define */}}

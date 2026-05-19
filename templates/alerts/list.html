@@ -32,7 +32,7 @@
             <input type="datetime-local" class="form-control" name="alert-start" id="alert-start" min="{{ min .Loc }}" max="{{ max .Loc }}" step=3600 value="{{ start_val .Query .Loc }}">
           </div>
         </div>
-        <div class="col-sm-4 col-sm-offset-1">
+        <div class="col-sm-4 offset-sm-1">
           <div class="form-group">
             <label for="resource-sid">Resource Sid</label>
             <input type="text" style="min-width: 320px;" class="form-control" name="resource-sid" id="resource-sid" placeholder="SM123,CA123" value="{{ (.Query.Get "resource-sid") }}">
@@ -45,7 +45,7 @@
       </div>
     </div>
     <div class="col-md-2">
-      <input type="submit" value="Search" class="btn-search btn btn-default btn-info" />
+      <input type="submit" value="Search" class="btn-search btn btn-info" />
     </div>
   </form>
 </div>
