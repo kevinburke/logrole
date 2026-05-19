@@ -18,6 +18,7 @@ import (
 
 	"github.com/kevinburke/logrole/services"
 	"github.com/kevinburke/rest"
+	"github.com/kevinburke/rest/resterror"
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/google"
 )
@@ -103,16 +104,16 @@ func (b *BasicAuthAuthenticator) Authenticate(w http.ResponseWriter, r *http.Req
 	user, pass, ok := r.BasicAuth()
 	if !ok {
 		rest.Unauthorized(w, r, b.Realm)
-		return nil, &rest.Error{Title: "No Basic Auth"}
+		return nil, &resterror.Error{Title: "No Basic Auth"}
 	}
 	serverPass, ok := b.Passwords[user]
 	if !ok {
-		var err *rest.Error
+		var err *resterror.Error
 		if user == "" {
 			rest.Unauthorized(w, r, b.Realm)
-			err = &rest.Error{Title: "No credentials"}
+			err = &resterror.Error{Title: "No credentials"}
 		} else {
-			err = &rest.Error{
+			err = &resterror.Error{
 				Title: "Username or password are invalid. Please double check your credentials",
 				ID:    "forbidden",
 			}
@@ -121,7 +122,7 @@ func (b *BasicAuthAuthenticator) Authenticate(w http.ResponseWriter, r *http.Req
 		return nil, err
 	}
 	if subtle.ConstantTimeCompare([]byte(pass), []byte(serverPass)) != 1 {
-		err := &rest.Error{
+		err := &resterror.Error{
 			Title:    fmt.Sprintf("Incorrect password for user %s", user),
 			ID:       "incorrect_password",
 			Instance: r.URL.Path,
@@ -137,7 +138,7 @@ func (b *BasicAuthAuthenticator) Authenticate(w http.ResponseWriter, r *http.Req
 		u, _, err := b.Policy.Lookup(user)
 		if err != nil {
 			rest.Unauthorized(w, r, b.Realm)
-			return nil, &rest.Error{Title: "User not found"}
+			return nil, &resterror.Error{Title: "User not found"}
 		}
 		return u, nil
 	}
@@ -303,7 +304,7 @@ func (g *GoogleAuthenticator) handleGoogleCallback(w http.ResponseWriter, r *htt
 	}
 	_, lookupErr := g.lookupUser(u.Email)
 	if lookupErr != nil {
-		restErr := &rest.Error{
+		restErr := &resterror.Error{
 			Title: lookupErr.Error(),
 			ID:    "unauthorized_domain",
 		}

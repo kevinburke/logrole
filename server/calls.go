@@ -20,6 +20,7 @@ import (
 	"github.com/kevinburke/logrole/services"
 	"github.com/kevinburke/logrole/views"
 	"github.com/kevinburke/rest"
+	"github.com/kevinburke/rest/resterror"
 	twilio "github.com/kevinburke/twilio-go"
 	"golang.org/x/sync/errgroup"
 )
@@ -170,7 +171,7 @@ func (s *callListServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if !u.CanViewCalls() {
-		rest.Forbidden(w, r, &rest.Error{Title: "Access denied"})
+		rest.Forbidden(w, r, &resterror.Error{Title: "Access denied"})
 		return
 	}
 	// This is modified as we parse the query; specifically we add some values
@@ -338,7 +339,7 @@ func (c *callInstanceServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if !u.CanViewCalls() {
-		rest.Forbidden(w, r, &rest.Error{Title: "Access denied"})
+		rest.Forbidden(w, r, &resterror.Error{Title: "Access denied"})
 		return
 	}
 	sid := callInstanceRoute.FindStringSubmatch(r.URL.Path)[1]
@@ -359,11 +360,11 @@ func (c *callInstanceServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	case nil:
 		break
 	case config.PermissionDenied, config.ErrTooOld:
-		rest.Forbidden(w, r, &rest.Error{Title: err.Error()})
+		rest.Forbidden(w, r, &resterror.Error{Title: err.Error()})
 		return
 	default:
 		switch terr := err.(type) {
-		case *rest.Error:
+		case *resterror.Error:
 			switch terr.Status {
 			case 404:
 				rest.NotFound(w, r)

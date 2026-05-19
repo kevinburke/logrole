@@ -12,6 +12,7 @@ import (
 	"github.com/kevinburke/logrole/config"
 	"github.com/kevinburke/logrole/views"
 	"github.com/kevinburke/rest"
+	"github.com/kevinburke/rest/resterror"
 	twilio "github.com/kevinburke/twilio-go"
 )
 
@@ -97,7 +98,7 @@ func (s *sendMessageServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if !u.CanSendMessages() {
-		rest.Forbidden(w, r, &rest.Error{Title: "You do not have permission to send messages"})
+		rest.Forbidden(w, r, &resterror.Error{Title: "You do not have permission to send messages"})
 		return
 	}
 	data := &sendMessageData{
@@ -157,7 +158,7 @@ func (s *messageCollectionServer) ServeHTTP(w http.ResponseWriter, r *http.Reque
 		return
 	}
 	if !u.CanSendMessages() {
-		rest.Forbidden(w, r, &rest.Error{Title: "You do not have permission to send messages"})
+		rest.Forbidden(w, r, &resterror.Error{Title: "You do not have permission to send messages"})
 		return
 	}
 	if err := r.ParseForm(); err != nil {
@@ -207,7 +208,7 @@ func (s *messageCollectionServer) ServeHTTP(w http.ResponseWriter, r *http.Reque
 			nums = n
 		}
 		code := http.StatusInternalServerError
-		if rerr, ok := err.(*rest.Error); ok && rerr.Status >= 400 && rerr.Status < 500 {
+		if rerr, ok := err.(*resterror.Error); ok && rerr.Status >= 400 && rerr.Status < 500 {
 			code = rerr.Status
 		}
 		s.renderFormErr(w, r, code, &sendMessageData{

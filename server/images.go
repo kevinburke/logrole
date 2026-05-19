@@ -13,6 +13,7 @@ import (
 	"github.com/kevinburke/handlers"
 	"github.com/kevinburke/logrole/services"
 	"github.com/kevinburke/rest"
+	"github.com/kevinburke/rest/resterror"
 	twilio "github.com/kevinburke/twilio-go"
 )
 
@@ -26,7 +27,7 @@ var imageRoute = regexp.MustCompile("^/images/(?P<encrypted>([-_a-zA-Z0-9=]+))$"
 func decryptURL(w http.ResponseWriter, r *http.Request, encoded string, secretKey *[32]byte) (*url.URL, bool) {
 	urlStr, err := services.Unopaque(encoded, secretKey)
 	if err != nil {
-		rest.BadRequest(w, r, &rest.Error{
+		rest.BadRequest(w, r, &resterror.Error{
 			Title: err.Error(),
 		})
 		return nil, true
@@ -34,7 +35,7 @@ func decryptURL(w http.ResponseWriter, r *http.Request, encoded string, secretKe
 	u, err := url.Parse(urlStr)
 	if err != nil {
 		handlers.Logger.Warn("Could not parse decrypted string as URL", "str", urlStr)
-		rest.BadRequest(w, r, &rest.Error{
+		rest.BadRequest(w, r, &resterror.Error{
 			Title: "Could not parse decrypted string as a URL",
 		})
 		return nil, true
@@ -62,7 +63,7 @@ func (i *imageServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	req, err := http.NewRequest("GET", u.String(), nil)
 	if err != nil {
 		handlers.Logger.Warn("Could not create proxy request", "err", err)
-		rest.BadRequest(w, r, &rest.Error{
+		rest.BadRequest(w, r, &resterror.Error{
 			Title: "Could not create proxy request",
 		})
 		return

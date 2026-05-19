@@ -38,11 +38,10 @@ func GetGoogleUserData(ctx context.Context, client *http.Client) (*GoogleUser, e
 	}
 	rc := restclient.New("", "", UserDataBase)
 	rc.Client = client
-	req, err := rc.NewRequest("GET", UserDataPath, nil)
+	req, err := rc.NewRequestWithContext(ctx, "GET", UserDataPath, nil)
 	if err != nil {
 		return nil, err
 	}
-	req = req.WithContext(ctx)
 	u := new(GoogleUser)
 	err = rc.Do(req, u)
 	if err != nil {

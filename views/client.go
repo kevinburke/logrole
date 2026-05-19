@@ -23,7 +23,7 @@ import (
 	"github.com/kevinburke/logrole/cache"
 	"github.com/kevinburke/logrole/config"
 	"github.com/kevinburke/logrole/services"
-	"github.com/kevinburke/rest"
+	"github.com/kevinburke/rest/resterror"
 	twilio "github.com/kevinburke/twilio-go"
 )
 
@@ -174,7 +174,7 @@ func (vc *client) GetIncomingNumberByPN(ctx context.Context, user *config.User, 
 		return nil, err
 	}
 	if len(page.IncomingPhoneNumbers) != 1 {
-		return nil, &rest.Error{
+		return nil, &resterror.Error{
 			Status: 404,
 			Title:  fmt.Sprintf("Phone number %s not found, or too many numbers match that result", pn),
 		}

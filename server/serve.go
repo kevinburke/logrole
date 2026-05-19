@@ -24,6 +24,7 @@ import (
 	"github.com/kevinburke/logrole/services"
 	"github.com/kevinburke/logrole/views"
 	"github.com/kevinburke/rest"
+	"github.com/kevinburke/rest/resterror"
 )
 
 // Server version, run "make release" to increase this value
@@ -68,7 +69,7 @@ func whitelistIPs(h http.Handler, l *slog.Logger, nets []*net.IPNet) http.Handle
 		}
 		if !found {
 			l.Warn("Denying access to request based on IP", "ip", ipStr, "subnets", nets)
-			rest.Forbidden(w, r, &rest.Error{Title: "Access denied"})
+			rest.Forbidden(w, r, &resterror.Error{Title: "Access denied"})
 			return
 		}
 		h.ServeHTTP(w, r)

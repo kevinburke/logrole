@@ -20,6 +20,7 @@ import (
 	"github.com/kevinburke/logrole/services"
 	"github.com/kevinburke/logrole/views"
 	"github.com/kevinburke/rest"
+	"github.com/kevinburke/rest/resterror"
 	twilio "github.com/kevinburke/twilio-go"
 	"golang.org/x/sync/errgroup"
 )
@@ -166,7 +167,7 @@ func (s *numberListServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 	if err != nil {
 		switch terr := err.(type) {
-		case *rest.Error:
+		case *resterror.Error:
 			switch terr.Status {
 			case 400:
 				s.renderError(w, r, http.StatusBadRequest, query, err)
@@ -280,11 +281,11 @@ func (s *numberInstanceServer) redirectPN(w http.ResponseWriter, r *http.Request
 	case nil:
 		break
 	case config.PermissionDenied, config.ErrTooOld:
-		rest.Forbidden(w, r, &rest.Error{Title: err.Error()})
+		rest.Forbidden(w, r, &resterror.Error{Title: err.Error()})
 		return
 	default:
 		switch terr := err.(type) {
-		case *rest.Error:
+		case *resterror.Error:
 			switch terr.Status {
 			case 404:
 				rest.NotFound(w, r)
@@ -298,7 +299,7 @@ func (s *numberInstanceServer) redirectPN(w http.ResponseWriter, r *http.Request
 	}
 	pn, err := number.PhoneNumber()
 	if err != nil {
-		rest.Forbidden(w, r, &rest.Error{Title: err.Error()})
+		rest.Forbidden(w, r, &resterror.Error{Title: err.Error()})
 		return
 	}
 	http.Redirect(w, r, "/phone-numbers/"+string(pn), http.StatusMovedPermanently)
@@ -328,11 +329,11 @@ func (s *numberInstanceServer) ServeHTTP(w http.ResponseWriter, r *http.Request)
 	case nil:
 		break
 	case config.PermissionDenied, config.ErrTooOld:
-		rest.Forbidden(w, r, &rest.Error{Title: err.Error()})
+		rest.Forbidden(w, r, &resterror.Error{Title: err.Error()})
 		return
 	default:
 		switch terr := err.(type) {
-		case *rest.Error:
+		case *resterror.Error:
 			switch terr.Status {
 			case 404:
 				// We still want to show the calls to/from this number

@@ -21,6 +21,7 @@ import (
 	"github.com/kevinburke/logrole/services"
 	"github.com/kevinburke/logrole/views"
 	"github.com/kevinburke/rest"
+	"github.com/kevinburke/rest/resterror"
 	twilio "github.com/kevinburke/twilio-go"
 )
 
@@ -112,7 +113,7 @@ func (s *alertInstanceServer) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 	if !u.CanViewAlerts() {
-		rest.Forbidden(w, r, &rest.Error{Title: "Access denied"})
+		rest.Forbidden(w, r, &resterror.Error{Title: "Access denied"})
 		return
 	}
 	ctx, cancel := getContext(r.Context(), 3*time.Second)
@@ -124,11 +125,11 @@ func (s *alertInstanceServer) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 	case nil:
 		break
 	case config.PermissionDenied, config.ErrTooOld:
-		rest.Forbidden(w, r, &rest.Error{Title: err.Error()})
+		rest.Forbidden(w, r, &resterror.Error{Title: err.Error()})
 		return
 	default:
 		switch terr := err.(type) {
-		case *rest.Error:
+		case *resterror.Error:
 			switch terr.Status {
 			case 404:
 				rest.NotFound(w, r)
@@ -314,7 +315,7 @@ func (s *alertListServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if !u.CanViewAlerts() {
-		rest.Forbidden(w, r, &rest.Error{Title: "Access denied"})
+		rest.Forbidden(w, r, &resterror.Error{Title: "Access denied"})
 		return
 	}
 	query := r.URL.Query()
@@ -364,7 +365,7 @@ func (s *alertListServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 	if err != nil {
 		switch terr := err.(type) {
-		case *rest.Error:
+		case *resterror.Error:
 			switch terr.Status {
 			case 400:
 				s.renderError(w, r, http.StatusBadRequest, query, err)
