@@ -1,6 +1,7 @@
 package server
 
 import (
+	"context"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -27,7 +28,7 @@ func TestGetImages(t *testing.T) {
 	i := &imageServer{
 		secretKey: key,
 	}
-	req, _ := http.NewRequest("GET", "/images/"+u, nil)
+	req, _ := http.NewRequestWithContext(context.Background(), "GET", "/images/"+u, nil)
 	w := httptest.NewRecorder()
 	i.ServeHTTP(w, req)
 	if w.Code != 200 {

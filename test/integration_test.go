@@ -1,6 +1,7 @@
 package test
 
 import (
+	"context"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -30,7 +31,7 @@ func TestServerStartsWithOnlySidAndToken(t *testing.T) {
 	s := startServer(t, c)
 	defer s.Close()
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest("GET", "/", nil)
+	req, _ := http.NewRequestWithContext(context.Background(), "GET", "/", nil)
 	s.ServeHTTP(w, req)
 	if w.Code != 200 {
 		t.Errorf("expected Code to be 200, got %d", w.Code)
@@ -49,13 +50,13 @@ func TestBasicAuthOnlyAllowsKnownUser(t *testing.T) {
 	s := startServer(t, c)
 	defer s.Close()
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest("GET", "/", nil)
+	req, _ := http.NewRequestWithContext(context.Background(), "GET", "/", nil)
 	s.ServeHTTP(w, req)
 	if w.Code != 401 {
 		t.Errorf("expected Code to be 401, got %d", w.Code)
 	}
 	w2 := httptest.NewRecorder()
-	req2, _ := http.NewRequest("GET", "/", nil)
+	req2, _ := http.NewRequestWithContext(context.Background(), "GET", "/", nil)
 	req2.SetBasicAuth("test", "thepassword")
 	s.ServeHTTP(w2, req2)
 	if w2.Code != 200 {
@@ -78,7 +79,7 @@ func TestBasicAuthNoUserPolicyRejected(t *testing.T) {
 	s := startServer(t, c)
 	defer s.Close()
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest("GET", "/", nil)
+	req, _ := http.NewRequestWithContext(context.Background(), "GET", "/", nil)
 	s.ServeHTTP(w, req)
 
 	if w.Code != 401 {

@@ -4,6 +4,7 @@ package main
 
 import (
 	"bytes"
+	"context"
 	"errors"
 	"flag"
 	"fmt"
@@ -182,7 +183,7 @@ func downloadFile(w io.Writer, e environment, varname string, cfgval string) (bo
 	if !ok {
 		return false, nil
 	}
-	req, err := http.NewRequest("GET", str, nil)
+	req, err := http.NewRequestWithContext(context.Background(), "GET", str, nil)
 	if err != nil {
 		handlers.Logger.Warn("Error parsing URL", "err", err)
 		return false, err

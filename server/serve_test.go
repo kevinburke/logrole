@@ -1,6 +1,7 @@
 package server
 
 import (
+	"context"
 	"log/slog"
 	"net/http"
 	"net/http/httptest"
@@ -22,7 +23,7 @@ func TestRequestsUpgraded(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	req, _ := http.NewRequest("GET", "http://localhost:12345/foo", nil)
+	req, _ := http.NewRequestWithContext(context.Background(), "GET", "http://localhost:12345/foo", nil)
 	req.Header.Set("X-Forwarded-Proto", "http")
 	w := httptest.NewRecorder()
 	s.ServeHTTP(w, req)
@@ -48,7 +49,7 @@ func TestIndex(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	req, _ := http.NewRequest("GET", "http://localhost:12345/", nil)
+	req, _ := http.NewRequestWithContext(context.Background(), "GET", "http://localhost:12345/", nil)
 	req.SetBasicAuth("test", "test")
 	w := httptest.NewRecorder()
 	s.ServeHTTP(w, req)
@@ -79,7 +80,7 @@ func getGoogleAuthServer(t *testing.T) *Server {
 func TestGoogleAuthenticatorRendersLoginPage(t *testing.T) {
 	t.Parallel()
 	s := getGoogleAuthServer(t)
-	req, _ := http.NewRequest("GET", "/login", nil)
+	req, _ := http.NewRequestWithContext(context.Background(), "GET", "/login", nil)
 	w := httptest.NewRecorder()
 	s.ServeHTTP(w, req)
 	if w.Code != 401 {
@@ -94,7 +95,7 @@ func TestGoogleAuthenticatorRendersLoginPage(t *testing.T) {
 func TestGoogleAuthenticatorRedirects(t *testing.T) {
 	t.Parallel()
 	s := getGoogleAuthServer(t)
-	req, _ := http.NewRequest("GET", "/", nil)
+	req, _ := http.NewRequestWithContext(context.Background(), "GET", "/", nil)
 	w := httptest.NewRecorder()
 	s.ServeHTTP(w, req)
 	if w.Code != 302 {
@@ -118,7 +119,7 @@ func TestStaticPagesAvailableNoAuth(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	req, _ := http.NewRequest("GET", "http://localhost:12345/static/css/style.css", nil)
+	req, _ := http.NewRequestWithContext(context.Background(), "GET", "http://localhost:12345/static/css/style.css", nil)
 	w := httptest.NewRecorder()
 	s.ServeHTTP(w, req)
 	if w.Code != 200 {

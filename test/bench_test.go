@@ -1,6 +1,7 @@
 package test
 
 import (
+	"context"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -73,7 +74,7 @@ func BenchmarkRenderLoginPage(b *testing.B) {
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
 		w := httptest.NewRecorder()
-		req, _ := http.NewRequest("GET", "/", nil)
+		req, _ := http.NewRequestWithContext(context.Background(), "GET", "/", nil)
 		req.SetBasicAuth("test", "password")
 		s.ServeHTTP(w, req)
 		if w.Code != 200 {
@@ -113,7 +114,7 @@ func BenchmarkRenderMessageList(b *testing.B) {
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
 		w := httptest.NewRecorder()
-		req, _ := http.NewRequest("GET", "/messages", nil)
+		req, _ := http.NewRequestWithContext(context.Background(), "GET", "/messages", nil)
 		req.SetBasicAuth("test", "password")
 		s.ServeHTTP(w, req)
 		if w.Code != 200 {

@@ -1,6 +1,7 @@
 package server
 
 import (
+	"context"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -18,7 +19,7 @@ func TestUnauthorizedUserCantViewConferenceList(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	req, _ := http.NewRequest("GET", "/conferences", nil)
+	req, _ := http.NewRequestWithContext(context.Background(), "GET", "/conferences", nil)
 	req.SetBasicAuth("test", "test")
 	u := config.NewUser(&config.UserSettings{CanViewConferences: false})
 	req = config.SetUser(req, u)
@@ -36,7 +37,7 @@ func TestUnauthorizedUserCantViewConferenceInstance(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	req, _ := http.NewRequest("GET", "/conferences/CF6c38e4202f499c5020dd3ca679010779", nil)
+	req, _ := http.NewRequestWithContext(context.Background(), "GET", "/conferences/CF6c38e4202f499c5020dd3ca679010779", nil)
 	req.SetBasicAuth("test", "test")
 	u := config.NewUser(&config.UserSettings{CanViewConferences: false})
 	req = config.SetUser(req, u)
@@ -65,7 +66,7 @@ func TestGetConferenceFiltersGeneratesCorrectQuery(t *testing.T) {
 		t.Fatal(err)
 	}
 	// 22:34 NYC time gets converted to 2:34 next day UTC
-	req, _ := http.NewRequest("GET", "/conferences?created-before=2016-10-27T19:25&created-after=2016-10-26T22:34", nil)
+	req, _ := http.NewRequestWithContext(context.Background(), "GET", "/conferences?created-before=2016-10-27T19:25&created-after=2016-10-26T22:34", nil)
 	req.SetBasicAuth("test", "test")
 	req = config.SetUser(req, theUser)
 	w := httptest.NewRecorder()

@@ -1,6 +1,7 @@
 package server
 
 import (
+	"context"
 	"net/http"
 	"net/http/httptest"
 	"net/mail"
@@ -24,7 +25,7 @@ func TestErrorsRender(t *testing.T) {
 	es, _ := newErrorServer(nil, nil)
 	registerErrorHandlers(es)
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest("GET", "/", nil)
+	req, _ := http.NewRequestWithContext(context.Background(), "GET", "/", nil)
 	rest.NotFound(w, req)
 	if w.Code != 404 {
 		t.Errorf("expected Code to be 404, got %d", w.Code)
@@ -42,7 +43,7 @@ func Test401RendersHTML(t *testing.T) {
 	es, _ := newErrorServer(nil, nil)
 	registerErrorHandlers(es)
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest("GET", "/", nil)
+	req, _ := http.NewRequestWithContext(context.Background(), "GET", "/", nil)
 	rest.Unauthorized(w, req, "domain")
 	if ctype := w.Header().Get("Content-Type"); ctype != "text/html; charset=utf-8" {
 		t.Errorf("expected Content-Type to be text/html, got %s", ctype)
@@ -55,7 +56,7 @@ func TestErrorShowsEmail(t *testing.T) {
 	es, _ := newErrorServer(address, nil)
 	registerErrorHandlers(es)
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest("GET", "/", nil)
+	req, _ := http.NewRequestWithContext(context.Background(), "GET", "/", nil)
 	rest.NotFound(w, req)
 	if body := w.Body.String(); !strings.Contains(body, "test@example.com") {
 		t.Errorf("expected body to contain test@example.com, got %s", body)

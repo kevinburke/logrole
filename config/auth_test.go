@@ -1,6 +1,7 @@
 package config
 
 import (
+	"context"
 	"log/slog"
 	"net/http"
 	"net/http/httptest"
@@ -14,7 +15,7 @@ var NullLogger = slog.New(slog.DiscardHandler)
 func TestLoggedInAuthenticates(t *testing.T) {
 	t.Parallel()
 	key := nacl.NewKey()
-	req, _ := http.NewRequest("GET", "/", nil)
+	req, _ := http.NewRequestWithContext(context.Background(), "GET", "/", nil)
 	w := httptest.NewRecorder()
 	a := NewGoogleAuthenticator(NullLogger, "", "", "http://localhost", nil, key)
 	cookie := a.newCookie("user@example.com")
@@ -29,7 +30,7 @@ func TestUnknownUserWithValidDomainAllowed(t *testing.T) {
 	// Should be allowed with the default user.
 	t.Parallel()
 	key := nacl.NewKey()
-	req, _ := http.NewRequest("GET", "/", nil)
+	req, _ := http.NewRequestWithContext(context.Background(), "GET", "/", nil)
 	w := httptest.NewRecorder()
 	a := NewGoogleAuthenticator(NullLogger, "", "", "http://localhost", []string{"example.com"}, key)
 	a.SetPolicy(&Policy{})
@@ -74,7 +75,7 @@ func TestGoogleAuth(t *testing.T) {
 	t.Parallel()
 	key := nacl.NewKey()
 	for _, tt := range authTests {
-		req, _ := http.NewRequest("GET", "/", nil)
+		req, _ := http.NewRequestWithContext(context.Background(), "GET", "/", nil)
 		w := httptest.NewRecorder()
 		a := NewGoogleAuthenticator(NullLogger, "", "", "http://localhost", tt.domains, key)
 		a.SetPolicy(tt.policy)

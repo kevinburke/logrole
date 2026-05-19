@@ -1,6 +1,7 @@
 package server
 
 import (
+	"context"
 	"fmt"
 	"log/slog"
 	"net/http"
@@ -37,7 +38,7 @@ func TestInvalidNext(t *testing.T) {
 		t.Fatal(err)
 	}
 	enc := services.Opaque("invalid", key)
-	req, _ := http.NewRequest("GET", "/messages?next="+enc, nil)
+	req, _ := http.NewRequestWithContext(context.Background(), "GET", "/messages?next="+enc, nil)
 	req.SetBasicAuth("test", "test")
 	req = config.SetUser(req, theUser)
 	w := httptest.NewRecorder()
@@ -69,7 +70,7 @@ func Test404OnResource404(t *testing.T) {
 	hrns := harness.ViewHarness{TestServer: server}
 	vc := harness.ViewsClient(hrns)
 	s := &messageInstanceServer{Logger: dlog, Client: vc}
-	req, _ := http.NewRequest("GET", "/messages/MMd04242a0544234abba080942e0535505", nil)
+	req, _ := http.NewRequestWithContext(context.Background(), "GET", "/messages/MMd04242a0544234abba080942e0535505", nil)
 	req.SetBasicAuth("test", "test")
 	req = config.SetUser(req, theUser)
 	w := httptest.NewRecorder()
@@ -100,7 +101,7 @@ func TestNoResultsIfAllResultsOld(t *testing.T) {
 		t.Fatal(err)
 	}
 	for _, uri := range uris {
-		req, _ := http.NewRequest("GET", uri, nil)
+		req, _ := http.NewRequestWithContext(context.Background(), "GET", uri, nil)
 		req.SetBasicAuth("test", "test")
 		req = config.SetUser(req, theUser)
 		w := httptest.NewRecorder()

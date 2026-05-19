@@ -60,7 +60,9 @@ func (i *imageServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	//
 	// Not too worried about this, though, since we control the URL on the
 	// server side and it's encrypted.
-	req, err := http.NewRequest("GET", u.String(), nil)
+	ctx, cancel := getContext(r.Context(), 5*time.Second)
+	defer cancel()
+	req, err := http.NewRequestWithContext(ctx, "GET", u.String(), nil)
 	if err != nil {
 		handlers.Logger.Warn("Could not create proxy request", "err", err)
 		rest.BadRequest(w, r, &resterror.Error{
@@ -68,9 +70,6 @@ func (i *imageServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		})
 		return
 	}
-	ctx, cancel := getContext(r.Context(), 5*time.Second)
-	defer cancel()
-	req = req.WithContext(ctx)
 	resp, err := twilio.MediaClient.Do(req)
 	if err != nil {
 		rest.ServerError(w, r, err)

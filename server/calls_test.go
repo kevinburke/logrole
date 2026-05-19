@@ -1,6 +1,7 @@
 package server
 
 import (
+	"context"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -28,7 +29,7 @@ func TestGetFiltersGeneratesCorrectQuery(t *testing.T) {
 		t.Fatal(err)
 	}
 	// 22:34 NYC time gets converted to 2:34 next day UTC
-	req, _ := http.NewRequest("GET", "/calls?start-before=2016-10-27T19:25&start-after=2016-10-26T22:34", nil)
+	req, _ := http.NewRequestWithContext(context.Background(), "GET", "/calls?start-before=2016-10-27T19:25&start-after=2016-10-26T22:34", nil)
 	req.SetBasicAuth("test", "test")
 	req = config.SetUser(req, theUser)
 	w := httptest.NewRecorder()
@@ -56,7 +57,7 @@ func TestNoEndGeneratesCorrectQuery(t *testing.T) {
 		t.Fatal(err)
 	}
 	// 22:34 NYC time gets converted to 2:34 next day UTC
-	req, _ := http.NewRequest("GET", "/calls?start-after=2016-10-26T22:34", nil)
+	req, _ := http.NewRequestWithContext(context.Background(), "GET", "/calls?start-after=2016-10-26T22:34", nil)
 	req.SetBasicAuth("test", "test")
 	req = config.SetUser(req, theUser)
 	w := httptest.NewRecorder()
