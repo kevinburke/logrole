@@ -18,7 +18,7 @@
   <body>
     <nav class="navbar">
       <div class="container-fluid">
-        <div id="navbar" class="row">
+        <div id="navbar">
           <ul class="nav navbar-nav">
             <li class="{{ if eq .Path "/" }}active{{ end }}">
               <a class="home-link navbar-brand" href="/">Logrole</a>
@@ -67,6 +67,7 @@
             {{- end }}
           </ul>
         </div>
+      </div>
     </nav>
 
     <!--[if lte IE 9]>
@@ -119,9 +120,11 @@
     </footer>
     <script type="text/javascript">
       var tzSelector = document.querySelector('#tz-select');
-      tzSelector.addEventListener('change', function(e) {
-        e.target.form.submit();
-      });
+      if (tzSelector !== null) {
+        tzSelector.addEventListener('change', function(e) {
+          e.target.form.submit();
+        });
+      }
     </script>
   </body>
 </html>

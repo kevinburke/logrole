@@ -8,8 +8,7 @@
   </div>
 </div>
 {{- end }}
-<div class="row row-search">
-  <form class="form-inline" method="get" action="{{ .Path }}">
+<form class="row row-search" method="get" action="{{ .Path }}">
     <div class="form-search form-alerts-search col-md-10">
       <div class="form-group">
         <label for="friendly-name">Friendly Name</label>
@@ -20,11 +19,10 @@
         <input type="text" class="form-control" name="phone-number" id="phone-number" placeholder="Phone Number" value="{{ (.Query.Get "phone-number") }}">
       </div>
     </div>
-    <div class="col-md-2">
+    <div class="col-md-2 search-submit">
       <input type="submit" value="Search" class="btn-search btn btn-info" />
     </div>
-  </form>
-</div>
+</form>
 <table class="table table-striped">
   <thead>
     <tr>

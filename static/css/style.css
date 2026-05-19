@@ -72,6 +72,11 @@ pre, code {
     align-items: center;
 }
 
+#navbar {
+    width: 100%;
+    flex-wrap: wrap;
+}
+
 .navbar-nav {
     flex-direction: row;
 }
@@ -117,6 +122,17 @@ pre, code {
     margin-bottom: 15px;
 }
 
+.form-search > .form-group {
+    display: inline-flex;
+    align-items: center;
+    margin-bottom: 0;
+    margin-right: 10px;
+}
+
+.form-search > .form-group .form-control {
+    width: auto;
+}
+
 /* need specifics to override table-striped */
 .table > tbody > tr.list-error {
     background-color: #FDDFDA;
@@ -134,9 +150,13 @@ pre, code {
     min-width: 155px;
 }
 
-.btn-next, .btn-search {
+.btn-next {
     min-width: 135px;
     float: right;
+}
+
+.btn-search {
+    min-width: 135px;
 }
 
 .btn-previous {
@@ -144,8 +164,14 @@ pre, code {
 }
 
 .row-search {
+    align-items: flex-end;
     margin-top: 20px;
     margin-bottom: 20px;
+}
+
+.search-submit {
+    display: flex;
+    justify-content: flex-end;
 }
 
 .form-search label {

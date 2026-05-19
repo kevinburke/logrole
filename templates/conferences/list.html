@@ -8,8 +8,7 @@
   </div>
 </div>
 {{- end }}
-<div class="row row-search">
-  <form class="form-inline" method="get" action="{{ .Path }}">
+<form class="row row-search" method="get" action="{{ .Path }}">
     <div class="form-search form-calls-search col-md-10">
       <div class="form-group">
         <label for="status">Status</label>
@@ -33,11 +32,10 @@
         <input type="datetime-local" class="form-control" name="created-before" id="created-before" min="{{ min .Loc }}" max="{{ max .Loc }}" step=3600 value="{{ end_val .Query .Loc }}">
       </div>
     </div>
-    <div class="col-md-2">
+    <div class="col-md-2 search-submit">
       <input type="submit" value="Search" class="btn-search btn btn-info" />
     </div>
-  </form>
-</div>
+</form>
 <table class="table table-striped">
   <thead>
     <tr class="friendly-date">
