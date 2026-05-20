@@ -55,8 +55,10 @@ func init() {
 
 // newTpl creates a new Template with the given base and common set of
 // functions.
-func newTpl(mp template.FuncMap, tpls string) (*template.Template, error) {
+func newTpl(mp template.FuncMap, tpls string, basePaths ...string) (*template.Template, error) {
 	t := template.New("base").Option("missingkey=error").Funcs(funcMap)
+	urls := urlBuilder{basePath: optionalBasePath(basePaths)}
+	t = t.Funcs(template.FuncMap{"url": urls.Path})
 	t = t.Funcs(mp)
 	return t.Parse(tpls)
 }

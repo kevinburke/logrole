@@ -40,8 +40,8 @@ func (e *errorServer) Serve401(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func newErrorServer(mailto *mail.Address, reporter services.ErrorReporter) (*errorServer, error) {
-	errorTemplate, err := newTpl(template.FuncMap{}, base+errorTpl)
+func newErrorServer(mailto *mail.Address, reporter services.ErrorReporter, basePaths ...string) (*errorServer, error) {
+	errorTemplate, err := newTpl(template.FuncMap{}, base+errorTpl, optionalBasePath(basePaths))
 	if err != nil {
 		return nil, err
 	}

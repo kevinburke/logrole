@@ -12,6 +12,7 @@ import (
 
 type searchServer struct {
 	*slog.Logger
+	urls urlBuilder
 }
 
 var smsSid = regexp.MustCompile("^" + messagePattern + "$")
@@ -24,35 +25,36 @@ func (s *searchServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	query := r.URL.Query()
 	q := query.Get("q")
 	if q == "" {
-		http.Redirect(w, r, "/", http.StatusFound)
+		http.Redirect(w, r, s.urls.Path("/"), http.StatusFound)
 		return
 	}
 	if smsSid.MatchString(q) {
-		http.Redirect(w, r, "/messages/"+q, http.StatusMovedPermanently)
+		http.Redirect(w, r, s.urls.Path("/messages/"+q), http.StatusMovedPermanently)
 		return
 	}
 	if callSid.MatchString(q) {
-		http.Redirect(w, r, "/calls/"+q, http.StatusMovedPermanently)
+		http.Redirect(w, r, s.urls.Path("/calls/"+q), http.StatusMovedPermanently)
 		return
 	}
 	if conferenceSid.MatchString(q) {
-		http.Redirect(w, r, "/conferences/"+q, http.StatusMovedPermanently)
+		http.Redirect(w, r, s.urls.Path("/conferences/"+q), http.StatusMovedPermanently)
 		return
 	}
 	if notificationSid.MatchString(q) {
-		http.Redirect(w, r, "/alerts/"+q, http.StatusMovedPermanently)
+		http.Redirect(w, r, s.urls.Path("/alerts/"+q), http.StatusMovedPermanently)
 		return
 	}
 	if numberSid.MatchString(q) {
-		http.Redirect(w, r, "/phone-numbers/"+q, http.StatusMovedPermanently)
+		http.Redirect(w, r, s.urls.Path("/phone-numbers/"+q), http.StatusMovedPermanently)
 		return
 	}
 	num, err := twilio.NewPhoneNumber(q)
 	if err == nil && len(num) > 3 {
-		http.Redirect(w, r, "/phone-numbers/"+string(num), http.StatusFound)
+		http.Redirect(w, r, s.urls.Path("/phone-numbers/"+string(num)), http.StatusFound)
+		return
 	}
 	s.Warn("Unknown search query", "q", q)
-	http.Redirect(w, r, "/", http.StatusFound)
+	http.Redirect(w, r, s.urls.Path("/"), http.StatusFound)
 }
 
 type openSearchXMLServer struct {
@@ -61,8 +63,8 @@ type openSearchXMLServer struct {
 	tpl                     *template.Template
 }
 
-func newOpenSearchServer(publicHost string, allowUnencryptedTraffic bool) (*openSearchXMLServer, error) {
-	openSearchTemplate, err := newTpl(template.FuncMap{}, openSearchTpl)
+func newOpenSearchServer(publicHost string, allowUnencryptedTraffic bool, basePaths ...string) (*openSearchXMLServer, error) {
+	openSearchTemplate, err := newTpl(template.FuncMap{}, openSearchTpl, optionalBasePath(basePaths))
 	if err != nil {
 		return nil, err
 	}

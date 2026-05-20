@@ -47,7 +47,7 @@ type numberListServer struct {
 
 func newNumberListServer(l *slog.Logger, vc views.Client,
 	lf services.LocationFinder, pageSize uint, maxResourceAge time.Duration,
-	secretKey *[32]byte) (*numberListServer, error) {
+	secretKey *[32]byte, basePaths ...string) (*numberListServer, error) {
 	s := &numberListServer{
 		Logger:         l,
 		Client:         vc,
@@ -56,7 +56,7 @@ func newNumberListServer(l *slog.Logger, vc views.Client,
 		MaxResourceAge: maxResourceAge,
 		secretKey:      secretKey,
 	}
-	tpl, err := newTpl(template.FuncMap{}, base+numberListTpl+pagingTpl)
+	tpl, err := newTpl(template.FuncMap{}, base+numberListTpl+pagingTpl, optionalBasePath(basePaths))
 	if err != nil {
 		return nil, err
 	}
@@ -212,19 +212,22 @@ type numberInstanceServer struct {
 	*slog.Logger
 	Client         views.Client
 	LocationFinder services.LocationFinder
+	urls           urlBuilder
 	tpl            *template.Template
 }
 
-func newNumberInstanceServer(l *slog.Logger, vc views.Client, lf services.LocationFinder) (*numberInstanceServer, error) {
+func newNumberInstanceServer(l *slog.Logger, vc views.Client, lf services.LocationFinder, basePaths ...string) (*numberInstanceServer, error) {
+	basePath := optionalBasePath(basePaths)
 	s := &numberInstanceServer{
 		Logger:         l,
 		Client:         vc,
 		LocationFinder: lf,
+		urls:           urlBuilder{basePath: basePath},
 	}
 	tpl, err := newTpl(template.FuncMap{
 		"is_our_pn": vc.IsTwilioNumber,
 	}, base+messageStatusTpl+messageSummaryTpl+callSummaryTpl+phoneTpl+
-		numberInstanceTpl+sidTpl+copyScript)
+		numberInstanceTpl+sidTpl+copyScript, basePath)
 	if err != nil {
 		return nil, err
 	}
@@ -302,7 +305,7 @@ func (s *numberInstanceServer) redirectPN(w http.ResponseWriter, r *http.Request
 		rest.Forbidden(w, r, &resterror.Error{Title: err.Error()})
 		return
 	}
-	http.Redirect(w, r, "/phone-numbers/"+string(pn), http.StatusMovedPermanently)
+	http.Redirect(w, r, s.urls.Path("/phone-numbers/"+string(pn)), http.StatusMovedPermanently)
 }
 
 func (s *numberInstanceServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {

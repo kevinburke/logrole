@@ -63,13 +63,13 @@ type conferenceInstanceServer struct {
 }
 
 func newConferenceInstanceServer(l *slog.Logger, vc views.Client,
-	lf services.LocationFinder) (*conferenceInstanceServer, error) {
+	lf services.LocationFinder, basePaths ...string) (*conferenceInstanceServer, error) {
 	c := &conferenceInstanceServer{
 		Logger:         l,
 		Client:         vc,
 		LocationFinder: lf,
 	}
-	tpl, err := newTpl(template.FuncMap{}, base+conferenceInstanceTpl+sidTpl+copyScript)
+	tpl, err := newTpl(template.FuncMap{}, base+conferenceInstanceTpl+sidTpl+copyScript, optionalBasePath(basePaths))
 	if err != nil {
 		return nil, err
 	}
@@ -87,7 +87,7 @@ func (d *conferenceListData) Statuses() []twilio.Status {
 
 func newConferenceListServer(l *slog.Logger, vc views.Client,
 	lf services.LocationFinder, pageSize uint, maxResourceAge time.Duration,
-	secretKey *[32]byte) (*conferenceListServer, error) {
+	secretKey *[32]byte, basePaths ...string) (*conferenceListServer, error) {
 	s := &conferenceListServer{
 		Logger:         l,
 		Client:         vc,
@@ -101,7 +101,7 @@ func newConferenceListServer(l *slog.Logger, vc views.Client,
 		"max":       maxLoc,
 		"start_val": s.StartSearchVal,
 		"end_val":   s.EndSearchVal,
-	}, base+conferenceListTpl+copyScript+pagingTpl)
+	}, base+conferenceListTpl+copyScript+pagingTpl, optionalBasePath(basePaths))
 	if err != nil {
 		return nil, err
 	}

@@ -8,11 +8,11 @@
     <meta name="description" content="A fast, configurable Twilio log viewer">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <link rel="icon" type="image/png" href="/static/favicon-32x32.png" sizes="32x32">
-    <link rel="icon" type="image/x-icon" href="/static/favicon.ico" sizes="16x16">
-    <link rel="apple-touch-icon" href="static/apple-touch-icon.png">
-    <link rel="search" type="application/opensearchdescription+xml" title="Logrole" href="/opensearch.xml" />
-    <link rel="stylesheet" href="/static/css/all.css">
+    <link rel="icon" type="image/png" href="{{ url "/static/favicon-32x32.png" }}" sizes="32x32">
+    <link rel="icon" type="image/x-icon" href="{{ url "/static/favicon.ico" }}" sizes="16x16">
+    <link rel="apple-touch-icon" href="{{ url "/static/apple-touch-icon.png" }}">
+    <link rel="search" type="application/opensearchdescription+xml" title="Logrole" href="{{ url "/opensearch.xml" }}" />
+    <link rel="stylesheet" href="{{ url "/static/css/all.css" }}">
     <link href="https://fonts.googleapis.com/css?family=PT+Sans:400,700&amp;subset=latin-ext" rel="stylesheet">
   </head>
   <body>
@@ -21,22 +21,22 @@
         <div id="navbar">
           <ul class="nav navbar-nav">
             <li class="{{ if eq .Path "/" }}active{{ end }}">
-              <a class="home-link navbar-brand" href="/">Logrole</a>
+              <a class="home-link navbar-brand" href="{{ url "/" }}">Logrole</a>
             </li>
             <li {{ if eq .Path "/calls" }}class="active"{{ end }}>
-              <a href="/calls">Calls</a>
+              <a href="{{ url "/calls" }}">Calls</a>
             </li>
             <li {{ if eq .Path "/conferences" }}class="active"{{ end }}>
-              <a href="/conferences">Conferences</a>
+              <a href="{{ url "/conferences" }}">Conferences</a>
             </li>
             <li {{ if eq .Path "/messages" }}class="active"{{ end }}>
-              <a href="/messages">Messages</a>
+              <a href="{{ url "/messages" }}">Messages</a>
             </li>
             <li {{ if eq .Path "/phone-numbers" }}class="active"{{ end }}>
-              <a href="/phone-numbers">Phone Numbers</a>
+              <a href="{{ url "/phone-numbers" }}">Phone Numbers</a>
             </li>
             <li {{ if eq .Path "/alerts" }}class="active"{{ end }}>
-              <a href="/alerts">Alerts</a>
+              <a href="{{ url "/alerts" }}">Alerts</a>
             </li>
           </ul>
           <ul class="nav navbar-nav navbar-nav-secondary">
@@ -45,8 +45,8 @@
             </li>
             {{- if .LF }}
             <li class="tz-control">
-              <form method="POST" action="/tz">
-                <input type="hidden" name="g" value="{{ .Path }}" />
+              <form method="POST" action="{{ url "/tz" }}">
+                <input type="hidden" name="g" value="{{ url .Path }}" />
                 <select name="tz" id="tz-select" class="form-control">
                   <option>Choose a timezone...</option>
                   {{- range .LF.Locations }}
@@ -60,7 +60,7 @@
             {{- end }}
             {{- if eq .LoggedOut false }}
             <li>
-              <form method="post" action="/auth/logout">
+              <form method="post" action="{{ url "/auth/logout" }}">
                 <input class="btn btn-link logout" name="Logout" value="Logout" type="submit" />
               </form>
             </li>
@@ -112,7 +112,7 @@
         <div class="row">
           <div class="col-md-12">
             <p>
-            Logrole is <a href="/open-source">open source software.</a>
+            Logrole is <a href="{{ url "/open-source" }}">open source software.</a>
             </p>
           </div>
         </div>

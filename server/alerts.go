@@ -80,12 +80,12 @@ func halve(firstHalf bool, vals url.Values) map[string]string {
 	}
 }
 
-func newAlertInstanceServer(l *slog.Logger, vc views.Client, lf services.LocationFinder) (*alertInstanceServer, error) {
+func newAlertInstanceServer(l *slog.Logger, vc views.Client, lf services.LocationFinder, basePaths ...string) (*alertInstanceServer, error) {
 	tpl, err := newTpl(template.FuncMap{
 		"has_prefix":  strings.HasPrefix,
 		"status_text": http.StatusText,
 		"halve":       halve,
-	}, base+alertInstanceTpl+sidTpl)
+	}, base+alertInstanceTpl+sidTpl, optionalBasePath(basePaths))
 	if err != nil {
 		return nil, err
 	}
@@ -243,7 +243,7 @@ func getAlertFrequency(alerts []*views.Alert, name string, since time.Duration) 
 
 func newAlertListServer(l *slog.Logger, vc views.Client,
 	lf services.LocationFinder, pageSize uint, maxResourceAge time.Duration,
-	secretKey *[32]byte) (*alertListServer, error) {
+	secretKey *[32]byte, basePaths ...string) (*alertListServer, error) {
 	s := &alertListServer{
 		Logger:         l,
 		Client:         vc,
@@ -258,7 +258,7 @@ func newAlertListServer(l *slog.Logger, vc views.Client,
 		"has_prefix": strings.HasPrefix,
 		"start_val":  s.StartSearchVal,
 		"end_val":    s.EndSearchVal,
-	}, base+alertListTpl+pagingTpl)
+	}, base+alertListTpl+pagingTpl, optionalBasePath(basePaths))
 	if err != nil {
 		return nil, err
 	}

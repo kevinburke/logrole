@@ -56,7 +56,7 @@
       {{- if .CanViewProperty "Sid" }}
       <tr class="conference">
         <td>
-          <a href="/conferences/{{ .Sid }}" title="View more details">
+          <a href="{{ url (printf "/conferences/%s" .Sid) }}" title="View more details">
             {{- if .CanViewProperty "DateCreated" }}
               {{ friendly_date (.DateCreated.Time.In $.Loc) }}
             {{- else }}

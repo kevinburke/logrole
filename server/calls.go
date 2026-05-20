@@ -41,7 +41,7 @@ type callListServer struct {
 
 func newCallListServer(l *slog.Logger, vc views.Client, lf services.LocationFinder,
 	pageSize uint, maxResourceAge time.Duration,
-	secretKey *[32]byte) (*callListServer, error) {
+	secretKey *[32]byte, basePaths ...string) (*callListServer, error) {
 	cs := &callListServer{
 		Logger:         l,
 		Client:         vc,
@@ -56,7 +56,7 @@ func newCallListServer(l *slog.Logger, vc views.Client, lf services.LocationFind
 		"max":       maxLoc,
 		"start_val": cs.StartSearchVal,
 		"end_val":   cs.EndSearchVal,
-	}, base+callListTpl+pagingTpl+phoneTpl+copyScript)
+	}, base+callListTpl+pagingTpl+phoneTpl+copyScript, optionalBasePath(basePaths))
 	if err != nil {
 		return nil, err
 	}
@@ -72,7 +72,7 @@ type callInstanceServer struct {
 }
 
 func newCallInstanceServer(l *slog.Logger, vc views.Client,
-	lf services.LocationFinder) (*callInstanceServer, error) {
+	lf services.LocationFinder, basePaths ...string) (*callInstanceServer, error) {
 	c := &callInstanceServer{
 		Logger:         l,
 		Client:         vc,
@@ -80,7 +80,7 @@ func newCallInstanceServer(l *slog.Logger, vc views.Client,
 	}
 	tpl, err := newTpl(template.FuncMap{
 		"is_our_pn": vc.IsTwilioNumber,
-	}, base+callInstanceTpl+recordingTpl+phoneTpl+sidTpl+copyScript)
+	}, base+callInstanceTpl+recordingTpl+phoneTpl+sidTpl+copyScript, optionalBasePath(basePaths))
 	if err != nil {
 		return nil, err
 	}

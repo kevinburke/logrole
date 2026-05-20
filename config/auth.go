@@ -152,6 +152,7 @@ func (b *BasicAuthAuthenticator) Logout(w http.ResponseWriter, r *http.Request) 
 type GoogleAuthenticator struct {
 	*slog.Logger
 	AllowUnencryptedTraffic bool
+	BasePath                string
 	Conf                    *oauth2.Config
 	RenderLogin             func(http.ResponseWriter, *http.Request, string)
 	RenderLogout            func(http.ResponseWriter, *http.Request)
@@ -167,6 +168,11 @@ type GoogleAuthenticator struct {
 // To get a clientID and clientSecret, see
 // https://github.com/kevinburke/logrole/blob/master/docs/google.md
 func NewGoogleAuthenticator(logger *slog.Logger, clientID string, clientSecret string, baseURL string, allowedDomains []string, secretKey *[32]byte) *GoogleAuthenticator {
+	baseURL = strings.TrimRight(baseURL, "/")
+	basePath := ""
+	if u, err := url.Parse(baseURL); err == nil {
+		basePath, _ = NormalizeBasePath(u.Path)
+	}
 	conf := &oauth2.Config{
 		ClientID:     clientID,
 		ClientSecret: clientSecret,
@@ -180,6 +186,7 @@ func NewGoogleAuthenticator(logger *slog.Logger, clientID string, clientSecret s
 	}
 	return &GoogleAuthenticator{
 		Logger:         logger,
+		BasePath:       basePath,
 		Conf:           conf,
 		allowedDomains: allowedDomains,
 		secretKey:      secretKey,
@@ -201,13 +208,14 @@ func (g *GoogleAuthenticator) URL(w http.ResponseWriter, r *http.Request) string
 		// prevent open redirect by only using the Path part
 		u, err := url.Parse(g)
 		if err == nil {
-			uri = u.Path
+			uri = u.RequestURI()
 		} else {
 			uri = r.URL.RequestURI()
 		}
 	} else {
 		uri = r.URL.RequestURI()
 	}
+	uri = g.externalURI(uri)
 	st := state{
 		CurrentURL: uri,
 		Time:       time.Now().UTC(),
@@ -219,6 +227,42 @@ func (g *GoogleAuthenticator) URL(w http.ResponseWriter, r *http.Request) string
 	}
 	encoded := services.OpaqueByte(bits, g.secretKey)
 	return g.Conf.AuthCodeURL(encoded)
+}
+
+func (g *GoogleAuthenticator) rootPath() string {
+	if g.BasePath == "" {
+		return "/"
+	}
+	return g.BasePath + "/"
+}
+
+func (g *GoogleAuthenticator) cookiePath() string {
+	if g.BasePath == "" {
+		return "/"
+	}
+	return g.BasePath
+}
+
+func (g *GoogleAuthenticator) externalURI(uri string) string {
+	if uri == "" {
+		uri = "/"
+	}
+	if !strings.HasPrefix(uri, "/") {
+		uri = "/" + uri
+	}
+	if g.BasePath == "" || uri == g.BasePath || strings.HasPrefix(uri, g.BasePath+"/") {
+		return uri
+	}
+	if i := strings.IndexByte(uri, '?'); i != -1 {
+		if uri[:i] == "/" {
+			return g.BasePath + "/" + uri[i:]
+		}
+		return g.BasePath + uri
+	}
+	if uri == "/" {
+		return g.BasePath + "/"
+	}
+	return g.BasePath + uri
 }
 
 const AuthTimeout = 1 * time.Hour
@@ -262,7 +306,7 @@ func (g *GoogleAuthenticator) newCookie(id string) *http.Cookie {
 	return &http.Cookie{
 		Name:     "token",
 		Value:    text,
-		Path:     "/",
+		Path:     g.cookiePath(),
 		Secure:   !g.AllowUnencryptedTraffic,
 		Expires:  t.Expiry,
 		HttpOnly: true,
@@ -274,13 +318,13 @@ func (g *GoogleAuthenticator) handleGoogleCallback(w http.ResponseWriter, r *htt
 	st := query.Get("state")
 	currentURL, ok := g.validState(st)
 	if !ok {
-		http.Redirect(w, r, "/", http.StatusFound)
+		http.Redirect(w, r, g.rootPath(), http.StatusFound)
 		return errors.New("invalid state")
 	}
 	code := query.Get("code")
 	if code == "" {
 		g.Warn("Callback request has valid state, no code")
-		http.Redirect(w, r, "/", http.StatusFound)
+		http.Redirect(w, r, g.rootPath(), http.StatusFound)
 		return errors.New("invalid state")
 	}
 	ctx, cancel := context.WithTimeout(r.Context(), GoogleTimeout)
@@ -363,7 +407,7 @@ func (g *GoogleAuthenticator) Authenticate(w http.ResponseWriter, r *http.Reques
 	// if you got to this point you have a valid login cookie, don't show you
 	// the login page.
 	if r.URL.Path == "/login" {
-		http.Redirect(w, r, "/", http.StatusFound)
+		http.Redirect(w, r, g.rootPath(), http.StatusFound)
 		return nil, errors.New("redirected logged in user to homepage")
 	}
 	u, err := g.lookupUser(t.ID)
@@ -421,7 +465,7 @@ func (g *GoogleAuthenticator) Logout(w http.ResponseWriter, r *http.Request) {
 		Secure:   !g.AllowUnencryptedTraffic,
 		HttpOnly: true,
 		MaxAge:   -1,
-		Path:     "/",
+		Path:     g.cookiePath(),
 	})
-	http.Redirect(w, r, "/", http.StatusFound)
+	http.Redirect(w, r, g.rootPath(), http.StatusFound)
 }

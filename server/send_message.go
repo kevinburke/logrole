@@ -25,6 +25,7 @@ type sendMessageServer struct {
 	Client                    views.Client
 	DefaultSendingPhoneNumber string
 	SecretKey                 *[32]byte
+	urls                      urlBuilder
 	tpl                       *template.Template
 }
 
@@ -42,14 +43,16 @@ type sendMessageData struct {
 
 func (s *sendMessageData) Title() string { return "Send Message" }
 
-func newSendMessageServer(l *slog.Logger, vc views.Client, defaultFrom string, secretKey *[32]byte) (*sendMessageServer, error) {
+func newSendMessageServer(l *slog.Logger, vc views.Client, defaultFrom string, secretKey *[32]byte, basePaths ...string) (*sendMessageServer, error) {
+	basePath := optionalBasePath(basePaths)
 	s := &sendMessageServer{
 		Logger:                    l,
 		Client:                    vc,
 		DefaultSendingPhoneNumber: defaultFrom,
 		SecretKey:                 secretKey,
+		urls:                      urlBuilder{basePath: basePath},
 	}
-	tpl, err := newTpl(template.FuncMap{}, base+sendMessageTpl)
+	tpl, err := newTpl(template.FuncMap{}, base+sendMessageTpl, basePath)
 	if err != nil {
 		return nil, err
 	}
@@ -122,11 +125,13 @@ type messageCollectionServer struct {
 	Client                    views.Client
 	DefaultSendingPhoneNumber string
 	SecretKey                 *[32]byte
+	urls                      urlBuilder
 	sendTpl                   *template.Template
 }
 
-func newMessageCollectionServer(l *slog.Logger, vc views.Client, defaultFrom string, secretKey *[32]byte) (*messageCollectionServer, error) {
-	tpl, err := newTpl(template.FuncMap{}, base+sendMessageTpl)
+func newMessageCollectionServer(l *slog.Logger, vc views.Client, defaultFrom string, secretKey *[32]byte, basePaths ...string) (*messageCollectionServer, error) {
+	basePath := optionalBasePath(basePaths)
+	tpl, err := newTpl(template.FuncMap{}, base+sendMessageTpl, basePath)
 	if err != nil {
 		return nil, err
 	}
@@ -135,6 +140,7 @@ func newMessageCollectionServer(l *slog.Logger, vc views.Client, defaultFrom str
 		Client:                    vc,
 		DefaultSendingPhoneNumber: defaultFrom,
 		SecretKey:                 secretKey,
+		urls:                      urlBuilder{basePath: basePath},
 		sendTpl:                   tpl,
 	}, nil
 }
@@ -223,8 +229,8 @@ func (s *messageCollectionServer) ServeHTTP(w http.ResponseWriter, r *http.Reque
 	sid, sErr := msg.Sid()
 	if sErr != nil {
 		// User can send but not view; redirect to the list instead.
-		http.Redirect(w, r, "/messages", http.StatusFound)
+		http.Redirect(w, r, s.urls.Path("/messages"), http.StatusFound)
 		return
 	}
-	http.Redirect(w, r, "/messages/"+sid, http.StatusFound)
+	http.Redirect(w, r, s.urls.Path("/messages/"+sid), http.StatusFound)
 }

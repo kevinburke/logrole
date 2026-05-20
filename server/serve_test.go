@@ -61,6 +61,33 @@ func TestIndex(t *testing.T) {
 	}
 }
 
+func TestIndexUsesBasePathForLinks(t *testing.T) {
+	t.Parallel()
+	settings := &config.Settings{
+		AllowUnencryptedTraffic: true,
+		Authenticator:           &config.NoopAuthenticator{},
+		BasePath:                "/phone",
+		SecretKey:               nacl.NewKey(),
+		Logger:                  NullLogger,
+	}
+	s, err := NewServer(settings)
+	if err != nil {
+		t.Fatal(err)
+	}
+	req, _ := http.NewRequestWithContext(context.Background(), "GET", "http://localhost:12345/", nil)
+	w := httptest.NewRecorder()
+	s.ServeHTTP(w, req)
+	if w.Code != 200 {
+		t.Errorf("expected Code to be 200, got %d", w.Code)
+	}
+	body := w.Body.String()
+	for _, want := range []string{`href="/phone/calls"`, `href="/phone/static/css/all.css"`, `action="/phone/auth/logout"`} {
+		if !strings.Contains(body, want) {
+			t.Errorf("expected body to contain %q, got %s", want, body)
+		}
+	}
+}
+
 var NullLogger = slog.New(slog.DiscardHandler)
 
 func getGoogleAuthServer(t *testing.T) *Server {
@@ -101,8 +128,32 @@ func TestGoogleAuthenticatorRedirects(t *testing.T) {
 	if w.Code != 302 {
 		t.Errorf("expected Code to be 302, got %d", w.Code)
 	}
-	if loc := w.Header().Get("Location"); loc != "/login?g=/" {
-		t.Errorf("expected redirect to /login?g=/, got %s", loc)
+	if loc := w.Header().Get("Location"); loc != "/login?g=%2F" {
+		t.Errorf("expected redirect to /login?g=%%2F, got %s", loc)
+	}
+}
+
+func TestGoogleAuthenticatorRedirectsWithBasePath(t *testing.T) {
+	t.Parallel()
+	key := nacl.NewKey()
+	settings := &config.Settings{
+		BasePath:      "/phone",
+		SecretKey:     key,
+		Authenticator: config.NewGoogleAuthenticator(NullLogger, "", "", "http://localhost/phone", nil, key),
+		Logger:        NullLogger,
+	}
+	s, err := NewServer(settings)
+	if err != nil {
+		t.Fatal(err)
+	}
+	req, _ := http.NewRequestWithContext(context.Background(), "GET", "/", nil)
+	w := httptest.NewRecorder()
+	s.ServeHTTP(w, req)
+	if w.Code != 302 {
+		t.Errorf("expected Code to be 302, got %d", w.Code)
+	}
+	if loc := w.Header().Get("Location"); loc != "/phone/login?g=%2Fphone%2F" {
+		t.Errorf("expected redirect to /phone/login?g=%%2Fphone%%2F, got %s", loc)
 	}
 }
 

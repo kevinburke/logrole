@@ -27,7 +27,7 @@
       {{ if .CanViewProperty "Sid" }}
       <tr class="message {{ if .CanViewProperty "ErrorCode" }}{{ if gt .ErrorCode 0 }}list-error{{ end }}{{ end }}">
         <td class="friendly-date">
-          <a href="/messages/{{ .Sid }}" title="View more details">
+          <a href="{{ url (printf "/messages/%s" .Sid) }}" title="View more details">
             {{- if .CanViewProperty "DateCreated" }}
               {{ friendly_date (.DateCreated.Time.In $.Loc) }}
             {{- else }}
@@ -50,6 +50,6 @@
     {{- end }}
   </tbody>
 </table>
-<a class="btn btn-info btn-lg btn-next" href="/messages?{{ if .IsFrom }}from={{ else }}to={{ end }}{{ .Number }}">More Messages</a>
+<a class="btn btn-info btn-lg btn-next" href="{{ url "/messages" }}?{{ if .IsFrom }}from={{ else }}to={{ end }}{{ .Number }}">More Messages</a>
 {{- end }}{{/* end "page has messages" block */}}
 {{- end }}{{/* end define */}}

@@ -57,7 +57,7 @@
       {{- if .CanViewProperty "Sid" }}
       <tr class="call {{ if .CanViewProperty "Status" }}{{ if .Failed }}list-error{{ end }}{{ end }}">
         <td class="friendly-date">
-          <a href="/calls/{{ .Sid }}" title="View more details">
+          <a href="{{ url (printf "/calls/%s" .Sid) }}" title="View more details">
             {{- if .CanViewProperty "DateCreated" }}
               {{ friendly_date (.DateCreated.Time.In $.Loc) }}
             {{- else }}
@@ -70,7 +70,7 @@
         {{- end }}
         {{- if .CanViewProperty "Status" }}
         <td>
-          <a href="/calls/{{ .Sid }}"
+          <a href="{{ url (printf "/calls/%s" .Sid) }}"
             title="View more details">
           {{ .Status.Friendly }}
           </a>

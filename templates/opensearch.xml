@@ -6,5 +6,5 @@ http://stackoverflow.com/a/7630169/329700 */}}
     Quick jump to a given resource
 </Description>
 <InputEncoding>UTF-8</InputEncoding>
-<Url type="text/html" method="get" template="{{ .Scheme }}://{{ .PublicHost }}/search?q={searchTerms}"/>
+<Url type="text/html" method="get" template="{{ .Scheme }}://{{ .PublicHost }}{{ url "/search" }}?q={searchTerms}"/>
 </OpenSearchDescription>

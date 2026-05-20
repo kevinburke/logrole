@@ -15,7 +15,7 @@
 </div>
 <div class="row">
   <div class="col-md-2">
-    <p><a title="Go home" href="/">Back to the homepage</a></p>
+    <p><a title="Go home" href="{{ url "/" }}">Back to the homepage</a></p>
     {{- if .Mailto }}
     <p><a href="mailto:{{ .Mailto.Address }}">Report a problem</a></p>
     {{- end }}

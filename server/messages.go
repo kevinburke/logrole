@@ -36,7 +36,7 @@ type messageInstanceServer struct {
 	tpl                *template.Template
 }
 
-func newMessageInstanceServer(l *slog.Logger, vc views.Client, lf services.LocationFinder, smbd bool) (*messageInstanceServer, error) {
+func newMessageInstanceServer(l *slog.Logger, vc views.Client, lf services.LocationFinder, smbd bool, basePaths ...string) (*messageInstanceServer, error) {
 	s := &messageInstanceServer{
 		Logger:             l,
 		Client:             vc,
@@ -45,7 +45,7 @@ func newMessageInstanceServer(l *slog.Logger, vc views.Client, lf services.Locat
 	}
 	tpl, err := newTpl(template.FuncMap{
 		"is_our_pn": vc.IsTwilioNumber,
-	}, base+messageInstanceTpl+phoneTpl+sidTpl+copyScript)
+	}, base+messageInstanceTpl+phoneTpl+sidTpl+copyScript, optionalBasePath(basePaths))
 	if err != nil {
 		return nil, err
 	}
@@ -168,7 +168,7 @@ func (s *messageListServer) EndSearchVal(query url.Values, loc *time.Location) s
 	return maxLoc(loc)
 }
 
-func newMessageListServer(l *slog.Logger, vc views.Client, lf services.LocationFinder, pageSize uint, maxResourceAge time.Duration, secretKey *[32]byte) (*messageListServer, error) {
+func newMessageListServer(l *slog.Logger, vc views.Client, lf services.LocationFinder, pageSize uint, maxResourceAge time.Duration, secretKey *[32]byte, basePaths ...string) (*messageListServer, error) {
 	s := &messageListServer{
 		Logger:         l,
 		Client:         vc,
@@ -183,7 +183,7 @@ func newMessageListServer(l *slog.Logger, vc views.Client, lf services.LocationF
 		"max":       maxLoc,
 		"start_val": s.StartSearchVal,
 		"end_val":   s.EndSearchVal,
-	}, base+messageListTpl+messageStatusTpl+pagingTpl+phoneTpl+copyScript)
+	}, base+messageListTpl+messageStatusTpl+pagingTpl+phoneTpl+copyScript, optionalBasePath(basePaths))
 	if err != nil {
 		return nil, err
 	}

@@ -94,6 +94,63 @@ func TestBasicAuthNoPolicyOK(t *testing.T) {
 	}
 }
 
+func TestBasePathNormalized(t *testing.T) {
+	t.Parallel()
+	c := &FileConfig{
+		AccountSid: "AC123",
+		AuthToken:  "123",
+		BasePath:   "/phone/",
+	}
+	settings, err := NewSettingsFromConfig(c, NullLogger)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if settings.BasePath != "/phone" {
+		t.Errorf("expected BasePath to be /phone, got %q", settings.BasePath)
+	}
+}
+
+func TestInvalidBasePathRejected(t *testing.T) {
+	t.Parallel()
+	c := &FileConfig{
+		AccountSid: "AC123",
+		AuthToken:  "123",
+		BasePath:   "phone",
+	}
+	_, err := NewSettingsFromConfig(c, NullLogger)
+	if err == nil {
+		t.Fatal("expected NewSettingsFromConfig to error, got nil")
+	}
+	if err.Error() != "base_path must start with /" {
+		t.Errorf("unexpected error: %v", err)
+	}
+}
+
+func TestGoogleAuthRedirectURLIncludesBasePath(t *testing.T) {
+	t.Parallel()
+	c := &FileConfig{
+		AccountSid:           "AC123",
+		AuthToken:            "123",
+		PublicHost:           "logrole.example.com",
+		BasePath:             "/phone",
+		AuthScheme:           "google",
+		GoogleClientID:       "client-id",
+		GoogleClientSecret:   "client-secret",
+		GoogleAllowedDomains: nil,
+	}
+	settings, err := NewSettingsFromConfig(c, NullLogger)
+	if err != nil {
+		t.Fatal(err)
+	}
+	ga, ok := settings.Authenticator.(*GoogleAuthenticator)
+	if !ok {
+		t.Fatalf("expected GoogleAuthenticator, got %T", settings.Authenticator)
+	}
+	if ga.Conf.RedirectURL != "https://logrole.example.com/phone/auth/callback" {
+		t.Errorf("unexpected redirect URL: %s", ga.Conf.RedirectURL)
+	}
+}
+
 func TestPolicyLoadedFromFile(t *testing.T) {
 	t.Parallel()
 	f, err := os.CreateTemp("", "logrole-tests-")

@@ -10,6 +10,8 @@ import (
 	"net"
 	"net/mail"
 	"os"
+	"path"
+	"strings"
 	"time"
 
 	"github.com/kevinburke/handlers"
@@ -54,6 +56,9 @@ type FileConfig struct {
 	// List of timezones a user can choose in the UI
 	Timezones  []string `yaml:"timezones"`
 	PublicHost string   `yaml:"public_host"`
+	// BasePath is the URL path prefix where Logrole is mounted, for example
+	// "/phone". Leave empty when serving Logrole from the URL root.
+	BasePath string `yaml:"base_path"`
 
 	// IP subnets that are allowed to visit the site. THIS IS NOT A SECURITY
 	// FEATURE. IP ADDRESSES ARE EASILY SPOOFED, AND YOUR IP ADDRESS IS EASILY
@@ -104,6 +109,9 @@ type Settings struct {
 	// The host the user visits to get to this site.
 	PublicHost string
 
+	// BasePath is the external URL path prefix where Logrole is mounted.
+	BasePath string
+
 	// Whether to allow HTTP traffic.
 	AllowUnencryptedTraffic bool
 	Client                  *twilio.Client
@@ -145,6 +153,24 @@ type Settings struct {
 	IPSubnets []*net.IPNet
 }
 
+func NormalizeBasePath(basePath string) (string, error) {
+	basePath = strings.TrimSpace(basePath)
+	if basePath == "" || basePath == "/" {
+		return "", nil
+	}
+	if !strings.HasPrefix(basePath, "/") {
+		return "", errors.New("base_path must start with /")
+	}
+	if strings.ContainsAny(basePath, "?#") {
+		return "", errors.New("base_path must not contain a query string or fragment")
+	}
+	cleaned := path.Clean(basePath)
+	if cleaned != strings.TrimRight(basePath, "/") {
+		return "", fmt.Errorf("base_path must not contain . or .. path elements: %q", basePath)
+	}
+	return cleaned, nil
+}
+
 // NewSettingsFromConfig creates a new Settings object from the given
 // FileConfig, or an error.
 //
@@ -170,6 +196,10 @@ func NewSettingsFromConfig(c *FileConfig, l *slog.Logger) (settings *Settings, e
 	}
 	if c.Policy != nil && c.PolicyFile != "" {
 		return nil, errors.New("Cannot define both policy and a policy_file")
+	}
+	basePath, err := NormalizeBasePath(c.BasePath)
+	if err != nil {
+		return nil, err
 	}
 	allowHTTP := false
 	if c.Realm == services.Local {
@@ -248,7 +278,7 @@ func NewSettingsFromConfig(c *FileConfig, l *slog.Logger) (settings *Settings, e
 		} else {
 			baseURL = "https://" + c.PublicHost
 		}
-		gauthenticator := NewGoogleAuthenticator(l, c.GoogleClientID, c.GoogleClientSecret, baseURL, c.GoogleAllowedDomains, secretKey)
+		gauthenticator := NewGoogleAuthenticator(l, c.GoogleClientID, c.GoogleClientSecret, baseURL+basePath, c.GoogleAllowedDomains, secretKey)
 		gauthenticator.AllowUnencryptedTraffic = allowHTTP
 		authenticator = gauthenticator
 	default:
@@ -305,6 +335,7 @@ func NewSettingsFromConfig(c *FileConfig, l *slog.Logger) (settings *Settings, e
 		Client:                    client,
 		LocationFinder:            locationFinder,
 		PublicHost:                c.PublicHost,
+		BasePath:                  basePath,
 		PageSize:                  c.PageSize,
 		SecretKey:                 secretKey,
 		MaxResourceAge:            c.MaxResourceAge,

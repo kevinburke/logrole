@@ -30,6 +30,7 @@ Supported environment variables are:
 
 PORT                   Port to listen on
 PUBLIC_HOST            Host your users will browse to to see the site
+BASE_PATH              URL path prefix if Logrole is mounted below root
 
 TWILIO_ACCOUNT_SID     Account SID for your Twilio account
 TWILIO_AUTH_TOKEN      Auth token
@@ -72,6 +73,21 @@ Heroku deployment. Sensitive environment variables (auth token, basic auth
 password, etc) are dropped before the server process starts.
 
 ## Settings details
+
+### Base path
+
+Set `base_path` when Logrole is mounted below another application instead of at
+the URL root. For example, if the parent app serves Logrole under `/phone`, set:
+
+```yml
+base_path: /phone
+```
+
+The parent app should route that prefix to Logrole after stripping it from the
+incoming request path, for example with `http.StripPrefix("/phone", logrole)`.
+Logrole still matches its internal routes at `/messages`, `/calls`, and so on,
+but generated links, forms, redirects, static asset URLs, OAuth callback URLs,
+and Google auth cookies use `/phone`.
 
 ### Secret key
 

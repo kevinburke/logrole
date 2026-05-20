@@ -44,6 +44,10 @@ timezones:
 # What users type in their browser to reach your site
 public_host: localhost:4114
 
+# URL path prefix if Logrole is mounted below another app. Leave empty when
+# serving Logrole from the URL root.
+# base_path: /phone
+
 # How many messages/calls to fetch per page. The larger the number, the slower
 # the response. Maximum 1000. Defaults to 50.
 page_size: 100

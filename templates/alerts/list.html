@@ -71,7 +71,7 @@
       {{- if gt (len .ResourceSid) 0 }}
       <tr class="alert">
         <td class="friendly-date">
-          <a href="/alerts/{{ .Sid }}" title="View more details">
+          <a href="{{ url (printf "/alerts/%s" .Sid) }}" title="View more details">
             {{- if .CanViewProperty "DateCreated" }}
               {{ friendly_date (.DateCreated.Time.In $.Loc) }}
             {{- else }}
@@ -83,13 +83,13 @@
         {{- if .CanViewProperty "ResourceSid" }}
         <td>
           {{- if has_prefix .ResourceSid "CA" }}
-          <a href="/calls/{{ .ResourceSid }}">Call</a>
+          <a href="{{ url (printf "/calls/%s" .ResourceSid) }}">Call</a>
           {{- else if has_prefix .ResourceSid "SM" }}
-          <a href="/messages/{{ .ResourceSid }}">SMS</a>
+          <a href="{{ url (printf "/messages/%s" .ResourceSid) }}">SMS</a>
           {{- else if has_prefix .ResourceSid "MM" }}
-          <a href="/messages/{{ .ResourceSid }}">MMS</a>
+          <a href="{{ url (printf "/messages/%s" .ResourceSid) }}">MMS</a>
           {{- else if has_prefix .ResourceSid "CF" }}
-          <a href="/conferences/{{ .ResourceSid }}">Conference</a>
+          <a href="{{ url (printf "/conferences/%s" .ResourceSid) }}">Conference</a>
           {{- else }}
           Resource {{ .ResourceSid }}
           {{- end }}

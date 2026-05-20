@@ -2,7 +2,7 @@
 {{- if and .CanSendMessages (ne .Message.ReplyTo "") }}
 <div class="row">
   <div class="col-md-12 message-actions">
-    <a class="btn btn-primary" href="/messages/new?to={{ .Message.ReplyTo }}">Reply</a>
+    <a class="btn btn-primary" href="{{ url "/messages/new" }}?to={{ .Message.ReplyTo }}">Reply</a>
   </div>
 </div>
 {{- end }}

@@ -62,6 +62,21 @@ google_allowed_domains:
 	}
 }
 
+func TestWriteBasePathConfig(t *testing.T) {
+	t.Parallel()
+	e := &dummyEnvironment{
+		env: map[string]string{"BASE_PATH": "/phone"},
+	}
+	buf := new(bytes.Buffer)
+	writeConfig(buf, e)
+	expected := `base_path: /phone
+
+`
+	if s := buf.String(); s != expected {
+		t.Errorf("expected config to be %s, got %s", expected, s)
+	}
+}
+
 func TestValidatePolicy(t *testing.T) {
 	t.Parallel()
 	e := &dummyEnvironment{

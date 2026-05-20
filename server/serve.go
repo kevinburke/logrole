@@ -14,6 +14,7 @@ import (
 	"log/slog"
 	"net"
 	"net/http"
+	"net/url"
 	"regexp"
 	"strings"
 	"time"
@@ -117,8 +118,8 @@ type indexServer struct {
 	tpl *template.Template
 }
 
-func newIndexServer() (*indexServer, error) {
-	indexTemplate, err := newTpl(template.FuncMap{}, base+indexTpl)
+func newIndexServer(basePaths ...string) (*indexServer, error) {
+	indexTemplate, err := newTpl(template.FuncMap{}, base+indexTpl, optionalBasePath(basePaths))
 	if err != nil {
 		return nil, err
 	}
@@ -145,8 +146,8 @@ type openSourceServer struct {
 	tpl *template.Template
 }
 
-func newOpenSourceServer() (*openSourceServer, error) {
-	openTemplate, err := newTpl(template.FuncMap{}, base+openSourceTpl)
+func newOpenSourceServer(basePaths ...string) (*openSourceServer, error) {
+	openTemplate, err := newTpl(template.FuncMap{}, base+openSourceTpl, optionalBasePath(basePaths))
 	if err != nil {
 		return nil, err
 	}
@@ -196,22 +197,26 @@ func (l *loginData) Title() string {
 }
 
 type loginServer struct {
-	tpl *template.Template
+	tpl  *template.Template
+	urls urlBuilder
 }
 
-func newLoginServer() (*loginServer, error) {
-	loginTemplate, err := newTpl(template.FuncMap{}, base+loginTpl)
+func newLoginServer(basePaths ...string) (*loginServer, error) {
+	basePath := optionalBasePath(basePaths)
+	loginTemplate, err := newTpl(template.FuncMap{}, base+loginTpl, basePath)
 	if err != nil {
 		return nil, err
 	}
 	return &loginServer{
-		tpl: loginTemplate,
+		tpl:  loginTemplate,
+		urls: urlBuilder{basePath: basePath},
 	}, nil
 }
 
 func (ls *loginServer) Serve(w http.ResponseWriter, r *http.Request, URL string) {
 	if r.URL.Path != "/login" {
-		http.Redirect(w, r, "/login?g="+r.URL.Path, http.StatusFound)
+		target := ls.urls.RequestURI(r.URL.RequestURI())
+		http.Redirect(w, r, ls.urls.Path("/login")+"?g="+url.QueryEscape(target), http.StatusFound)
 		return
 	}
 	bd := &baseData{
@@ -253,6 +258,12 @@ func AddAuthenticator(h http.Handler, ls *loginServer, a config.Authenticator) h
 
 // NewServer returns a new Handler that can serve the website.
 func NewServer(settings *config.Settings) (*Server, error) {
+	basePath, err := config.NormalizeBasePath(settings.BasePath)
+	if err != nil {
+		return nil, err
+	}
+	settings.BasePath = basePath
+	urls := urlBuilder{basePath: basePath}
 	if settings.Reporter == nil {
 		settings.Reporter = services.GetReporter("noop", "")
 	}
@@ -275,73 +286,74 @@ func NewServer(settings *config.Settings) (*Server, error) {
 	permission := config.NewPermission(settings.MaxResourceAge)
 	vc := views.NewClient(settings.Logger, settings.Client, settings.SecretKey, permission)
 	mls, err := newMessageListServer(settings.Logger, vc, settings.LocationFinder,
-		settings.PageSize, settings.MaxResourceAge, settings.SecretKey)
+		settings.PageSize, settings.MaxResourceAge, settings.SecretKey, basePath)
 	if err != nil {
 		return nil, err
 	}
-	mis, err := newMessageInstanceServer(settings.Logger, vc, settings.LocationFinder, settings.ShowMediaByDefault)
+	mis, err := newMessageInstanceServer(settings.Logger, vc, settings.LocationFinder, settings.ShowMediaByDefault, basePath)
 	if err != nil {
 		return nil, err
 	}
-	sms, err := newSendMessageServer(settings.Logger, vc, settings.DefaultSendingPhoneNumber, settings.SecretKey)
+	sms, err := newSendMessageServer(settings.Logger, vc, settings.DefaultSendingPhoneNumber, settings.SecretKey, basePath)
 	if err != nil {
 		return nil, err
 	}
-	mcs, err := newMessageCollectionServer(settings.Logger, vc, settings.DefaultSendingPhoneNumber, settings.SecretKey)
+	mcs, err := newMessageCollectionServer(settings.Logger, vc, settings.DefaultSendingPhoneNumber, settings.SecretKey, basePath)
 	if err != nil {
 		return nil, err
 	}
 	cls, err := newCallListServer(settings.Logger, vc, settings.LocationFinder,
-		settings.PageSize, settings.MaxResourceAge, settings.SecretKey)
+		settings.PageSize, settings.MaxResourceAge, settings.SecretKey, basePath)
 	if err != nil {
 		return nil, err
 	}
-	cis, err := newCallInstanceServer(settings.Logger, vc, settings.LocationFinder)
+	cis, err := newCallInstanceServer(settings.Logger, vc, settings.LocationFinder, basePath)
 	if err != nil {
 		return nil, err
 	}
 	confs, err := newConferenceListServer(settings.Logger, vc,
 		settings.LocationFinder, settings.PageSize, settings.MaxResourceAge,
-		settings.SecretKey)
+		settings.SecretKey, basePath)
 	if err != nil {
 		return nil, err
 	}
 	confInstance, err := newConferenceInstanceServer(settings.Logger, vc,
-		settings.LocationFinder)
+		settings.LocationFinder, basePath)
 	if err != nil {
 		return nil, err
 	}
 	als, err := newAlertListServer(settings.Logger, vc,
 		settings.LocationFinder, settings.PageSize, settings.MaxResourceAge,
-		settings.SecretKey)
+		settings.SecretKey, basePath)
 	if err != nil {
 		return nil, err
 	}
-	ais, err := newAlertInstanceServer(settings.Logger, vc, settings.LocationFinder)
+	ais, err := newAlertInstanceServer(settings.Logger, vc, settings.LocationFinder, basePath)
 	if err != nil {
 		return nil, err
 	}
 	ns, err := newNumberListServer(settings.Logger, vc, settings.LocationFinder,
-		settings.PageSize, settings.MaxResourceAge, settings.SecretKey)
+		settings.PageSize, settings.MaxResourceAge, settings.SecretKey, basePath)
 	if err != nil {
 		return nil, err
 	}
-	nis, err := newNumberInstanceServer(settings.Logger, vc, settings.LocationFinder)
+	nis, err := newNumberInstanceServer(settings.Logger, vc, settings.LocationFinder, basePath)
 	if err != nil {
 		return nil, err
 	}
 	ss := &searchServer{
 		Logger: settings.Logger,
+		urls:   urls,
 	}
-	o, err := newOpenSearchServer(settings.PublicHost, settings.AllowUnencryptedTraffic)
+	o, err := newOpenSearchServer(settings.PublicHost, settings.AllowUnencryptedTraffic, basePath)
 	if err != nil {
 		return nil, err
 	}
-	index, err := newIndexServer()
+	index, err := newIndexServer(basePath)
 	if err != nil {
 		return nil, err
 	}
-	openSource, err := newOpenSourceServer()
+	openSource, err := newOpenSourceServer(basePath)
 	if err != nil {
 		return nil, err
 	}
@@ -363,7 +375,7 @@ func NewServer(settings *config.Settings) (*Server, error) {
 	logout := &logoutServer{
 		Authenticator: settings.Authenticator,
 	}
-	ls, err := newLoginServer()
+	ls, err := newLoginServer(basePath)
 	if err != nil {
 		return nil, err
 	}
@@ -371,9 +383,10 @@ func NewServer(settings *config.Settings) (*Server, error) {
 		Logger:                  settings.Logger,
 		AllowUnencryptedTraffic: settings.AllowUnencryptedTraffic,
 		LocationFinder:          settings.LocationFinder,
+		urls:                    urls,
 	}
 
-	e, err := newErrorServer(settings.Mailto, settings.Reporter)
+	e, err := newErrorServer(settings.Mailto, settings.Reporter, basePath)
 	if err != nil {
 		return nil, err
 	}

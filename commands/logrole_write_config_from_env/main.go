@@ -30,6 +30,7 @@ Supported environment variables are:
 
 PORT                   Port to listen on
 PUBLIC_HOST            Host your users will browse to to see the site
+BASE_PATH              URL path prefix if Logrole is mounted below root
 
 TWILIO_ACCOUNT_SID     Account SID for your Twilio account
 TWILIO_AUTH_TOKEN      Auth token
@@ -119,6 +120,7 @@ func writeConfig(b *bytes.Buffer, e environment) {
 	var ok bool
 	ok = writeVal(b, e, "PORT", "port") || ok
 	ok = writeVal(b, e, "PUBLIC_HOST", "public_host") || ok
+	ok = writeVal(b, e, "BASE_PATH", "base_path") || ok
 	ok = writeCommaSeparatedVal(b, e, "IP_SUBNETS", "ip_subnets") || ok
 	if ok {
 		b.WriteByte('\n')

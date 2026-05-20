@@ -12,13 +12,14 @@ type tzServer struct {
 	*slog.Logger
 	LocationFinder          services.LocationFinder
 	AllowUnencryptedTraffic bool
+	urls                    urlBuilder
 }
 
 func (t *tzServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	// TODO csrf
 	if err := r.ParseForm(); err != nil {
 		t.Warn("Error parsing form on TZ page", "err", err)
-		http.Redirect(w, r, "/", http.StatusFound)
+		http.Redirect(w, r, t.urls.Path("/"), http.StatusFound)
 		return
 	}
 	tz := r.PostForm.Get("tz")
@@ -29,8 +30,8 @@ func (t *tzServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	g := r.PostForm.Get("g")
 	u, err := url.Parse(g)
 	if err == nil {
-		http.Redirect(w, r, u.Path, http.StatusFound)
+		http.Redirect(w, r, t.urls.RequestURI(u.RequestURI()), http.StatusFound)
 		return
 	}
-	http.Redirect(w, r, "/", http.StatusFound)
+	http.Redirect(w, r, t.urls.Path("/"), http.StatusFound)
 }

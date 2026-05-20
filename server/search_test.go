@@ -27,7 +27,7 @@ var searchTests = []struct {
 
 func TestSearchRedirects(t *testing.T) {
 	t.Parallel()
-	s := &searchServer{dlog}
+	s := &searchServer{Logger: dlog}
 	for _, tt := range searchTests {
 		req, _ := http.NewRequestWithContext(context.Background(), "GET", tt.in, nil)
 		w := httptest.NewRecorder()
@@ -38,5 +38,19 @@ func TestSearchRedirects(t *testing.T) {
 		if location := w.Header().Get("Location"); location != tt.location {
 			t.Errorf("expected Location to equal %s, got %s", tt.location, location)
 		}
+	}
+}
+
+func TestSearchRedirectsWithBasePath(t *testing.T) {
+	t.Parallel()
+	s := &searchServer{Logger: dlog, urls: urlBuilder{basePath: "/phone"}}
+	req, _ := http.NewRequestWithContext(context.Background(), "GET", "/search?q="+mms, nil)
+	w := httptest.NewRecorder()
+	s.ServeHTTP(w, req)
+	if w.Code != 301 {
+		t.Errorf("expected Code to equal 301, got %d", w.Code)
+	}
+	if location := w.Header().Get("Location"); location != "/phone/messages/"+mms {
+		t.Errorf("expected Location to equal /phone/messages/%s, got %s", mms, location)
 	}
 }
