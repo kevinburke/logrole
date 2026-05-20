@@ -4,7 +4,7 @@ import (
 	"strings"
 	"testing"
 
-	yaml "gopkg.in/yaml.v2"
+	"github.com/goccy/go-yaml"
 )
 
 var policy = []byte(`

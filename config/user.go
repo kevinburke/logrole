@@ -101,9 +101,11 @@ func (us *UserSettings) UnmarshalYAML(unmarshal func(any) error) error {
 	aus := AllUserSettings()
 	ys := yamlSettings(*aus)
 	if err := unmarshal(&ys); err != nil {
-		if strings.Contains(err.Error(), "unmarshal !!seq") {
+		errText := err.Error()
+		if strings.Contains(errText, "unmarshal !!seq") ||
+			strings.Contains(errText, "sequence was used where mapping is expected") {
 			return fmt.Errorf("%s. Double check that permissions is a map and "+
-				"not a list (with dashes)", err.Error())
+				"not a list (with dashes)", errText)
 		}
 		return err
 	}

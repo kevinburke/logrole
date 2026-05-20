@@ -4,7 +4,7 @@ import (
 	"testing"
 	"time"
 
-	yaml "gopkg.in/yaml.v2"
+	"github.com/goccy/go-yaml"
 )
 
 func TestUnmarshal(t *testing.T) {

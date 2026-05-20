@@ -6,9 +6,9 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	"github.com/goccy/go-yaml"
 	"github.com/kevinburke/logrole/config"
 	"github.com/kevinburke/logrole/server"
-	yaml "gopkg.in/yaml.v2"
 )
 
 func startBenchServer(b *testing.B, c *config.FileConfig) *server.Server {

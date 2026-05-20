@@ -4,6 +4,7 @@ go 1.26
 
 require (
 	github.com/aristanetworks/goarista v0.0.0-20251201112602-a373d7c9f0d9
+	github.com/goccy/go-yaml v1.19.2
 	github.com/golang/groupcache v0.0.0-20241129210726-2c02b8208cf8
 	github.com/kevinburke/go-types v0.0.0-20260504162008-727f2bf5a955
 	github.com/kevinburke/handlers v0.48.0
@@ -13,7 +14,6 @@ require (
 	github.com/kevinburke/twilio-go v0.0.0-20260504164244-2e3e7dddbc33
 	golang.org/x/oauth2 v0.36.0
 	golang.org/x/sync v0.20.0
-	gopkg.in/yaml.v2 v2.4.0
 )
 
 require (

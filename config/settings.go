@@ -14,11 +14,11 @@ import (
 	"strings"
 	"time"
 
+	"github.com/goccy/go-yaml"
 	"github.com/kevinburke/handlers"
 	"github.com/kevinburke/logrole/services"
 	"github.com/kevinburke/nacl"
 	twilio "github.com/kevinburke/twilio-go"
-	yaml "gopkg.in/yaml.v2"
 )
 
 const DefaultPort = "4114"
