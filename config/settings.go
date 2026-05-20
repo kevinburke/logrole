@@ -230,7 +230,7 @@ func NewSettingsFromConfig(c *FileConfig, l *slog.Logger) (settings *Settings, e
 	}
 	if c.ErrorReporter != "" {
 		if !services.IsRegistered(c.ErrorReporter) {
-			l.Warn("Unknown error reporter, using the noop reporter", "name", c.ErrorReporter)
+			return nil, fmt.Errorf("Unknown error reporter: %s", c.ErrorReporter)
 		}
 	}
 	reporter := services.GetReporter(c.ErrorReporter, c.ErrorReporterToken)

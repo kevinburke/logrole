@@ -3,8 +3,6 @@ package services
 import (
 	"net/http"
 	"sync"
-
-	raven "github.com/kevinburke/raven-go"
 )
 
 // An ErrorReporter reports errors to a third party service. ErrorReporter
@@ -25,7 +23,6 @@ var reporters = map[string]ErrorReporter{}
 var reporterMu sync.Mutex
 
 func init() {
-	RegisterReporter("sentry", new(SentryErrorReporter))
 	RegisterReporter("noop", new(NoopErrorReporter))
 }
 
@@ -61,25 +58,6 @@ func GetReporter(name, token string) ErrorReporter {
 	}
 	r.Configure(token)
 	return r
-}
-
-type SentryErrorReporter struct{}
-
-func (s *SentryErrorReporter) Configure(token string) {
-	raven.SetDSN(token)
-}
-
-func (s *SentryErrorReporter) ReportError(err error, block bool) {
-	if block {
-		raven.CaptureErrorAndWait(err, nil)
-	} else {
-		raven.CaptureError(err, nil)
-	}
-}
-
-func (s *SentryErrorReporter) ReportPanics(h http.Handler) http.Handler {
-	// yuck, https://github.com/getsentry/raven-go/issues/78
-	return http.HandlerFunc(raven.RecoveryHandler(h.ServeHTTP))
 }
 
 // A NoopErrorReporter silently swallows all errors.

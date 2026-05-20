@@ -57,7 +57,7 @@ GOOGLE_CLIENT_SECRET   For Google OAuth
 GOOGLE_ALLOWED_DOMAINS Comma separated list of domains to allow to
                        authenticate. If empty or omitted, all domains allowed.
 
-ERROR_REPORTER         "sentry", empty, or register your own.
+ERROR_REPORTER         Empty, or register your own reporter name.
 ERROR_REPORTER_TOKEN   Token for the error reporter.
 
 POLICY_FILE            Load policy info from a file

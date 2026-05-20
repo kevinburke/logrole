@@ -79,6 +79,24 @@ func TestInvalidPolicyRejected(t *testing.T) {
 	}
 }
 
+func TestUnknownErrorReporterRejected(t *testing.T) {
+	t.Parallel()
+	c := &FileConfig{
+		AccountSid:         "AC123",
+		AuthToken:          "123",
+		ErrorReporter:      "unregistered",
+		EmailAddress:       "support@example.com",
+		ErrorReporterToken: "https://example.com/error-reporter-token",
+	}
+	_, err := NewSettingsFromConfig(c, NullLogger)
+	if err == nil {
+		t.Fatal("expected NewSettingsFromConfig to error, got nil")
+	}
+	if err.Error() != "Unknown error reporter: unregistered" {
+		t.Errorf("wrong error: %v", err)
+	}
+}
+
 func TestBasicAuthNoPolicyOK(t *testing.T) {
 	t.Parallel()
 	c := &FileConfig{

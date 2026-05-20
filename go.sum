@@ -2,8 +2,6 @@ cloud.google.com/go/compute/metadata v0.9.0 h1:pDUj4QMoPejqq20dK0Pg2N4yG9zIkYGdB
 cloud.google.com/go/compute/metadata v0.9.0/go.mod h1:E0bWwX5wTnLPedCKqk3pJmVgCBSM6qQI1yTBdEb3C10=
 github.com/aristanetworks/goarista v0.0.0-20251201112602-a373d7c9f0d9 h1:sUmkQn9Eg+C0sRvW5jtAYUcfT1OWJf747YIh9MIvpWY=
 github.com/aristanetworks/goarista v0.0.0-20251201112602-a373d7c9f0d9/go.mod h1:FP0assX+asxaJNbxWW6ZnYu/RtL6xtSlcJ7zqAmoRgI=
-github.com/certifi/gocertifi v0.0.0-20210507211836-431795d63e8d h1:S2NE3iHSwP0XV47EEXL8mWmRdEfGscSJ+7EgePNgt0s=
-github.com/certifi/gocertifi v0.0.0-20210507211836-431795d63e8d/go.mod h1:sGbDF6GwGcLpkNXPUTkMRoywsNa/ol15pxFe6ERfguA=
 github.com/goccy/go-yaml v1.19.2 h1:PmFC1S6h8ljIz6gMRBopkjP1TVT7xuwrButHID66PoM=
 github.com/goccy/go-yaml v1.19.2/go.mod h1:XBurs7gK8ATbW4ZPGKgcbrY1Br56PdM69F7LkFRi1kA=
 github.com/gofrs/uuid/v5 v5.4.0 h1:EfbpCTjqMuGyq5ZJwxqzn3Cbr2d0rUZU7v5ycAk/e/0=
@@ -22,8 +20,6 @@ github.com/kevinburke/handlers v0.48.0 h1:KlLRpzjfAqkm5nyN5bEbNv+xpB89f76Ojs7sO1
 github.com/kevinburke/handlers v0.48.0/go.mod h1:SU5P4j4X4RePv7gr4vNYp2fCWmkWMkqxNvFKRAHJLmk=
 github.com/kevinburke/nacl v0.9.0 h1:2C9v+jXTUUlK19kw+9rqfsdO7riP5xIyHNJ3GvsgOro=
 github.com/kevinburke/nacl v0.9.0/go.mod h1:qxFJhGMHIPiWJXUauGGORlObOR4bLKBqf/n6PL8l8N0=
-github.com/kevinburke/raven-go v0.0.0-20161009192639-b8684db99b33 h1:lt56qRf8nV6Q91iTutj/KMk2tKiMGeme/zeo+nW93e8=
-github.com/kevinburke/raven-go v0.0.0-20161009192639-b8684db99b33/go.mod h1:1tGc7TGy1lN4apsXl9I2ZnTDVg1DcVnJ7f2DyXozTfU=
 github.com/kevinburke/rest v0.0.0-20260504163705-04a245549cc6 h1:EuHVhHxqfYDMmrWzOfeoFwg8x51zRexP95t4ypWB024=
 github.com/kevinburke/rest v0.0.0-20260504163705-04a245549cc6/go.mod h1:Fqq3AMJ2uvn3zSO5bO+FIM3gzJcA1+zAPJU2SnrwOuc=
 github.com/kevinburke/twilio-go v0.0.0-20260504164244-2e3e7dddbc33 h1:tPSBCefs2ScyHbvb2dOfO1LdRQ92HXgt1n/7eG7B6v0=

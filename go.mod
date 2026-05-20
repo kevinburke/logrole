@@ -9,7 +9,6 @@ require (
 	github.com/kevinburke/go-types v0.0.0-20260504162008-727f2bf5a955
 	github.com/kevinburke/handlers v0.48.0
 	github.com/kevinburke/nacl v0.9.0
-	github.com/kevinburke/raven-go v0.0.0-20161009192639-b8684db99b33
 	github.com/kevinburke/rest v0.0.0-20260504163705-04a245549cc6
 	github.com/kevinburke/twilio-go v0.0.0-20260504164244-2e3e7dddbc33
 	golang.org/x/oauth2 v0.36.0
@@ -18,7 +17,6 @@ require (
 
 require (
 	cloud.google.com/go/compute/metadata v0.9.0 // indirect
-	github.com/certifi/gocertifi v0.0.0-20210507211836-431795d63e8d // indirect
 	github.com/gofrs/uuid/v5 v5.4.0 // indirect
 	github.com/golang/protobuf v1.5.4 // indirect
 	github.com/inconshreveable/log15/v3 v3.2.1 // indirect
