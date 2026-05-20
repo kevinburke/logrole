@@ -71,9 +71,11 @@ $(BUMP_VERSION):
 $(DIFFER):
 	go install github.com/kevinburke/differ@latest
 
+version ?= minor
+
 release: race-test | $(BUMP_VERSION) $(DIFFER)
 	$(DIFFER) $(MAKE) authors
-	$(BUMP_VERSION) --tag-prefix=v minor server/serve.go
+	$(BUMP_VERSION) --tag-prefix=v $(version) server/serve.go
 
 bench:
 	tmp=$$(mktemp); go test -trimpath -benchtime=2s -bench=. -run='^$$' ./... > "$$tmp" 2>&1 && go run golang.org/x/perf/cmd/benchstat@latest "$$tmp"
