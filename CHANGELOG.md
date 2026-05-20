@@ -1,16 +1,34 @@
 # Changes
 
-## 1.6
+## 1.7.0 - 2026-05-19
+
+- Support mounting Logrole under a URL base path. Generated links, redirects,
+  forms, OpenSearch URLs, and error pages now respect the configured base path.
+
+## 1.6.1 - 2026-05-19
+
+- Modernize the project for Go modules and Go 1.26, replacing the old dep and
+  vendor workflow and refreshing dependencies.
+- Add Buildkite CI coverage for formatting, linting, tests, and builds, plus
+  updated Makefile targets for tests, assets, releases, authors, and benchmarks.
+- Add UI support for sending outbound SMS messages, including permission
+  checks, CSRF protection, a new message form, reply/new-message actions, and a
+  configurable default sending phone number.
+- Update templates and styles for newer Bootstrap markup and vendored CSS.
+- Update HTTP, logging, REST, and Twilio API usage to current packages and
+  context-aware request patterns.
+
+## 1.6 - 2017-07-20
 
 - Switch to using dep
 - Switch to using kevinburke/twilio-go
 - Switch to using stdlib context
 
-## 1.5
+## 1.5 - 2017-02-13
 
 Ensure repository works with latest version of kevinburke/rest.
 
-## 1.4
+## 1.4 - 2017-01-02
 
 - Use a monotonic clock for reporting durations.
 - Slight improvements to error handling and cancellation when actions are
@@ -18,32 +36,32 @@ Ensure repository works with latest version of kevinburke/rest.
 - 3 day alert view had problems.
 - Slight improvement for list view filters on normal sized laptops.
 
-## 1.1
+## 1.1 - 2016-11-10
 
 Tweak the README/homepage and describe how to contribute to the project.
 
-## 1.0
+## 1.0 - 2016-11-10
 
 We made it! Link from every phone number on the site to the phone number
 instance view.
 
-## 0.77
+## 0.77 - 2016-11-10
 
 Flush out the phone number instance view - show calls and messages to and from
 this number. Add links to the fuller list of those resources. Show dates in
 a shorter format if a message is old.
 
-## 0.76
+## 0.76 - 2016-11-10
 
 Flush out the phone number list view (paging, filters). Implement a phone
 number instance view. Redirect /phone-numbers/PN123 to /phone-numbers/+1410...
 and implement tab-to-search.
 
-## 0.73
+## 0.73 - 2016-11-08
 
 Add a phone number list view.
 
-## 0.72
+## 0.72 - 2016-11-08
 
 Reject invalid query parameters on list views
 
@@ -51,7 +69,7 @@ Implement per-user/group MaxResourceAge settings.
 
 Refactor template generation a little bit.
 
-## 0.71
+## 0.71 - 2016-11-07
 
 Implement caching for Messages
 
@@ -59,28 +77,28 @@ Show whether a result was returned from the cache, and if so how old that
 result is. Alters services.Duration to show fewer bits after the decimal if the
 Duration is larger than one second.
 
-## 0.70
+## 0.70 - 2016-11-07
 
 Implement search filters for Alerts
 
-## 0.69
+## 0.69 - 2016-11-07
 
 Add back caching for calls/messages/conferences
 
-## 0.67
+## 0.67 - 2016-11-04
 
 Switch the date filtering system from day-and-UTC based to timezone aware, to
 the hour filtering of calls, messages, and conferences.
 
-## 0.66
+## 0.66 - 2016-11-04
 
 Cosmetic changes - changing "redacted" to "hidden" and reordering some filters.
 
-## 0.61
+## 0.61 - 2016-11-03
 
 Implement an Alerts list view.
 
-## 0.58
+## 0.58 - 2016-11-02
 
 Implement multi-user permissions
 
@@ -113,32 +131,32 @@ Add tools in write_config_from_env to download a policy file from a URL (for
 Heroku deployment, if you can't include the permissions as part of the Git
 repo).
 
-## 0.56
+## 0.56 - 2016-10-31
 
 Highlight Call list rows in red if the call ended unsuccessfully.
 
-## 0.55
+## 0.55 - 2016-10-28
 
 Show error/warning information about a Call on the instance page.
 
 Messages that resulted in an error are highlighted in red.
 
-## 0.54
+## 0.54 - 2016-10-28
 
 You can configure timezones via config.yml, and the timezones in the menu bar
 are now dynamic.
 
-## 0.51
+## 0.51 - 2016-10-28
 
 Gzip static files so they get sent to the client more quickly. It would be nice
 to also gzip the HTML, but this would be vulnerable to BEAST/CRIME attacks on
 SSL.
 
-## 0.50
+## 0.50 - 2016-10-27
 
 Add a Conference instance view.
 
-## 0.48
+## 0.48 - 2016-10-27
 
 Renamed the binaries from `server` and `write_config_from_env` to
 `logrole_server` and `logrole_write_config_from_env` to avoid conflicts with
