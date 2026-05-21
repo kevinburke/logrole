@@ -1,7 +1,7 @@
 {{ define "content" }}
 {{- if and .CanSendMessages (ne .Message.ReplyTo "") }}
 <div class="row">
-  <div class="col-md-12 message-actions">
+  <div class="col-12 message-actions">
     <a class="btn btn-primary" href="{{ url "/messages/new" }}?to={{ .Message.ReplyTo }}">Reply</a>
   </div>
 </div>
@@ -152,7 +152,7 @@
 {{- if .Media }}
   {{- if .Media.Err }}
   <div class="row">
-    <div class="col-md-12">
+    <div class="col-12">
       <p>
       Error retrieving media for this message: {{ .Media.Err }}.
       Refresh the page to try again.
@@ -201,7 +201,7 @@
       };
     </script>
     <div id="hidden-images-warning" class="row">
-      <div class="col-md-12" id="hidden-images-warning-warning">
+      <div class="col-12" id="hidden-images-warning-warning">
         <p>
         Images are hidden by default.
         <a id="show-images" onclick="logroleShowImages(); return false;" href="#">Click to show all images</a>
@@ -211,7 +211,7 @@
     {{ end }}
     {{- range .Media.URLs }}
     <div class="row">
-      <div class="col-md-12">
+      <div class="col-12">
         <table class="table">
           <tbody>
             <tr>
@@ -232,7 +232,7 @@
 {{- end }}
 {{- else }}
 <div class="row">
-  <div class="col-md-12">
+  <div class="col-12">
     <p>Not displaying any media because you do not have permission to view it.</p>
   </div>
 </div>

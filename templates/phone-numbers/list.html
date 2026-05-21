@@ -1,27 +1,25 @@
 {{- define "content" }}
 {{- if .Err }}
 <div class="row">
-  <div class="col-md-12">
+  <div class="col-12">
     <div class="alert alert-danger">
       <p>{{ .Err }}</p>
     </div>
   </div>
 </div>
 {{- end }}
-<form class="row row-search" method="get" action="{{ .Path }}">
-    <div class="form-search form-alerts-search col-md-10">
-      <div class="form-group">
-        <label for="friendly-name">Friendly Name</label>
-        <input type="text" class="form-control" name="friendly-name" id="friendly-name" placeholder="Name (exact match)" value="{{ (.Query.Get "friendly-name") }}">
-      </div>
-      <div class="form-group">
-        <label for="phone-number">Phone Number (or part)</label>
-        <input type="text" class="form-control" name="phone-number" id="phone-number" placeholder="Phone Number" value="{{ (.Query.Get "phone-number") }}">
-      </div>
-    </div>
-    <div class="col-md-2 search-submit">
-      <input type="submit" value="Search" class="btn-search btn btn-info" />
-    </div>
+<form class="row row-search g-3 align-items-end" method="get" action="{{ .Path }}">
+  <div class="col-sm-6 col-lg-auto">
+    <label class="form-label" for="friendly-name">Friendly Name</label>
+    <input type="text" class="form-control" name="friendly-name" id="friendly-name" placeholder="Name (exact match)" value="{{ (.Query.Get "friendly-name") }}">
+  </div>
+  <div class="col-sm-6 col-lg-auto">
+    <label class="form-label" for="phone-number">Phone Number (or part)</label>
+    <input type="text" class="form-control" name="phone-number" id="phone-number" placeholder="Phone Number" value="{{ (.Query.Get "phone-number") }}">
+  </div>
+  <div class="col-sm-6 col-lg-auto ms-lg-auto search-submit">
+    <input type="submit" value="Search" class="btn-search btn btn-info" />
+  </div>
 </form>
 <table class="table table-striped">
   <thead>
@@ -75,15 +73,7 @@
 {{- if eq 0 (len .Page.Numbers) }}
   {{/* Don't need if/else with range .Page.Numbers, that will always be empty
        if this is non-empty and vice versa */}}
-  No phone numbers match the search criteria
-  <br>
-  <br>
-  <br>
-  <br>
-  <br>
-  <br>
-  <br>
-  <br>
+  <p class="my-5">No phone numbers match the search criteria</p>
 {{- end }}
 {{- template "paging" . }}
 {{- end }}

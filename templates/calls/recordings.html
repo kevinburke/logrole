@@ -4,7 +4,7 @@
 {{- if .CanViewNumRecordings }}
   {{- if .Err }}
   <div class="row">
-    <div class="col-md-12">
+    <div class="col-12">
       <p>
       Error retrieving recordings for this call: {{ .Err }}.
       Refresh the page to try again.
@@ -60,7 +60,7 @@
       {{- end }}
     {{- else }}
     <div class="row">
-      <div class="col-md-12">
+      <div class="col-12">
         <p>
         {{- $len := len .Recordings }}
         {{- if eq $len 0 }}

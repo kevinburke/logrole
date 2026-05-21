@@ -68,7 +68,7 @@
 </div>
 {{ if and (.Alert.CanViewProperty "RequestMethod") (.Alert.CanViewProperty "RequestURL") }}
 <div class="row">
-  <div class="col-md-12">
+  <div class="col-12">
     <h3>Twilio's Request</h3>
     <p>
     <pre>{{ .Alert.RequestMethod }} {{ .Alert.RequestURL }}</pre>
