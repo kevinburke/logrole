@@ -13,3 +13,15 @@ updates:
       interval: "daily"
     cooldown:
       default-days: 7
+
+  # npm: keeps the bundled browser JS up to date, principally
+  # @twilio/voice-sdk (which powers the browser-calling dialer) and
+  # esbuild (which produces static/js/twilio-voice-sdk.js). The Assets
+  # CI step re-runs `make assets` after any version bump so a stale
+  # bundle vs. updated lockfile gets caught.
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "daily"
+    cooldown:
+      default-days: 7

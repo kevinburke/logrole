@@ -20,9 +20,13 @@ calls, call from, etc. etc.
 - Tab to search: start typing the URL in the tab bar, then press &lt;tab&gt;.
   Paste any SID to immediately jump to that page.
 
+- Place outbound voice calls from the browser using the Twilio Voice JS
+  SDK. See [docs/browser-calling.md][browser-calling-docs] for setup.
+
 <img alt="Tab to search demo" src="https://thumbs.gfycat.com/BarrenColorlessJackrabbit-size_restricted.gif" />
 
 [user-settings]: https://godoc.org/github.com/kevinburke/logrole/config#UserSettings
+[browser-calling-docs]: https://github.com/kevinburke/logrole/blob/master/docs/browser-calling.md
 
 ## It Is Really Fast
 

@@ -29,6 +29,9 @@
     <input type="submit" value="Search" class="btn-search btn btn-info" />
   </div>
 </form>
+{{- if and .BrowserCallingEnabled .CanMakeCalls }}
+<p><a href="{{ url "/dial" }}" class="btn btn-primary">Place a call from your browser</a></p>
+{{- end }}
 <table class="table table-striped">
   <thead>
     <tr>

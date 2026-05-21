@@ -303,7 +303,8 @@ func NewServer(settings *config.Settings) (*Server, error) {
 		return nil, err
 	}
 	cls, err := newCallListServer(settings.Logger, vc, settings.LocationFinder,
-		settings.PageSize, settings.MaxResourceAge, settings.SecretKey, basePath)
+		settings.PageSize, settings.MaxResourceAge, settings.SecretKey,
+		settings.BrowserCallingEnabled(), basePath)
 	if err != nil {
 		return nil, err
 	}
@@ -340,6 +341,16 @@ func NewServer(settings *config.Settings) (*Server, error) {
 	nis, err := newNumberInstanceServer(settings.Logger, vc, settings.LocationFinder, basePath)
 	if err != nil {
 		return nil, err
+	}
+	// Browser calling. Only wired when all three Twilio credentials and a
+	// default caller ID are configured; otherwise newBrowserCallHandler
+	// returns (nil, nil) and we leave the routes unregistered.
+	browserCalls, err := newBrowserCallHandler(settings.Logger, settings)
+	if err != nil {
+		return nil, err
+	}
+	if browserCalls == nil {
+		settings.Logger.Info("Browser calling disabled: set twilio_api_key, twilio_api_secret, twilio_twiml_app_sid, and default_sending_phone_number to enable")
 	}
 	ss := &searchServer{
 		Logger: settings.Logger,
@@ -410,6 +421,13 @@ func NewServer(settings *config.Settings) (*Server, error) {
 	authR.Handle(conferenceInstanceRoute, []string{"GET"}, confInstance)
 	authR.Handle(callInstanceRoute, []string{"GET"}, cis)
 	authR.Handle(messageInstanceRoute, []string{"GET"}, mis)
+	if browserCalls != nil {
+		// /dial (the dialer page) and /dial/token (access tokens) are
+		// user-facing. The browsercall handler enforces CanMakeCalls
+		// via the Authorize callback.
+		authR.Handle(regexp.MustCompile(`^/dial$`), []string{"GET"}, browserCalls)
+		authR.Handle(regexp.MustCompile(`^/dial/token$`), []string{"GET", "POST"}, browserCalls)
+	}
 	authH := AddAuthenticator(authR, ls, settings.Authenticator)
 	authH = handlers.WithLogger(authH, settings.Logger)
 	if len(settings.IPSubnets) > 0 {
@@ -421,6 +439,12 @@ func NewServer(settings *config.Settings) (*Server, error) {
 	r.Handle(regexp.MustCompile(`^/open-source$`), []string{"GET"}, openSource)
 	r.Handle(regexp.MustCompile(`^/opensearch.xml$`), []string{"GET"}, o)
 	r.Handle(regexp.MustCompile(`^/auth/logout$`), []string{"POST"}, logout)
+	if browserCalls != nil {
+		// /dial/voice is hit by Twilio; no session cookie, so it sits
+		// outside the authenticator. The browsercall handler verifies
+		// X-Twilio-Signature itself.
+		r.Handle(regexp.MustCompile(`^/dial/voice$`), []string{"POST"}, browserCalls)
+	}
 	// todo awkward using HTTP methods here
 	r.Handle(regexp.MustCompile(`^/`), []string{"GET", "POST", "PUT", "DELETE"}, authH)
 	h := UpgradeInsecureHandler(r, settings.AllowUnencryptedTraffic)

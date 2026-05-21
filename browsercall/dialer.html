@@ -1,0 +1,90 @@
+<div class="browsercall"
+     data-generated-by="logrole/browsercall"
+     data-source="{{ .SourceURL }}"
+     {{- if .SourceVersion }} data-version="{{ .SourceVersion }}"{{ end }}>
+  <p class="browsercall-intro">Place an outbound call from your browser.
+    {{- if .From }} Calls show the caller ID <strong>{{ .From }}</strong>.{{ end }}
+  </p>
+  <div id="browsercall-status" class="browsercall-status" role="status">Initializing&hellip;</div>
+  <form id="browsercall-form" class="browsercall-form" onsubmit="return false;">
+    <label for="browsercall-to">To</label>
+    <input type="text" name="to" id="browsercall-to" placeholder="+15557654321" autocomplete="off" autofocus />
+    <div class="browsercall-buttons">
+      <button type="button" id="browsercall-call" disabled>Call</button>
+      <button type="button" id="browsercall-hangup" disabled>Hang up</button>
+    </div>
+  </form>
+</div>
+<script src="{{ .ScriptURL }}"></script>
+<script type="text/javascript">
+(function() {
+  var tokenURL = {{ .TokenPath }};
+  var statusEl = document.getElementById('browsercall-status');
+  var callBtn = document.getElementById('browsercall-call');
+  var hangupBtn = document.getElementById('browsercall-hangup');
+  var toInput = document.getElementById('browsercall-to');
+  var device = null;
+  var activeCall = null;
+
+  function setStatus(msg, level) {
+    statusEl.textContent = msg;
+    statusEl.setAttribute('data-level', level || 'info');
+  }
+  function setBusy(busy) {
+    callBtn.disabled = busy;
+    hangupBtn.disabled = !busy;
+    toInput.disabled = busy;
+  }
+  function fetchToken() {
+    return fetch(tokenURL, {credentials: 'same-origin'}).then(function(r) {
+      if (!r.ok) { throw new Error('token request failed: ' + r.status); }
+      return r.json();
+    });
+  }
+  function attachCallHandlers(call) {
+    activeCall = call;
+    setBusy(true);
+    call.on('accept', function() { setStatus('Call connected.', 'success'); });
+    call.on('disconnect', function() { activeCall = null; setStatus('Call ended.', 'info'); setBusy(false); });
+    call.on('cancel', function() { activeCall = null; setStatus('Call canceled.', 'warning'); setBusy(false); });
+    call.on('reject', function() { activeCall = null; setStatus('Call rejected.', 'warning'); setBusy(false); });
+    call.on('error', function(err) { setStatus('Call error: ' + (err && err.message || err), 'danger'); setBusy(false); });
+  }
+
+  fetchToken()
+    .then(function(data) {
+      // The access token has no incoming grant, so the device is
+      // outbound-only and we skip device.register().
+      device = new Twilio.Device(data.token, {
+        codecPreferences: ['opus', 'pcmu'],
+        logLevel: 'warn',
+      });
+      device.on('error', function(err) {
+        setStatus('Device error: ' + (err && err.message || err), 'danger');
+        setBusy(false);
+      });
+      device.on('tokenWillExpire', function() {
+        fetchToken().then(function(d) { device.updateToken(d.token); })
+          .catch(function(err) { setStatus('Could not refresh token: ' + err.message, 'danger'); });
+      });
+      setStatus('Ready (identity ' + data.identity + ').', 'success');
+      callBtn.disabled = false;
+    })
+    .catch(function(err) { setStatus('Could not initialize: ' + err.message, 'danger'); });
+
+  callBtn.addEventListener('click', function() {
+    if (!device) { return; }
+    var to = toInput.value.trim();
+    if (!to) { return; }
+    setStatus('Dialing ' + to + '…', 'info');
+    device.connect({params: {To: to}}).then(attachCallHandlers).catch(function(err) {
+      setStatus('Could not place call: ' + (err && err.message || err), 'danger');
+      setBusy(false);
+    });
+  });
+  hangupBtn.addEventListener('click', function() {
+    if (activeCall) { activeCall.disconnect(); }
+    else if (device) { device.disconnectAll(); }
+  });
+})();
+</script>

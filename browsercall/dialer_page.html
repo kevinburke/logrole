@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{ .Title }}</title>
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+           max-width: 32rem; margin: 2rem auto; padding: 0 1rem; color: #222; }
+    h1 { font-size: 1.4rem; }
+    .browsercall-intro { color: #444; }
+    .browsercall-status { padding: 0.5rem 0.75rem; border-radius: 4px;
+                          background: #e7f3ff; border: 1px solid #bcdfff; margin: 0.75rem 0; }
+    .browsercall-status[data-level="success"] { background: #e6f7ea; border-color: #b6e2c2; }
+    .browsercall-status[data-level="warning"] { background: #fff5d6; border-color: #f0d780; }
+    .browsercall-status[data-level="danger"]  { background: #fde2e2; border-color: #f0b4b4; color: #8a1f1f; }
+    .browsercall-form label { display: block; margin-top: 0.5rem; font-weight: 600; }
+    .browsercall-form input[type=text] { width: 100%; padding: 0.5rem; font-size: 1rem; box-sizing: border-box; }
+    .browsercall-buttons { margin-top: 0.75rem; display: flex; gap: 0.5rem; }
+    .browsercall-buttons button { padding: 0.4rem 0.9rem; font-size: 1rem; cursor: pointer; }
+    .browsercall-buttons button[disabled] { opacity: 0.5; cursor: default; }
+  </style>
+</head>
+<body>
+  <h1>{{ .Title }}</h1>
+  {{ .Fragment }}
+</body>
+</html>

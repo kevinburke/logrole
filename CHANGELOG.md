@@ -1,5 +1,22 @@
 # Changes
 
+## Unreleased
+
+- Add browser calling: place outbound voice calls from the Calls page using the
+  Twilio Voice JS SDK. Gated on the new `can_make_calls` user permission and
+  the new `twilio_api_key`, `twilio_api_secret`, and `twilio_twiml_app_sid`
+  settings; reuses `default_sending_phone_number` as caller ID. The
+  `/dial/voice` TwiML webhook verifies the `X-Twilio-Signature` header. A new
+  `logrole_create_twiml_app` binary creates or updates the required TwiML
+  Application against the Twilio API.
+- Add an embeddable `github.com/kevinburke/logrole/browsercall` package so
+  other apps can mount the dialer (and its token/voice endpoints) under any
+  URL prefix. The logrole server itself now uses this package internally.
+- Bundle the Twilio Voice JS SDK at build time via npm + esbuild rather than
+  loading it from a CDN. The SDK is embedded into the Go binary along with
+  the rest of the static assets; run `make assets` to rebuild it after
+  bumping `@twilio/voice-sdk` in `package.json`.
+
 ## 1.7.0 - 2026-05-19
 
 - Support mounting Logrole under a URL base path. Generated links, redirects,

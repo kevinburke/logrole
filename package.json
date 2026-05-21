@@ -1,0 +1,15 @@
+{
+  "name": "logrole-frontend",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Bundled browser JS for Logrole. Currently produces a UMD-style bundle of @twilio/voice-sdk that exposes Twilio.Device on window, matching the API the dialer expects.",
+  "scripts": {
+    "build": "esbuild js/twilio-voice-sdk.js --bundle --minify --target=es2020 --outfile=static/js/twilio-voice-sdk.js"
+  },
+  "dependencies": {
+    "@twilio/voice-sdk": "2.18.0"
+  },
+  "devDependencies": {
+    "esbuild": "0.25.10"
+  }
+}

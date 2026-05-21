@@ -34,6 +34,9 @@ BASE_PATH              URL path prefix if Logrole is mounted below root
 
 TWILIO_ACCOUNT_SID     Account SID for your Twilio account
 TWILIO_AUTH_TOKEN      Auth token
+TWILIO_API_KEY         API Key SID (for browser calling)
+TWILIO_API_SECRET      API Key Secret (for browser calling)
+TWILIO_TWIML_APP_SID   TwiML Application SID (for browser calling)
 
 REALM                  Realm (either "local" or "prod")
 TZ                     Default timezone (example "America/Los_Angeles")
@@ -128,6 +131,9 @@ func writeConfig(b *bytes.Buffer, e environment) {
 	}
 	ok = writeVal(b, e, "TWILIO_ACCOUNT_SID", "twilio_account_sid") || ok
 	ok = writeVal(b, e, "TWILIO_AUTH_TOKEN", "twilio_auth_token") || ok
+	ok = writeVal(b, e, "TWILIO_API_KEY", "twilio_api_key") || ok
+	ok = writeVal(b, e, "TWILIO_API_SECRET", "twilio_api_secret") || ok
+	ok = writeVal(b, e, "TWILIO_TWIML_APP_SID", "twilio_twiml_app_sid") || ok
 	if ok {
 		b.WriteByte('\n')
 		ok = false

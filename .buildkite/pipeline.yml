@@ -26,6 +26,16 @@ steps:
     artifact_paths:
       - "reports/lint/**/*"
 
+  - label: ":package: Assets"
+    key: "assets"
+    command: ".buildkite/ci/assets.sh"
+    timeout_in_minutes: 10
+    agents:
+      vm: "buildkite"
+      host: "caracal"
+    artifact_paths:
+      - "reports/assets/**/*"
+
   - label: ":go: Test"
     key: "test"
     command: ".buildkite/ci/test.sh"
@@ -44,6 +54,7 @@ steps:
     depends_on:
       - "format"
       - "lint"
+      - "assets"
       - "test"
     agents:
       vm: "buildkite"

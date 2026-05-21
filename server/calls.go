@@ -31,24 +31,26 @@ var callInstanceRoute = regexp.MustCompile("^/calls/" + callPattern + "$")
 
 type callListServer struct {
 	*slog.Logger
-	Client         views.Client
-	LocationFinder services.LocationFinder
-	PageSize       uint
-	MaxResourceAge time.Duration
-	secretKey      *[32]byte
-	tpl            *template.Template
+	Client                views.Client
+	LocationFinder        services.LocationFinder
+	PageSize              uint
+	MaxResourceAge        time.Duration
+	secretKey             *[32]byte
+	browserCallingEnabled bool
+	tpl                   *template.Template
 }
 
 func newCallListServer(l *slog.Logger, vc views.Client, lf services.LocationFinder,
 	pageSize uint, maxResourceAge time.Duration,
-	secretKey *[32]byte, basePaths ...string) (*callListServer, error) {
+	secretKey *[32]byte, browserCallingEnabled bool, basePaths ...string) (*callListServer, error) {
 	cs := &callListServer{
-		Logger:         l,
-		Client:         vc,
-		LocationFinder: lf,
-		PageSize:       pageSize,
-		MaxResourceAge: maxResourceAge,
-		secretKey:      secretKey,
+		Logger:                l,
+		Client:                vc,
+		LocationFinder:        lf,
+		PageSize:              pageSize,
+		MaxResourceAge:        maxResourceAge,
+		secretKey:             secretKey,
+		browserCallingEnabled: browserCallingEnabled,
 	}
 	tpl, err := newTpl(template.FuncMap{
 		"is_our_pn": vc.IsTwilioNumber,
@@ -103,6 +105,8 @@ type callListData struct {
 	Loc                   *time.Location
 	Query                 url.Values
 	Err                   string
+	BrowserCallingEnabled bool
+	CanMakeCalls          bool
 }
 
 func (c *callListData) Title() string {
@@ -247,6 +251,8 @@ func (s *callListServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		Query:                 query,
 		EncryptedNextPage:     getEncryptedPage(page.NextPageURI(), s.secretKey),
 		EncryptedPreviousPage: getEncryptedPage(page.PreviousPageURI(), s.secretKey),
+		BrowserCallingEnabled: s.browserCallingEnabled,
+		CanMakeCalls:          u.CanMakeCalls(),
 	}
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	w.WriteHeader(200)

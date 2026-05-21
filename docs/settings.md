@@ -271,6 +271,37 @@ default group exists, the user is denied access.
 [user-settings]: https://godoc.org/github.com/kevinburke/logrole/config#UserSettings
 [default-user]: https://godoc.org/github.com/kevinburke/logrole/config#DefaultUser
 
+## Browser calling
+
+Logrole can place outbound voice calls from the browser using Twilio's
+Voice JS SDK. The feature is opt-in: it only activates when all four of
+these settings are present:
+
+| YAML key                       | Environment variable     |
+| ------------------------------ | ------------------------ |
+| `twilio_api_key`               | `TWILIO_API_KEY`         |
+| `twilio_api_secret`            | `TWILIO_API_SECRET`      |
+| `twilio_twiml_app_sid`         | `TWILIO_TWIML_APP_SID`   |
+| `default_sending_phone_number` | (no env mapping)         |
+
+Without all four, the `/dial`, `/dial/token`, and `/dial/voice`
+routes are not registered and the "Place a call from your browser" link
+is hidden on the Calls page. Logrole logs `Browser calling disabled:
+set ...` at startup so you can confirm.
+
+Per-user gating uses the `can_make_calls` permission (default `true`):
+
+```yaml
+policy:
+    - name: support
+      permissions:
+          can_make_calls: false
+```
+
+For setup steps, the `logrole_create_twiml_app` helper, signature
+verification, and embedding the dialer in another Go app, see
+[docs/browser-calling.md](browser-calling.md).
+
 ### What happens to the YAML file?
 
 You don't need to read this if you are just running logrole_server. But if you

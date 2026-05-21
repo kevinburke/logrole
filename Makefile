@@ -1,11 +1,18 @@
 SHELL = /bin/bash -o pipefail
 
-BUMP_VERSION := $(GOPATH)/bin/bump_version
-DIFFER := $(GOPATH)/bin/differ
-GO_BINDATA := $(GOPATH)/bin/go-bindata
-JUSTRUN := $(GOPATH)/bin/justrun
-WRITE_MAILMAP := $(GOPATH)/bin/write_mailmap
-STATICCHECK := $(GOPATH)/bin/staticcheck
+# `go install` writes to GOBIN when it's set, otherwise to GOPATH/bin.
+# Mirror that here so the file targets point at the binary's actual
+# install location - relying on `$(GOPATH)` alone breaks in CI
+# environments that set GOBIN but not GOPATH (e.g. Buildkite).
+GO_BIN_DIR := $(or $(shell go env GOBIN),$(shell go env GOPATH)/bin)
+
+BUMP_VERSION := $(GO_BIN_DIR)/bump_version
+DIFFER := $(GO_BIN_DIR)/differ
+GO_BINDATA := $(GO_BIN_DIR)/go-bindata
+JUSTRUN := $(GO_BIN_DIR)/justrun
+WRITE_MAILMAP := $(GO_BIN_DIR)/write_mailmap
+STATICCHECK := $(GO_BIN_DIR)/staticcheck
+NPM := npm
 
 WATCH_TARGETS = static/css/style.css \
 	templates/base.html \
@@ -29,7 +36,8 @@ ASSET_TARGETS = templates/base.html templates/index.html \
 	templates/phone-numbers/list.html \
 	templates/snippets/phonenumber.html \
 	templates/errors.html templates/login.html \
-	static/css/style.css static/css/bootstrap.min.css
+	static/css/style.css static/css/bootstrap.min.css \
+	static/js/twilio-voice-sdk.js
 
 .PHONY: test race-test serve lint assets watch release docs bench loc authors ci
 
@@ -54,8 +62,29 @@ compile-css: static/css/bootstrap.min.css static/css/style.css
 	cat static/css/bootstrap.min.css static/css/style.css > static/css/all.css
 
 $(GO_BINDATA):
-	go install github.com/kevinburke/go-bindata/v4/go-bindata@latest
+	go install github.com/kevinburke/go-bindata/v4/go-bindata@v4.0.2
 
+node_modules: package-lock.json
+	$(NPM) ci
+	@touch node_modules
+
+# Bundle browser JS. Currently this is just the Twilio Voice JS SDK
+# repackaged to expose Twilio.Device on window. Sourcemap is intentionally
+# off because the bundle is embedded into the Go binary via go-bindata.
+static/js/twilio-voice-sdk.js: js/twilio-voice-sdk.js package-lock.json | node_modules
+	$(NPM) run build
+
+# `make assets` regenerates the embedded bindata. The output is not
+# byte-stable across Go toolchain versions: compress/gzip in 1.27
+# emits slightly different bytes than 1.26 for the same input, and
+# bindata.go is gzip-compressed. CI runs Go 1.26, so the committed
+# bindata.go must be produced with a go-bindata built under Go 1.26
+# or the Assets CI step will report drift. If you have multiple Go
+# toolchains installed:
+#
+#   GOROOT=~/go1.26 PATH=~/go1.26/bin:$PATH \
+#       go install github.com/kevinburke/go-bindata/v4/go-bindata@v4.0.2
+#   make assets
 assets: $(ASSET_TARGETS) compile-css | $(GO_BINDATA)
 	$(GO_BINDATA) -o=assets/bindata.go --nometadata --pkg=assets templates/... static/...
 

@@ -24,7 +24,7 @@ func TestGetFiltersGeneratesCorrectQuery(t *testing.T) {
 	}))
 	defer s.Close()
 	vc := harness.ViewsClient(harness.ViewHarness{SecretKey: key, TestServer: s})
-	c, err := newCallListServer(dlog, vc, lf, 1, config.DefaultMaxResourceAge, key)
+	c, err := newCallListServer(dlog, vc, lf, 1, config.DefaultMaxResourceAge, key, false)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -52,7 +52,7 @@ func TestNoEndGeneratesCorrectQuery(t *testing.T) {
 	}))
 	defer s.Close()
 	vc := harness.ViewsClient(harness.ViewHarness{SecretKey: key, TestServer: s})
-	c, err := newCallListServer(dlog, vc, lf, 1, config.DefaultMaxResourceAge, key)
+	c, err := newCallListServer(dlog, vc, lf, 1, config.DefaultMaxResourceAge, key, false)
 	if err != nil {
 		t.Fatal(err)
 	}

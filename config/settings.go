@@ -78,6 +78,17 @@ type FileConfig struct {
 	// that number is auto-populated at startup.
 	DefaultSendingPhoneNumber string `yaml:"default_sending_phone_number"`
 
+	// Twilio API Key SID and Secret, used to mint AccessTokens for the Voice
+	// JS SDK. Create one at https://www.twilio.com/console/voice/runtime/api-keys.
+	TwilioAPIKey    string `yaml:"twilio_api_key"`
+	TwilioAPISecret string `yaml:"twilio_api_secret"`
+
+	// TwiML Application SID. Browser-initiated calls cause Twilio to hit this
+	// app's voice URL, which should be configured to point at this server's
+	// public /calls/voice endpoint. Required to enable browser calling along
+	// with TwilioAPIKey/TwilioAPISecret.
+	TwilioTwiMLAppSid string `yaml:"twilio_twiml_app_sid"`
+
 	// Need a pointer to a boolean here since we want to be able to distinguish
 	// "false" from "omitted"
 	ShowMediaByDefault *bool `yaml:"show_media_by_default,omitempty"`
@@ -135,8 +146,17 @@ type Settings struct {
 	ShowMediaByDefault bool
 
 	// Default phone number used as the "From" when sending an outbound
-	// message. May be empty.
+	// message. May be empty. Also used as the caller ID for browser-initiated
+	// outbound calls.
 	DefaultSendingPhoneNumber string
+
+	// Twilio API Key SID, API Key Secret, and TwiML Application SID. All three
+	// must be non-empty to enable browser calling. The Twilio Auth Token (in
+	// Client) is still used to verify X-Twilio-Signature on the /calls/voice
+	// webhook.
+	TwilioAPIKey      string
+	TwilioAPISecret   string
+	TwilioTwiMLAppSid string
 
 	// Email address for server errors / "contact me" on error pages.
 	Mailto *mail.Address
@@ -345,6 +365,16 @@ func NewSettingsFromConfig(c *FileConfig, l *slog.Logger) (settings *Settings, e
 		Authenticator:             authenticator,
 		IPSubnets:                 nets,
 		DefaultSendingPhoneNumber: c.DefaultSendingPhoneNumber,
+		TwilioAPIKey:              c.TwilioAPIKey,
+		TwilioAPISecret:           c.TwilioAPISecret,
+		TwilioTwiMLAppSid:         c.TwilioTwiMLAppSid,
 	}
 	return
+}
+
+// BrowserCallingEnabled reports whether all of the configuration required to
+// place outbound calls from the browser is present.
+func (s *Settings) BrowserCallingEnabled() bool {
+	return s.TwilioAPIKey != "" && s.TwilioAPISecret != "" &&
+		s.TwilioTwiMLAppSid != "" && s.DefaultSendingPhoneNumber != ""
 }

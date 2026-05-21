@@ -1,1 +1,6 @@
-/assets/bindata.go binary
+# assets/bindata.go is generated Go source. Marking it `diff` forces
+# git to attempt a textual diff even though the long byte-literal
+# strings would normally trip its binary heuristic. The diffs are
+# huge in normal review but the Assets CI step needs a visible diff
+# when the bundle drifts.
+/assets/bindata.go diff

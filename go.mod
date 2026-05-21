@@ -11,6 +11,7 @@ require (
 	github.com/kevinburke/nacl v0.9.0
 	github.com/kevinburke/rest v0.0.0-20260504163705-04a245549cc6
 	github.com/kevinburke/twilio-go v0.0.0-20260504164244-2e3e7dddbc33
+	github.com/ttacon/libphonenumber v1.2.1
 	golang.org/x/oauth2 v0.36.0
 	golang.org/x/sync v0.20.0
 )
@@ -23,7 +24,6 @@ require (
 	github.com/mattn/go-colorable v0.1.14 // indirect
 	github.com/mattn/go-isatty v0.0.22 // indirect
 	github.com/ttacon/builder v0.0.0-20170518171403-c099f663e1c2 // indirect
-	github.com/ttacon/libphonenumber v1.2.1 // indirect
 	golang.org/x/crypto v0.51.0 // indirect
 	golang.org/x/net v0.54.0 // indirect
 	golang.org/x/sys v0.44.0 // indirect

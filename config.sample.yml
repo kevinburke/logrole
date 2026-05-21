@@ -72,7 +72,25 @@ show_media_by_default: true
 # "New Message" form. If empty and the account has exactly one phone number,
 # that number is used automatically. Users with can_send_messages permission
 # may pick from any of the account's numbers if more than one exists.
-# default_sending_phone_number: "+15551234567"
+#
+# Also used as the caller ID for browser-initiated outbound voice calls.
+# default_sending_phone_number: "+14155550199"
+
+# Browser calling. To enable, set all three of the values below.
+#
+# 1. Create an API Key + Secret at
+#    https://www.twilio.com/console/voice/runtime/api-keys
+# 2. Create a TwiML Application whose Voice URL points at
+#    https://<public_host>/calls/voice (use the included
+#    "logrole_create_twiml_app" binary to do this, or create one manually in
+#    the Twilio console).
+# 3. Put the AccountSid + AuthToken above, set default_sending_phone_number
+#    to a verified Twilio number on this account (used as caller ID), then
+#    fill in the API Key, Secret, and TwiML App SID.
+#
+# twilio_api_key:        SKxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+# twilio_api_secret:     fill-in-api-secret
+# twilio_twiml_app_sid:  APxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 
 # This is shown as a "Contact Me" message on 401/403/404/500 error pages.
 email_address: test@example.com

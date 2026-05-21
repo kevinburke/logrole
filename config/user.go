@@ -29,6 +29,7 @@ type User struct {
 	canViewAlerts         bool
 	canViewCallbackURLs   bool
 	canSendMessages       bool
+	canMakeCalls          bool
 	// The maximum viewable age this viewer can view resources. If nonzero,
 	// this overrides any global setting.
 	maxResourceAge time.Duration
@@ -78,6 +79,10 @@ type UserSettings struct {
 	// Can the user send an outbound SMS/MMS message from a Twilio phone number
 	// on the account?
 	CanSendMessages bool `yaml:"can_send_messages"`
+
+	// Can the user place an outbound voice call from the browser (using the
+	// configured default sending phone number as the caller ID)?
+	CanMakeCalls bool `yaml:"can_make_calls"`
 
 	// The maximum viewable age of resources this user can view. If nonzero,
 	// this overrides any global setting.
@@ -135,6 +140,7 @@ func AllUserSettings() *UserSettings {
 		CanViewAlerts:         true,
 		CanViewCallbackURLs:   true,
 		CanSendMessages:       true,
+		CanMakeCalls:          true,
 		MaxResourceAge:        DefaultMaxResourceAge,
 	}
 }
@@ -163,6 +169,7 @@ func NewUser(us *UserSettings) *User {
 		canViewAlerts:         us.CanViewAlerts,
 		canViewCallbackURLs:   us.CanViewCallbackURLs,
 		canSendMessages:       us.CanSendMessages,
+		canMakeCalls:          us.CanMakeCalls,
 		maxResourceAge:        us.MaxResourceAge,
 	}
 }
@@ -238,6 +245,12 @@ func (u *User) CanViewCallbackURLs() bool {
 // CanSendMessages reports whether the user can send outbound SMS messages.
 func (u *User) CanSendMessages() bool {
 	return u.canSendMessages
+}
+
+// CanMakeCalls reports whether the user can place an outbound voice call from
+// the browser.
+func (u *User) CanMakeCalls() bool {
+	return u.canMakeCalls
 }
 
 // CanViewResource returns true if the specified timestamp is within the
