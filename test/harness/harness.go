@@ -8,7 +8,7 @@ import (
 	"github.com/kevinburke/logrole/config"
 	"github.com/kevinburke/logrole/views"
 	"github.com/kevinburke/nacl"
-	twilio "github.com/kevinburke/twilio-go"
+	twilio "github.com/kevinburke/twilio-go/v2"
 )
 
 var NullLogger = slog.New(slog.DiscardHandler)

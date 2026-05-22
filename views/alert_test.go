@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"github.com/kevinburke/logrole/config"
-	twilio "github.com/kevinburke/twilio-go"
+	twilio "github.com/kevinburke/twilio-go/v2"
 )
 
 func TestViewResourceSid(t *testing.T) {

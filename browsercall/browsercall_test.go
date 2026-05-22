@@ -11,7 +11,7 @@ import (
 	"strings"
 	"testing"
 
-	twilio "github.com/kevinburke/twilio-go"
+	twilio "github.com/kevinburke/twilio-go/v2"
 )
 
 func validConfig() Config {

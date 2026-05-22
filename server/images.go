@@ -14,7 +14,7 @@ import (
 	"github.com/kevinburke/logrole/services"
 	"github.com/kevinburke/rest"
 	"github.com/kevinburke/rest/resterror"
-	twilio "github.com/kevinburke/twilio-go"
+	twilio "github.com/kevinburke/twilio-go/v2"
 )
 
 // An imageServer provides an opaque proxy for image requests.

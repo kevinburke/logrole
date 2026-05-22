@@ -11,7 +11,7 @@ import (
 
 	types "github.com/kevinburke/go-types"
 	"github.com/kevinburke/logrole/services"
-	twilio "github.com/kevinburke/twilio-go"
+	twilio "github.com/kevinburke/twilio-go/v2"
 )
 
 const HTML5DatetimeLocalFormat = "2006-01-02T15:04"

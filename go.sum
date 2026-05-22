@@ -22,8 +22,8 @@ github.com/kevinburke/nacl v0.9.0 h1:2C9v+jXTUUlK19kw+9rqfsdO7riP5xIyHNJ3GvsgOro
 github.com/kevinburke/nacl v0.9.0/go.mod h1:qxFJhGMHIPiWJXUauGGORlObOR4bLKBqf/n6PL8l8N0=
 github.com/kevinburke/rest v0.0.0-20260504163705-04a245549cc6 h1:EuHVhHxqfYDMmrWzOfeoFwg8x51zRexP95t4ypWB024=
 github.com/kevinburke/rest v0.0.0-20260504163705-04a245549cc6/go.mod h1:Fqq3AMJ2uvn3zSO5bO+FIM3gzJcA1+zAPJU2SnrwOuc=
-github.com/kevinburke/twilio-go v0.0.0-20260504164244-2e3e7dddbc33 h1:tPSBCefs2ScyHbvb2dOfO1LdRQ92HXgt1n/7eG7B6v0=
-github.com/kevinburke/twilio-go v0.0.0-20260504164244-2e3e7dddbc33/go.mod h1:Z7bqFOTtIqCCIO+uPtod7Fp3gPMR8aTCcp5Pe8D+3fE=
+github.com/kevinburke/twilio-go/v2 v2.11.0 h1:gCCCTsbjSkJXn2c8oQdi+bwFzsAdaqeXKzGL6WQVeQs=
+github.com/kevinburke/twilio-go/v2 v2.11.0/go.mod h1:WLYWCcoM8yVqP/AaLyOGaI6OlIfQ2dQ4CtxllkQZqY8=
 github.com/mattn/go-colorable v0.1.14 h1:9A9LHSqF/7dyVVX6g0U9cwm9pG3kP9gSzcuIPHPsaIE=
 github.com/mattn/go-colorable v0.1.14/go.mod h1:6LmQG8QLFO4G5z1gPvYEzlUgJ2wF+stgPZH1UqBm1s8=
 github.com/mattn/go-isatty v0.0.22 h1:j8l17JJ9i6VGPUFUYoTUKPSgKe/83EYU2zBC7YNKMw4=

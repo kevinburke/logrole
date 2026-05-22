@@ -7,7 +7,7 @@ import (
 
 	types "github.com/kevinburke/go-types"
 	"github.com/kevinburke/logrole/config"
-	twilio "github.com/kevinburke/twilio-go"
+	twilio "github.com/kevinburke/twilio-go/v2"
 )
 
 type Conference struct {

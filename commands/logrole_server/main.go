@@ -16,7 +16,7 @@ import (
 	"github.com/kevinburke/logrole/config"
 	"github.com/kevinburke/logrole/server"
 	"github.com/kevinburke/logrole/services"
-	twilio "github.com/kevinburke/twilio-go"
+	twilio "github.com/kevinburke/twilio-go/v2"
 )
 
 var logger *slog.Logger

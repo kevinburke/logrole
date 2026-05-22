@@ -24,7 +24,7 @@ import (
 	"github.com/kevinburke/logrole/config"
 	"github.com/kevinburke/logrole/services"
 	"github.com/kevinburke/rest/resterror"
-	twilio "github.com/kevinburke/twilio-go"
+	twilio "github.com/kevinburke/twilio-go/v2"
 )
 
 // Front page of messages should be changing

@@ -15,7 +15,7 @@ import (
 	"github.com/kevinburke/logrole/test"
 	"github.com/kevinburke/logrole/test/harness"
 	"github.com/kevinburke/nacl"
-	twilio "github.com/kevinburke/twilio-go"
+	twilio "github.com/kevinburke/twilio-go/v2"
 )
 
 var dlog = slog.New(slog.DiscardHandler)

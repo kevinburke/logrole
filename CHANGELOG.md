@@ -4,6 +4,8 @@
 
 ## 1.8.0 - 2026-05-22
 
+- Update imports to reference github.com/kevinburke/twilio-go/v2 (and v2.11.0 of
+  the library).
 - Add browser calling: place outbound voice calls from the Calls page using the
   Twilio Voice JS SDK. Gated on the new `can_make_calls` user permission and
   the new `twilio_api_key`, `twilio_api_secret`, and `twilio_twiml_app_sid`

@@ -7,7 +7,7 @@ import (
 	"regexp"
 
 	"github.com/kevinburke/logrole/views"
-	twilio "github.com/kevinburke/twilio-go"
+	twilio "github.com/kevinburke/twilio-go/v2"
 )
 
 type audioServer struct {

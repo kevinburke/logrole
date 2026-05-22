@@ -18,7 +18,7 @@ import (
 	"github.com/kevinburke/handlers"
 	"github.com/kevinburke/logrole/services"
 	"github.com/kevinburke/nacl"
-	twilio "github.com/kevinburke/twilio-go"
+	twilio "github.com/kevinburke/twilio-go/v2"
 )
 
 const DefaultPort = "4114"

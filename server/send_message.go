@@ -13,7 +13,7 @@ import (
 	"github.com/kevinburke/logrole/views"
 	"github.com/kevinburke/rest"
 	"github.com/kevinburke/rest/resterror"
-	twilio "github.com/kevinburke/twilio-go"
+	twilio "github.com/kevinburke/twilio-go/v2"
 )
 
 // sendMessageRoute matches the GET form page. Sends are handled by POSTs to

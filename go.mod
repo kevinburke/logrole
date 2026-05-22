@@ -10,7 +10,7 @@ require (
 	github.com/kevinburke/handlers v0.48.0
 	github.com/kevinburke/nacl v0.9.0
 	github.com/kevinburke/rest v0.0.0-20260504163705-04a245549cc6
-	github.com/kevinburke/twilio-go v0.0.0-20260504164244-2e3e7dddbc33
+	github.com/kevinburke/twilio-go/v2 v2.11.0
 	github.com/ttacon/libphonenumber v1.2.1
 	golang.org/x/oauth2 v0.36.0
 	golang.org/x/sync v0.20.0

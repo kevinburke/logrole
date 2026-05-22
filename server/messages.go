@@ -21,7 +21,7 @@ import (
 	"github.com/kevinburke/logrole/views"
 	"github.com/kevinburke/rest"
 	"github.com/kevinburke/rest/resterror"
-	twilio "github.com/kevinburke/twilio-go"
+	twilio "github.com/kevinburke/twilio-go/v2"
 )
 
 const messagePattern = `(?P<sid>(MM|SM)[a-f0-9]{32})`

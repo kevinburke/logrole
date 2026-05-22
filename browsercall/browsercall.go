@@ -50,8 +50,8 @@ import (
 
 	"github.com/kevinburke/rest"
 	"github.com/kevinburke/rest/resterror"
-	twilio "github.com/kevinburke/twilio-go"
-	"github.com/kevinburke/twilio-go/token"
+	twilio "github.com/kevinburke/twilio-go/v2"
+	"github.com/kevinburke/twilio-go/v2/token"
 	"github.com/ttacon/libphonenumber"
 )
 

@@ -8,7 +8,7 @@ import (
 
 	"github.com/kevinburke/logrole/config"
 	"github.com/kevinburke/nacl"
-	twilio "github.com/kevinburke/twilio-go"
+	twilio "github.com/kevinburke/twilio-go/v2"
 )
 
 // makeBrowserCallsTestHandler returns a handler wired up just like the
