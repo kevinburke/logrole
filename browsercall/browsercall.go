@@ -439,6 +439,7 @@ func (h *Handler) serveVoice(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if err := r.ParseForm(); err != nil {
+		h.logger.Warn("browsercall: could not parse /voice form", "err", err, "ra", r.RemoteAddr)
 		rest.BadRequest(w, r, &resterror.Error{Title: "could not parse form: " + err.Error()})
 		return
 	}
@@ -462,28 +463,39 @@ func (h *Handler) serveVoice(w http.ResponseWriter, r *http.Request) {
 	}
 
 	to := strings.TrimSpace(r.PostForm.Get("To"))
+	callSid := strings.TrimSpace(r.PostForm.Get("CallSid"))
 	if _, err := validPhoneNumber(to); err != nil {
 		h.logger.Warn("browsercall: invalid To", "to", to, "err", err)
-		h.respond(w, &twimlResponse{Say: "Sorry, that number is not valid."})
+		if err := h.respond(w, &twimlResponse{Say: "Sorry, that number is not valid."}); err != nil {
+			h.logger.Warn("browsercall: write invalid-number TwiML", "err", err, "call_sid", callSid, "ra", r.RemoteAddr)
+			return
+		}
+		h.logger.Info("browsercall: returned invalid-number TwiML",
+			"to", to, "call_sid", callSid, "signed_url", signedURL, "ra", r.RemoteAddr)
 		return
 	}
-	h.respond(w, &twimlResponse{
+	if err := h.respond(w, &twimlResponse{
 		Dial: &twimlDial{
 			CallerID:       h.cfg.CallerID,
 			AnswerOnBridge: "true",
 			Number:         to,
 		},
-	})
+	}); err != nil {
+		h.logger.Warn("browsercall: write outbound call TwiML", "err", err, "to", to, "call_sid", callSid, "ra", r.RemoteAddr)
+		return
+	}
+	h.logger.Info("browsercall: returned outbound call TwiML",
+		"to", to, "caller_id", h.cfg.CallerID, "call_sid", callSid, "signed_url", signedURL, "ra", r.RemoteAddr)
 }
 
-func (h *Handler) respond(w http.ResponseWriter, resp *twimlResponse) {
+func (h *Handler) respond(w http.ResponseWriter, resp *twimlResponse) error {
 	w.Header().Set("Content-Type", "application/xml; charset=utf-8")
 	if _, err := w.Write([]byte(xml.Header)); err != nil {
-		h.logger.Warn("browsercall: write XML header", "err", err)
-		return
+		return fmt.Errorf("write XML header: %w", err)
 	}
 	enc := xml.NewEncoder(w)
 	if err := enc.Encode(resp); err != nil {
-		h.logger.Warn("browsercall: encode TwiML", "err", err)
+		return fmt.Errorf("encode TwiML: %w", err)
 	}
+	return nil
 }

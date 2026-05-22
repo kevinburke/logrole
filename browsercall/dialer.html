@@ -25,6 +25,7 @@
   var toInput = document.getElementById('browsercall-to');
   var device = null;
   var activeCall = null;
+  var tokenData = null;
 
   function setStatus(msg, level) {
     statusEl.textContent = msg;
@@ -41,6 +42,32 @@
       return r.json();
     });
   }
+  function installDeviceHandlers() {
+    device.on('error', function(err) {
+      setStatus('Device error: ' + (err && err.message || err), 'danger');
+      setBusy(false);
+    });
+    device.on('tokenWillExpire', function() {
+      fetchToken().then(function(d) {
+        tokenData = d;
+        device.updateToken(d.token);
+      }).catch(function(err) {
+        setStatus('Could not refresh token: ' + err.message, 'danger');
+      });
+    });
+  }
+  function ensureDevice() {
+    if (device) { return device; }
+    if (!tokenData) { throw new Error('access token is not ready yet'); }
+    // Construct Twilio.Device inside the click handler. Browsers can block
+    // the SDK's AudioContext if the device is created during page load.
+    device = new Twilio.Device(tokenData.token, {
+      codecPreferences: ['opus', 'pcmu'],
+      logLevel: 'warn',
+    });
+    installDeviceHandlers();
+    return device;
+  }
   function attachCallHandlers(call) {
     activeCall = call;
     setBusy(true);
@@ -53,31 +80,26 @@
 
   fetchToken()
     .then(function(data) {
-      // The access token has no incoming grant, so the device is
-      // outbound-only and we skip device.register().
-      device = new Twilio.Device(data.token, {
-        codecPreferences: ['opus', 'pcmu'],
-        logLevel: 'warn',
-      });
-      device.on('error', function(err) {
-        setStatus('Device error: ' + (err && err.message || err), 'danger');
-        setBusy(false);
-      });
-      device.on('tokenWillExpire', function() {
-        fetchToken().then(function(d) { device.updateToken(d.token); })
-          .catch(function(err) { setStatus('Could not refresh token: ' + err.message, 'danger'); });
-      });
+      tokenData = data;
       setStatus('Ready (identity ' + data.identity + ').', 'success');
       callBtn.disabled = false;
     })
     .catch(function(err) { setStatus('Could not initialize: ' + err.message, 'danger'); });
 
   callBtn.addEventListener('click', function() {
-    if (!device) { return; }
     var to = toInput.value.trim();
     if (!to) { return; }
     setStatus('Dialing ' + to + '…', 'info');
-    device.connect({params: {To: to}}).then(attachCallHandlers).catch(function(err) {
+    setBusy(true);
+    var d;
+    try {
+      d = ensureDevice();
+    } catch (err) {
+      setStatus('Could not initialize: ' + (err && err.message || err), 'danger');
+      setBusy(false);
+      return;
+    }
+    d.connect({params: {To: to}}).then(attachCallHandlers).catch(function(err) {
       setStatus('Could not place call: ' + (err && err.message || err), 'danger');
       setBusy(false);
     });
