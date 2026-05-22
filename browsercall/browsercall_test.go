@@ -243,6 +243,12 @@ func TestDialerDefaultPage(t *testing.T) {
 	if !strings.Contains(body, `var tokenURL = "token"`) {
 		t.Errorf("expected sibling token URL 'token', got %s", body)
 	}
+	if !strings.Contains(body, "function ensureDevice()") {
+		t.Errorf("expected dialer to defer Twilio.Device construction to call flow, got %s", body)
+	}
+	if strings.Contains(body, "device = new Twilio.Device(data.token") {
+		t.Errorf("dialer constructs Twilio.Device during token fetch, before a user gesture: %s", body)
+	}
 	// html/template strips HTML comments, so the source attribution
 	// lives on the container's data-* attributes instead.
 	if !strings.Contains(body, `data-source="https://github.com/kevinburke/logrole`) {
