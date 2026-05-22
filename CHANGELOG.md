@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## 1.8.0 - 2026-05-22
+
 - Add browser calling: place outbound voice calls from the Calls page using the
   Twilio Voice JS SDK. Gated on the new `can_make_calls` user permission and
   the new `twilio_api_key`, `twilio_api_secret`, and `twilio_twiml_app_sid`
@@ -9,6 +11,10 @@
   `/dial/voice` TwiML webhook verifies the `X-Twilio-Signature` header. A new
   `logrole_create_twiml_app` binary creates or updates the required TwiML
   Application against the Twilio API.
+- Improve browser-call diagnostics by logging the TwiML branch returned by the
+  `/dial/voice` webhook, including the signed URL and Twilio `CallSid`, and
+  initialize the Twilio Voice SDK from the Call button so browsers allow audio
+  startup.
 - Add an embeddable `github.com/kevinburke/logrole/browsercall` package so
   other apps can mount the dialer (and its token/voice endpoints) under any
   URL prefix. The logrole server itself now uses this package internally.
@@ -16,6 +22,16 @@
   loading it from a CDN. The SDK is embedded into the Go binary along with
   the rest of the static assets; run `make assets` to rebuild it after
   bumping `@twilio/voice-sdk` in `package.json`.
+- Align templates with Bootstrap 5 navbar, form, spacing, and grid classes, and
+  remove old inline layout CSS and repeated spacer markup.
+
+## 1.7.1 - 2026-05-20
+
+- Replace `gopkg.in/yaml.v2` with `github.com/goccy/go-yaml` for config and
+  policy parsing.
+- Remove the built-in Sentry/raven error reporter while keeping the generic
+  error-reporter registration hook. Unknown configured reporters now fail
+  during settings construction instead of silently falling back to noop.
 
 ## 1.7.0 - 2026-05-19
 
