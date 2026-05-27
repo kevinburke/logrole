@@ -64,19 +64,20 @@ func newBrowserCallHandler(l *slog.Logger, settings *config.Settings) (http.Hand
 		return nil
 	}
 	h, err := browsercall.New(browsercall.Config{
-		AccountSid:   settings.Client.AccountSid,
-		APIKey:       settings.TwilioAPIKey,
-		APISecret:    settings.TwilioAPISecret,
-		TwiMLAppSid:  settings.TwilioTwiMLAppSid,
-		AuthToken:    settings.Client.AuthToken,
-		CallerID:     settings.DefaultSendingPhoneNumber,
-		PublicHost:   settings.PublicHost,
-		AllowHTTP:    settings.AllowUnencryptedTraffic,
-		Logger:       l,
-		Authorize:    canMakeCallsAuthorizer,
-		DialerLayout: layout,
-		ScriptURL:    basePath + "/static/js/twilio-voice-sdk.js",
-		Version:      Version,
+		AccountSid:    settings.Client.AccountSid,
+		APIKey:        settings.TwilioAPIKey,
+		APISecret:     settings.TwilioAPISecret,
+		TwiMLAppSid:   settings.TwilioTwiMLAppSid,
+		AuthToken:     settings.Client.AuthToken,
+		CallerID:      settings.DefaultSendingPhoneNumber,
+		PublicHost:    settings.PublicHost,
+		AllowHTTP:     settings.AllowUnencryptedTraffic,
+		DefaultRegion: settings.DefaultPhoneRegion,
+		Logger:        l,
+		Authorize:     canMakeCallsAuthorizer,
+		DialerLayout:  layout,
+		ScriptURL:     basePath + "/static/js/twilio-voice-sdk.js",
+		Version:       Version,
 	})
 	if err != nil {
 		return nil, err

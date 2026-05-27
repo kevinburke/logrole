@@ -89,6 +89,11 @@ type FileConfig struct {
 	// with TwilioAPIKey/TwilioAPISecret.
 	TwilioTwiMLAppSid string `yaml:"twilio_twiml_app_sid"`
 
+	// ISO 3166-1 alpha-2 country code assumed when a dialed number does not
+	// start with "+". For example, set "US" to let users type "(925) 943-5839"
+	// instead of "+19259435839". If empty, only E.164 numbers are accepted.
+	DefaultPhoneRegion string `yaml:"default_phone_region"`
+
 	// Need a pointer to a boolean here since we want to be able to distinguish
 	// "false" from "omitted"
 	ShowMediaByDefault *bool `yaml:"show_media_by_default,omitempty"`
@@ -157,6 +162,11 @@ type Settings struct {
 	TwilioAPIKey      string
 	TwilioAPISecret   string
 	TwilioTwiMLAppSid string
+
+	// DefaultPhoneRegion is the ISO 3166-1 alpha-2 country code assumed
+	// when a dialed number does not start with "+". If empty, only E.164
+	// numbers are accepted in the browser dialer.
+	DefaultPhoneRegion string
 
 	// Email address for server errors / "contact me" on error pages.
 	Mailto *mail.Address
@@ -368,6 +378,7 @@ func NewSettingsFromConfig(c *FileConfig, l *slog.Logger) (settings *Settings, e
 		TwilioAPIKey:              c.TwilioAPIKey,
 		TwilioAPISecret:           c.TwilioAPISecret,
 		TwilioTwiMLAppSid:         c.TwilioTwiMLAppSid,
+		DefaultPhoneRegion:        c.DefaultPhoneRegion,
 	}
 	return
 }

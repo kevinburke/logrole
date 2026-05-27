@@ -200,6 +200,71 @@ func TestVoiceWebhookRejectsMissingSignature(t *testing.T) {
 	}
 }
 
+func TestNormalizePhoneNumber(t *testing.T) {
+	t.Parallel()
+	cases := []struct {
+		in      string
+		region  string
+		want    string
+		wantErr bool
+	}{
+		{"+14155550123", "US", "+14155550123", false},
+		{"(925) 943-5839", "US", "+19259435839", false},
+		{"925-943-5839", "US", "+19259435839", false},
+		{"9259435839", "US", "+19259435839", false},
+		{"+44 20 7946 0958", "US", "+442079460958", false},
+		{"+44 20 7946 0958", "", "+442079460958", false},
+		{"020 7946 0958", "GB", "+442079460958", false},
+		// No default region: local numbers fail.
+		{"(925) 943-5839", "", "", true},
+		{"sip:eve@evil.example", "US", "", true},
+		{"client:browser-abc", "US", "", true},
+		{"not-a-number", "US", "", true},
+		{"", "US", "", true},
+	}
+	for _, tc := range cases {
+		got, err := normalizePhoneNumber(tc.in, tc.region)
+		if tc.wantErr {
+			if err == nil {
+				t.Errorf("normalizePhoneNumber(%q, %q): want error, got %q", tc.in, tc.region, got)
+			}
+			continue
+		}
+		if err != nil {
+			t.Errorf("normalizePhoneNumber(%q, %q): unexpected error: %v", tc.in, tc.region, err)
+			continue
+		}
+		if got != tc.want {
+			t.Errorf("normalizePhoneNumber(%q, %q) = %q, want %q", tc.in, tc.region, got, tc.want)
+		}
+	}
+}
+
+func TestVoiceWebhookNormalizesLocalNumber(t *testing.T) {
+	t.Parallel()
+	cfg := validConfig()
+	cfg.DefaultRegion = "US"
+	h, err := New(cfg)
+	if err != nil {
+		t.Fatal(err)
+	}
+	form := url.Values{
+		"To":   []string{"(925) 943-5839"},
+		"From": []string{"client:browser-abc"},
+	}
+	req := signedTwilioPost(cfg, "/voice", form)
+	w := httptest.NewRecorder()
+	h.ServeHTTP(w, req)
+	if w.Code != 200 {
+		body, _ := io.ReadAll(w.Body)
+		t.Fatalf("expected 200, got %d: %s", w.Code, body)
+	}
+	body := w.Body.String()
+	if !strings.Contains(body, ">+19259435839</Dial>") {
+		t.Errorf("expected normalized E.164 number in TwiML: %s", body)
+	}
+}
+
 func TestVoiceWebhookRejectsNonE164(t *testing.T) {
 	t.Parallel()
 	cfg := validConfig()

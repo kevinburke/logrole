@@ -63,23 +63,26 @@ const pkgSourceURL = "https://github.com/kevinburke/logrole/tree/master/browserc
 // short enough that a leaked token expires quickly.
 const accessTokenTTL = time.Hour
 
-// validPhoneNumber reports whether s parses as an E.164 phone number
-// that libphonenumber recognizes as valid for some region. We use it
-// for both the configured CallerID and the To value Twilio echoes
-// back to the /voice webhook, so SIP URIs ("sip:..."), Twilio Client
-// identities ("client:..."), and made-up numbers can't be smuggled
-// through the dialer.
-func validPhoneNumber(s string) (*libphonenumber.PhoneNumber, error) {
-	// Empty defaultRegion: the caller must supply E.164 with a leading
-	// "+" or libphonenumber will reject the parse.
-	pn, err := libphonenumber.Parse(s, "")
+// normalizePhoneNumber parses s as a phone number and returns its
+// E.164 representation. Numbers that already have a leading "+" are
+// parsed without a default region; otherwise defaultRegion (e.g.
+// "US") is used so local formats like "(925) 943-5839" work. If
+// defaultRegion is empty and s lacks a leading "+", the parse fails.
+// SIP URIs, Twilio Client identities, and made-up numbers are
+// rejected.
+func normalizePhoneNumber(s, defaultRegion string) (string, error) {
+	region := defaultRegion
+	if strings.HasPrefix(s, "+") {
+		region = ""
+	}
+	pn, err := libphonenumber.Parse(s, region)
 	if err != nil {
-		return nil, err
+		return "", err
 	}
 	if !libphonenumber.IsValidNumber(pn) {
-		return nil, fmt.Errorf("%q is not a valid phone number", s)
+		return "", fmt.Errorf("%q is not a valid phone number", s)
 	}
-	return pn, nil
+	return libphonenumber.Format(pn, libphonenumber.E164), nil
 }
 
 //go:embed dialer.html
@@ -168,6 +171,12 @@ type Config struct {
 	// Logger sinks warnings and errors. Defaults to slog.Default().
 	Logger *slog.Logger
 
+	// DefaultRegion is the ISO 3166-1 alpha-2 country code assumed when
+	// the dialed number does not start with "+". For example, set "US"
+	// to let users type "(925) 943-5839" instead of "+19259435839".
+	// If empty, only E.164 numbers (with a leading "+") are accepted.
+	DefaultRegion string
+
 	// Version, if non-empty, is rendered as an HTML comment in the
 	// dialer page alongside a link to this package's source. logrole
 	// passes server.Version here. Optional.
@@ -192,7 +201,7 @@ func (c *Config) Validate() error {
 	case c.ScriptURL == "":
 		return errors.New("browsercall: ScriptURL is required (bundle @twilio/voice-sdk and host it)")
 	}
-	if _, err := validPhoneNumber(c.CallerID); err != nil {
+	if _, err := normalizePhoneNumber(c.CallerID, ""); err != nil {
 		return fmt.Errorf("browsercall: CallerID: %w", err)
 	}
 	return nil
@@ -462,16 +471,17 @@ func (h *Handler) serveVoice(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	to := strings.TrimSpace(r.PostForm.Get("To"))
+	rawTo := strings.TrimSpace(r.PostForm.Get("To"))
 	callSid := strings.TrimSpace(r.PostForm.Get("CallSid"))
-	if _, err := validPhoneNumber(to); err != nil {
-		h.logger.Warn("browsercall: invalid To", "to", to, "err", err)
+	to, err := normalizePhoneNumber(rawTo, h.cfg.DefaultRegion)
+	if err != nil {
+		h.logger.Warn("browsercall: invalid To", "to", rawTo, "err", err)
 		if err := h.respond(w, &twimlResponse{Say: "Sorry, that number is not valid."}); err != nil {
 			h.logger.Warn("browsercall: write invalid-number TwiML", "err", err, "call_sid", callSid, "ra", r.RemoteAddr)
 			return
 		}
 		h.logger.Info("browsercall: returned invalid-number TwiML",
-			"to", to, "call_sid", callSid, "signed_url", signedURL, "ra", r.RemoteAddr)
+			"to", rawTo, "call_sid", callSid, "signed_url", signedURL, "ra", r.RemoteAddr)
 		return
 	}
 	if err := h.respond(w, &twimlResponse{
