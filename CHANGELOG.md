@@ -2,6 +2,14 @@
 
 ## Unreleased
 
+## 1.8.1 - 2026-05-27
+
+- Add `default_phone_region` config option (ISO 3166-1 alpha-2 country code,
+  e.g. "US") so the browser dialer accepts local phone number formats like
+  "(925) 943-5839" in addition to E.164. Numbers are normalized to E.164 via
+  libphonenumber before dialing. When unset, only E.164 is accepted (existing
+  behavior).
+
 ## 1.8.0 - 2026-05-22
 
 - Update imports to reference github.com/kevinburke/twilio-go/v2 (and v2.11.0 of
