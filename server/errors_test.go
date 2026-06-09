@@ -8,7 +8,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/kevinburke/rest"
+	"github.com/kevinburke/rest/v2"
 )
 
 func clearErrorHandlers() {

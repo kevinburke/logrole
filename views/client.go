@@ -23,7 +23,7 @@ import (
 	"github.com/kevinburke/logrole/cache"
 	"github.com/kevinburke/logrole/config"
 	"github.com/kevinburke/logrole/services"
-	"github.com/kevinburke/rest/resterror"
+	"github.com/kevinburke/rest/v2/resterror"
 	twilio "github.com/kevinburke/twilio-go/v2"
 )
 

@@ -8,7 +8,7 @@ import (
 	"net/http"
 	"net/mail"
 
-	"github.com/kevinburke/rest/restclient"
+	"github.com/kevinburke/rest/v2/restclient"
 )
 
 // Base URL to get user data from.

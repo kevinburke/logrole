@@ -8,7 +8,7 @@ import (
 
 	"github.com/kevinburke/logrole/browsercall"
 	"github.com/kevinburke/logrole/config"
-	"github.com/kevinburke/rest"
+	"github.com/kevinburke/rest/v2"
 )
 
 // dialerChromeTpl wraps the browsercall dialer fragment in logrole's site

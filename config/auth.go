@@ -17,8 +17,8 @@ import (
 	"time"
 
 	"github.com/kevinburke/logrole/services"
-	"github.com/kevinburke/rest"
-	"github.com/kevinburke/rest/resterror"
+	"github.com/kevinburke/rest/v2"
+	"github.com/kevinburke/rest/v2/resterror"
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/google"
 )

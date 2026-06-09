@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"regexp"
 
-	"github.com/kevinburke/rest"
+	"github.com/kevinburke/rest/v2"
 	twilio "github.com/kevinburke/twilio-go/v2"
 )
 
