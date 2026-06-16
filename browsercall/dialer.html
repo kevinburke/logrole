@@ -6,9 +6,9 @@
     {{- if .From }} Calls show the caller ID <strong>{{ .From }}</strong>.{{ end }}
   </p>
   <div id="browsercall-status" class="browsercall-status" role="status">Initializing&hellip;</div>
-  <form id="browsercall-form" class="browsercall-form" onsubmit="return false;">
+  <form id="browsercall-form" class="browsercall-form">
     <label for="browsercall-to">To</label>
-    <input type="text" name="to" id="browsercall-to" placeholder="+15557654321" autocomplete="off" autofocus />
+    <input type="tel" inputmode="tel" name="to" id="browsercall-to" placeholder="+15557654321" autocomplete="tel" autofocus />
     <div class="browsercall-buttons">
       <button type="button" id="browsercall-call" disabled>Call</button>
       <button type="button" id="browsercall-hangup" disabled>Hang up</button>
@@ -20,6 +20,7 @@
 (function() {
   var tokenURL = {{ .TokenPath }};
   var statusEl = document.getElementById('browsercall-status');
+  var formEl = document.getElementById('browsercall-form');
   var callBtn = document.getElementById('browsercall-call');
   var hangupBtn = document.getElementById('browsercall-hangup');
   var toInput = document.getElementById('browsercall-to');
@@ -86,7 +87,11 @@
     })
     .catch(function(err) { setStatus('Could not initialize: ' + err.message, 'danger'); });
 
-  callBtn.addEventListener('click', function() {
+  function placeCall() {
+    // Ignore activation while the call button is disabled (token not ready,
+    // or a call is already in progress). This guards the Enter-key path,
+    // since a disabled button never fires its own click event.
+    if (callBtn.disabled) { return; }
     var to = toInput.value.trim();
     if (!to) { return; }
     setStatus('Dialing ' + to + '…', 'info');
@@ -103,7 +108,12 @@
       setStatus('Could not place call: ' + (err && err.message || err), 'danger');
       setBusy(false);
     });
-  });
+  }
+
+  callBtn.addEventListener('click', placeCall);
+  // Pressing Enter in the To field submits the form; place the call instead
+  // of letting the browser navigate.
+  formEl.addEventListener('submit', function(e) { e.preventDefault(); placeCall(); });
   hangupBtn.addEventListener('click', function() {
     if (activeCall) { activeCall.disconnect(); }
     else if (device) { device.disconnectAll(); }

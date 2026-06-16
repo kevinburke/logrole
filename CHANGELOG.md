@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+- browsercall: the dialer's To field now uses `type="tel"` with
+  `inputmode="tel"`, so phones bring up the numeric dialpad by default.
+- browsercall: pressing Enter in the To field now places the call, equivalent
+  to clicking the Call button.
+
 ## 1.8.1 - 2026-05-27
 
 - Add `default_phone_region` config option (ISO 3166-1 alpha-2 country code,
