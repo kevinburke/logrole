@@ -1,6 +1,6 @@
 # Changes
 
-## Unreleased
+## 1.8.3 - 2026-06-16
 
 - browsercall: the dialer's To field now uses `type="tel"` with
   `inputmode="tel"`, so phones bring up the numeric dialpad by default.
