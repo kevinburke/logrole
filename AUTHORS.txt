@@ -1,3 +1,4 @@
 Chris Bennett <chris.bennett.edm@gmail.com>
 Claude <noreply@anthropic.com>
 Kevin Burke <kevin@burke.dev>
+dependabot <dependabot@users.noreply.github.com>
