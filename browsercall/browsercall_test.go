@@ -314,6 +314,17 @@ func TestDialerDefaultPage(t *testing.T) {
 	if strings.Contains(body, "device = new Twilio.Device(data.token") {
 		t.Errorf("dialer constructs Twilio.Device during token fetch, before a user gesture: %s", body)
 	}
+	if !strings.Contains(body, `class="browsercall-keypad"`) {
+		t.Errorf("expected keypad container in dialer, got %s", body)
+	}
+	for _, digit := range []string{"1", "2", "3", "4", "5", "6", "7", "8", "9", "*", "0", "#"} {
+		if !strings.Contains(body, `data-digit="`+digit+`"`) {
+			t.Errorf("expected keypad digit %q, got %s", digit, body)
+		}
+	}
+	if !strings.Contains(body, "activeCall.sendDigits(digit)") {
+		t.Errorf("expected keypad to send Twilio DTMF digits, got %s", body)
+	}
 	// html/template strips HTML comments, so the source attribution
 	// lives on the container's data-* attributes instead.
 	if !strings.Contains(body, `data-source="https://github.com/kevinburke/logrole`) {

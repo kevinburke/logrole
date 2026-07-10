@@ -15,10 +15,25 @@
     .browsercall-status[data-level="warning"] { background: #fff5d6; border-color: #f0d780; }
     .browsercall-status[data-level="danger"]  { background: #fde2e2; border-color: #f0b4b4; color: #8a1f1f; }
     .browsercall-form label { display: block; margin-top: 0.5rem; font-weight: 600; }
-    .browsercall-form input[type=text] { width: 100%; padding: 0.5rem; font-size: 1rem; box-sizing: border-box; }
+    .browsercall-form input[type=tel] { width: 100%; padding: 0.5rem; font-size: 1rem; box-sizing: border-box; }
     .browsercall-buttons { margin-top: 0.75rem; display: flex; gap: 0.5rem; }
     .browsercall-buttons button { padding: 0.4rem 0.9rem; font-size: 1rem; cursor: pointer; }
     .browsercall-buttons button[disabled] { opacity: 0.5; cursor: default; }
+    .browsercall-keypad { display: grid; grid-template-columns: repeat(3, minmax(4.5rem, 1fr));
+                           gap: 0.5rem; margin-top: 1rem; }
+    .browsercall-key { min-height: 4rem; padding: 0.75rem; border: 1px solid #bbb;
+                       border-radius: 6px; background: #f8f8f8; color: #222;
+                       box-shadow: 0 2px 0 #d0d0d0; font-size: 1.45rem;
+                       font-weight: 600; cursor: pointer;
+                       transition: background 100ms ease, border-color 100ms ease,
+                                   box-shadow 100ms ease, transform 100ms ease; }
+    .browsercall-key:hover:not([disabled]),
+    .browsercall-key:focus-visible:not([disabled]) { background: #d9ecff; border-color: #4c98d8;
+                                                     box-shadow: 0 3px 0 #9fbfda;
+                                                     transform: translateY(-1px); }
+    .browsercall-key:active:not([disabled]) { background: #9fc8ed; border-color: #347ebc;
+                                              box-shadow: 0 0 0 #d0d0d0; transform: translateY(2px); }
+    .browsercall-key[disabled] { opacity: 0.45; cursor: default; }
   </style>
 </head>
 <body>

@@ -13,6 +13,20 @@
       <button type="button" id="browsercall-call" disabled>Call</button>
       <button type="button" id="browsercall-hangup" disabled>Hang up</button>
     </div>
+    <div class="browsercall-keypad" aria-label="Call keypad">
+      <button type="button" class="browsercall-key" data-digit="1" aria-label="Send digit 1" disabled>1</button>
+      <button type="button" class="browsercall-key" data-digit="2" aria-label="Send digit 2" disabled>2</button>
+      <button type="button" class="browsercall-key" data-digit="3" aria-label="Send digit 3" disabled>3</button>
+      <button type="button" class="browsercall-key" data-digit="4" aria-label="Send digit 4" disabled>4</button>
+      <button type="button" class="browsercall-key" data-digit="5" aria-label="Send digit 5" disabled>5</button>
+      <button type="button" class="browsercall-key" data-digit="6" aria-label="Send digit 6" disabled>6</button>
+      <button type="button" class="browsercall-key" data-digit="7" aria-label="Send digit 7" disabled>7</button>
+      <button type="button" class="browsercall-key" data-digit="8" aria-label="Send digit 8" disabled>8</button>
+      <button type="button" class="browsercall-key" data-digit="9" aria-label="Send digit 9" disabled>9</button>
+      <button type="button" class="browsercall-key" data-digit="*" aria-label="Send star" disabled>*</button>
+      <button type="button" class="browsercall-key" data-digit="0" aria-label="Send digit 0" disabled>0</button>
+      <button type="button" class="browsercall-key" data-digit="#" aria-label="Send pound" disabled>#</button>
+    </div>
   </form>
 </div>
 <script src="{{ .ScriptURL }}"></script>
@@ -24,6 +38,7 @@
   var callBtn = document.getElementById('browsercall-call');
   var hangupBtn = document.getElementById('browsercall-hangup');
   var toInput = document.getElementById('browsercall-to');
+  var keypadBtns = document.querySelectorAll('.browsercall-key');
   var device = null;
   var activeCall = null;
   var tokenData = null;
@@ -36,6 +51,12 @@
     callBtn.disabled = busy;
     hangupBtn.disabled = !busy;
     toInput.disabled = busy;
+    if (!busy) { setKeypadEnabled(false); }
+  }
+  function setKeypadEnabled(enabled) {
+    for (var i = 0; i < keypadBtns.length; i++) {
+      keypadBtns[i].disabled = !enabled;
+    }
   }
   function fetchToken() {
     return fetch(tokenURL, {credentials: 'same-origin'}).then(function(r) {
@@ -72,11 +93,12 @@
   function attachCallHandlers(call) {
     activeCall = call;
     setBusy(true);
-    call.on('accept', function() { setStatus('Call connected.', 'success'); });
+    setKeypadEnabled(false);
+    call.on('accept', function() { setStatus('Call connected.', 'success'); setKeypadEnabled(true); });
     call.on('disconnect', function() { activeCall = null; setStatus('Call ended.', 'info'); setBusy(false); });
     call.on('cancel', function() { activeCall = null; setStatus('Call canceled.', 'warning'); setBusy(false); });
     call.on('reject', function() { activeCall = null; setStatus('Call rejected.', 'warning'); setBusy(false); });
-    call.on('error', function(err) { setStatus('Call error: ' + (err && err.message || err), 'danger'); setBusy(false); });
+    call.on('error', function(err) { activeCall = null; setStatus('Call error: ' + (err && err.message || err), 'danger'); setBusy(false); });
   }
 
   fetchToken()
@@ -110,10 +132,30 @@
     });
   }
 
+  function sendDigit(digit) {
+    if (!activeCall || !digit) { return; }
+    if (typeof activeCall.sendDigits !== 'function') {
+      setStatus('Keypad unavailable for this call.', 'danger');
+      setKeypadEnabled(false);
+      return;
+    }
+    try {
+      activeCall.sendDigits(digit);
+      setStatus('Sent keypad digit.', 'success');
+    } catch (err) {
+      setStatus('Could not send keypad digit: ' + (err && err.message || err), 'danger');
+    }
+  }
+
   callBtn.addEventListener('click', placeCall);
   // Pressing Enter in the To field submits the form; place the call instead
   // of letting the browser navigate.
   formEl.addEventListener('submit', function(e) { e.preventDefault(); placeCall(); });
+  for (var i = 0; i < keypadBtns.length; i++) {
+    keypadBtns[i].addEventListener('click', function(e) {
+      sendDigit(e.currentTarget.getAttribute('data-digit'));
+    });
+  }
   hangupBtn.addEventListener('click', function() {
     if (activeCall) { activeCall.disconnect(); }
     else if (device) { device.disconnectAll(); }
