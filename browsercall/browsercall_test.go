@@ -357,6 +357,9 @@ func TestDialerCustomLayout(t *testing.T) {
 	if strings.Contains(body, "<!doctype html>") {
 		t.Errorf("expected DialerLayout to suppress default page, got %s", body)
 	}
+	if !strings.Contains(body, `.browsercall .browsercall-keypad`) {
+		t.Errorf("expected custom layout fragment to include keypad styles, got %s", body)
+	}
 }
 
 func TestSiblingTokenPath(t *testing.T) {

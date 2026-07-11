@@ -1,3 +1,31 @@
+<style>
+  .browsercall .browsercall-intro { color: #444; }
+  .browsercall .browsercall-status { padding: 0.5rem 0.75rem; border-radius: 4px;
+                                     background: #e7f3ff; border: 1px solid #bcdfff; margin: 0.75rem 0; }
+  .browsercall .browsercall-status[data-level="success"] { background: #e6f7ea; border-color: #b6e2c2; }
+  .browsercall .browsercall-status[data-level="warning"] { background: #fff5d6; border-color: #f0d780; }
+  .browsercall .browsercall-status[data-level="danger"]  { background: #fde2e2; border-color: #f0b4b4; color: #8a1f1f; }
+  .browsercall .browsercall-form label { display: block; margin-top: 0.5rem; font-weight: 600; }
+  .browsercall .browsercall-form input[type=tel] { width: 100%; padding: 0.5rem; font-size: 1rem; box-sizing: border-box; }
+  .browsercall .browsercall-buttons { margin-top: 0.75rem; display: flex; gap: 0.5rem; }
+  .browsercall .browsercall-buttons button { padding: 0.4rem 0.9rem; font-size: 1rem; cursor: pointer; }
+  .browsercall .browsercall-buttons button[disabled] { opacity: 0.5; cursor: default; }
+  .browsercall .browsercall-keypad { display: grid; grid-template-columns: repeat(3, minmax(4.5rem, 1fr));
+                                     gap: 0.5rem; margin-top: 1rem; }
+  .browsercall .browsercall-key { min-height: 4rem; padding: 0.75rem; border: 1px solid #bbb;
+                                  border-radius: 6px; background: #f8f8f8; color: #222;
+                                  box-shadow: 0 2px 0 #d0d0d0; font-size: 1.45rem;
+                                  font-weight: 600; cursor: pointer;
+                                  transition: background 100ms ease, border-color 100ms ease,
+                                              box-shadow 100ms ease, transform 100ms ease; }
+  .browsercall .browsercall-key:hover:not([disabled]),
+  .browsercall .browsercall-key:focus-visible:not([disabled]) { background: #d9ecff; border-color: #4c98d8;
+                                                                box-shadow: 0 3px 0 #9fbfda;
+                                                                transform: translateY(-1px); }
+  .browsercall .browsercall-key:active:not([disabled]) { background: #9fc8ed; border-color: #347ebc;
+                                                         box-shadow: 0 0 0 #d0d0d0; transform: translateY(2px); }
+  .browsercall .browsercall-key[disabled] { opacity: 0.45; cursor: default; }
+</style>
 <div class="browsercall"
      data-generated-by="logrole/browsercall"
      data-source="{{ .SourceURL }}"
