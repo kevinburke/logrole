@@ -70,10 +70,20 @@
   var device = null;
   var activeCall = null;
   var tokenData = null;
+  // Twilio's Device 'error' event carries the richest description of
+  // signaling-level failures (e.g. AccessTokenInvalid). connect()'s promise
+  // can reject with a bare/undefined reason for the same failure, so we
+  // remember the last device error and fall back to it when formatting.
+  var lastDeviceError = null;
 
   function setStatus(msg, level) {
     statusEl.textContent = msg;
     statusEl.setAttribute('data-level', level || 'info');
+  }
+  function formatError(err) {
+    if (!err) { return lastDeviceError ? formatError(lastDeviceError) : 'unknown error'; }
+    var msg = err.message || err.description || String(err);
+    return err.code ? msg + ' (' + err.code + ')' : msg;
   }
   function setBusy(busy) {
     callBtn.disabled = busy;
@@ -94,7 +104,8 @@
   }
   function installDeviceHandlers() {
     device.on('error', function(err) {
-      setStatus('Device error: ' + (err && err.message || err), 'danger');
+      lastDeviceError = err;
+      setStatus('Device error: ' + formatError(err), 'danger');
       setBusy(false);
     });
     device.on('tokenWillExpire', function() {
@@ -126,7 +137,7 @@
     call.on('disconnect', function() { activeCall = null; setStatus('Call ended.', 'info'); setBusy(false); });
     call.on('cancel', function() { activeCall = null; setStatus('Call canceled.', 'warning'); setBusy(false); });
     call.on('reject', function() { activeCall = null; setStatus('Call rejected.', 'warning'); setBusy(false); });
-    call.on('error', function(err) { activeCall = null; setStatus('Call error: ' + (err && err.message || err), 'danger'); setBusy(false); });
+    call.on('error', function(err) { activeCall = null; setStatus('Call error: ' + formatError(err), 'danger'); setBusy(false); });
   }
 
   fetchToken()
@@ -155,7 +166,7 @@
       return;
     }
     d.connect({params: {To: to}}).then(attachCallHandlers).catch(function(err) {
-      setStatus('Could not place call: ' + (err && err.message || err), 'danger');
+      setStatus('Could not place call: ' + formatError(err), 'danger');
       setBusy(false);
     });
   }
