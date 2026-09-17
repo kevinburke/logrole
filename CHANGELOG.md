@@ -1,5 +1,13 @@
 # Changes
 
+## Unreleased
+
+- The browser dialer page (`/dial`) now lists the ten most recent calls
+  placed from the caller ID: the time each call was placed, the number it
+  was placed to, and its duration. The list obeys the existing
+  `can_view_calls` / `can_view_call_to` permissions, and a failed or slow
+  Twilio request degrades to a warning instead of failing the page.
+
 ## 1.8.3 - 2026-06-16
 
 - browsercall: the dialer's To field now uses `type="tel"` with

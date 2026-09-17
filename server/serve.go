@@ -345,7 +345,7 @@ func NewServer(settings *config.Settings) (*Server, error) {
 	// Browser calling. Only wired when all three Twilio credentials and a
 	// default caller ID are configured; otherwise newBrowserCallHandler
 	// returns (nil, nil) and we leave the routes unregistered.
-	browserCalls, err := newBrowserCallHandler(settings.Logger, settings)
+	browserCalls, err := newBrowserCallHandler(settings.Logger, vc, settings.LocationFinder, settings)
 	if err != nil {
 		return nil, err
 	}

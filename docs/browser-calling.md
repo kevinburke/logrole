@@ -161,6 +161,27 @@ A handful of things commonly go wrong on first install:
   contain it. Run `make assets` (which runs `npm ci` and esbuild) and
   rebuild.
 
+## Recent calls on the dialer page
+
+Underneath the keypad, `/dial` lists the ten most recent calls placed
+from the caller ID — when each call was placed, the number it was
+placed to, and how long it lasted. Each row links to the call's detail
+page, and a "More calls" button links to `/calls?from=<caller ID>`.
+
+Twilio's call list can't be filtered by direction, and a browser call
+produces two records: the parent leg from the browser client and the
+child leg the `<Dial>` verb creates. Logrole filters on
+`From=<default_sending_phone_number>`, which selects the child legs —
+the records that carry the dialed number and the talk time. Outbound
+calls placed from that same number by other means (the REST API, say)
+show up in the list too.
+
+The list respects the usual call permissions: a user without
+`can_view_calls` sees the dialer with no list at all (and Logrole skips
+the Twilio request), and `can_view_call_to` controls the To column. If
+the Twilio request fails or times out (3 seconds), the dialer still
+renders, with a warning in place of the table.
+
 ## Permissions reference
 
 Add to `policy` entries or `policy_file`:
@@ -172,6 +193,9 @@ can_make_calls: true   # or false; defaults to true
 The `can_make_calls` permission gates `/dial` and `/dial/token`.
 There's no permission gate on `/dial/voice` — it's authenticated by
 the `X-Twilio-Signature` header instead.
+
+`can_view_calls`, `can_view_call_to`, and `max_resource_age` control
+the recent-call list on the dialer page, exactly as they do on `/calls`.
 
 ## Settings reference
 
