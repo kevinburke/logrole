@@ -1,9 +1,11 @@
 env:
   TZ: UTC
-  # staticcheck v0.7.0 doesn't support Go 1.26+ (export data version
-  # mismatch). Track master until the next tagged release.
-  STATICCHECK_VERSION: "master"
-  DIFFER_VERSION: "v0.0.0-20260403230520-c0574ebcacb2"
+  # staticcheck v0.7.x can't read Go 1.27 export data ("export data
+  # version 4 is greater than maximum supported version 2"); v0.8.1 is
+  # the first tagged release with the fix, so pin to it instead of
+  # floating on master.
+  STATICCHECK_VERSION: "v0.8.1"
+  DIFFER_VERSION: "v1.4.0"
 
 steps:
   - label: ":go: Format"
@@ -11,8 +13,7 @@ steps:
     command: ".buildkite/ci/format.sh"
     timeout_in_minutes: 10
     agents:
-      vm: "buildkite"
-      host: "caracal"
+      pool: "ci"
     artifact_paths:
       - "reports/format/**/*"
 
@@ -21,8 +22,7 @@ steps:
     command: ".buildkite/ci/lint.sh"
     timeout_in_minutes: 10
     agents:
-      vm: "buildkite"
-      host: "caracal"
+      pool: "ci"
     artifact_paths:
       - "reports/lint/**/*"
 
@@ -31,8 +31,7 @@ steps:
     command: ".buildkite/ci/assets.sh"
     timeout_in_minutes: 10
     agents:
-      vm: "buildkite"
-      host: "caracal"
+      pool: "ci"
     artifact_paths:
       - "reports/assets/**/*"
 
@@ -41,8 +40,7 @@ steps:
     command: ".buildkite/ci/test.sh"
     timeout_in_minutes: 15
     agents:
-      vm: "buildkite"
-      host: "caracal"
+      pool: "ci"
     artifact_paths:
       - "coverage/**/*"
       - "reports/tests/**/*"
@@ -57,8 +55,7 @@ steps:
       - "assets"
       - "test"
     agents:
-      vm: "buildkite"
-      host: "caracal"
+      pool: "ci"
     artifact_paths:
       - "reports/build/**/*"
       - "tmp/dist/**/*"
