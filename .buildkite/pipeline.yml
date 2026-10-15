@@ -4,7 +4,7 @@ env:
   # version 4 is greater than maximum supported version 2"); v0.8.1 is
   # the first tagged release with the fix, so pin to it instead of
   # floating on master.
-  STATICCHECK_VERSION: "v0.8.1"
+  STATICCHECK_VERSION: "v0.8.2"
   DIFFER_VERSION: "v1.4.0"
 
 steps:
